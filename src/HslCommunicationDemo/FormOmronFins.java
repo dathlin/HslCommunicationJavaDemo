@@ -84,7 +84,7 @@ public class FormOmronFins extends JDialog {
 
         JTextField textField2 = new JTextField();
         textField2.setBounds(238,14,61, 23);
-        textField2.setText("502");
+        textField2.setText("9600");
         panelConnect.add(textField2);
 
         JLabel label3 = new JLabel("PLC Unit：");

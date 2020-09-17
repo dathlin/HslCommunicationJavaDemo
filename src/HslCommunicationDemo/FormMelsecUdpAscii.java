@@ -1,9 +1,9 @@
 package HslCommunicationDemo;
 
 import HslCommunication.BasicFramework.SoftBasic;
-import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.Melsec.MelsecMcNet;
+import HslCommunication.Profinet.Melsec.MelsecMcAsciiUdp;
+import HslCommunication.Profinet.Melsec.MelsecMcUdp;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 
 import javax.swing.*;
@@ -11,10 +11,8 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormMelsecBinary extends JDialog
-{
-
-    public FormMelsecBinary(){
+public class FormMelsecUdpAscii  extends JDialog {
+    public FormMelsecUdpAscii(){
         this.setTitle("Melsec Plc Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
@@ -29,10 +27,10 @@ public class FormMelsecBinary extends JDialog
 
         this.add(panel);
 
-        melsecMcNet = new MelsecMcNet();
+        melsecMcNet = new MelsecMcAsciiUdp();
     }
 
-    private MelsecMcNet melsecMcNet = null;
+    private MelsecMcAsciiUdp melsecMcNet = null;
     private JPanel panelContent = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
@@ -51,7 +49,7 @@ public class FormMelsecBinary extends JDialog
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("Qna-3E Binary");
+        JLabel label3 = new JLabel("Qna-3E Udp Binary");
         label3.setForeground(Color.RED);
         label3.setBounds(540, 9,160, 17);
         panel.add(label3);
@@ -108,25 +106,10 @@ public class FormMelsecBinary extends JDialog
                     melsecMcNet.setIpAddress(textField1.getText());
                     melsecMcNet.setPort(Integer.parseInt(textField2.getText()));
 
-                    OperateResult connect = melsecMcNet.ConnectServer();
-                    if(connect.IsSuccess){
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "Connect Success",
-                                "Result",
-                                JOptionPane.PLAIN_MESSAGE);
-                        DemoUtils.SetPanelEnabled(panelContent,true);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
-                        userControlReadWriteOp1.SetReadWriteNet(melsecMcNet, defaultAddress, 10);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "Connect Failed:" + connect.ToMessageShowString(),
-                                "Result",
-                                JOptionPane.WARNING_MESSAGE);
-                    }
+                    DemoUtils.SetPanelEnabled(panelContent, true);
+                    button2.setEnabled(true);
+                    button1.setEnabled(false);
+                    userControlReadWriteOp1.SetReadWriteNet(melsecMcNet, defaultAddress, 10);
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -143,7 +126,6 @@ public class FormMelsecBinary extends JDialog
                 super.mouseClicked(e);
                 if (button2.isEnabled() == false) return;
                 if(melsecMcNet!=null){
-                    melsecMcNet.ConnectClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     DemoUtils.SetPanelEnabled(panelContent,false);

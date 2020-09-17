@@ -16,7 +16,7 @@ public class FormLoad extends JDialog
 {
     public FormLoad(){
         this.setTitle("HslCommunication Test Tool");
-        this.setSize(996, 723);
+        this.setSize(996, 643);
         this.setLocationRelativeTo(null);
         this.setModal(true);
         AddMenuBar();
@@ -127,11 +127,11 @@ public class FormLoad extends JDialog
 
     private void AddMelsecGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(9,5,183, 319);
+        buttonPanel.setBounds(9,5,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Melsec [三菱PLC]"));
         int location_y = 24;
 
-        JButton button1 = new JButton( "MC 二进制");
+        JButton button1 = new JButton( "MC Binary");
         button1.setBounds(15,location_y,150, 32);
         button1.setFocusPainted(false);
         button1.addMouseListener(new MouseAdapter() {
@@ -165,10 +165,44 @@ public class FormLoad extends JDialog
         buttonPanel.add(button2);
         location_y+=40;
 
-        JButton button3 = new JButton( "A-1E 二进制");
+        JButton button3 = new JButton( "MC Udp Binary");
         button3.setBounds(15,location_y,150, 32);
         button3.setFocusPainted(false);
         button3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormMelsecUdp form = new FormMelsecUdp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button3);
+        location_y+=40;
+
+        JButton button4 = new JButton( "MC Udp ASCII");
+        button4.setBounds(15,location_y,150, 32);
+        button4.setFocusPainted(false);
+        button4.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormMelsecUdpAscii form = new FormMelsecUdpAscii();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button4);
+        location_y+=40;
+
+        JButton button5 = new JButton( "A-1E 二进制");
+        button5.setBounds(15,location_y,150, 32);
+        button5.setFocusPainted(false);
+        button5.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
@@ -179,7 +213,7 @@ public class FormLoad extends JDialog
                 setVisible(true);
             }
         });
-        buttonPanel.add(button3);
+        buttonPanel.add(button5);
         location_y+=40;
 
         panel.add(buttonPanel);
@@ -187,7 +221,7 @@ public class FormLoad extends JDialog
 
     private void AddSiemensGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(203,5,183, 319);
+        buttonPanel.setBounds(203,5,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Siemens [西门子PLC]"));
         int location_y = 24;
 
@@ -226,7 +260,7 @@ public class FormLoad extends JDialog
         location_y+=40;
 
         JButton button3 = new JButton( "300");
-        button3.setBounds(15,location_y,150, 32);
+        button3.setBounds(15,location_y,70, 32);
         button3.setFocusPainted(false);
         button3.addMouseListener(new MouseAdapter() {
             @Override
@@ -240,10 +274,9 @@ public class FormLoad extends JDialog
             }
         });
         buttonPanel.add(button3);
-        location_y+=40;
 
         JButton button4 = new JButton( "400");
-        button4.setBounds(15,location_y,150, 32);
+        button4.setBounds(95,location_y,70, 32);
         button4.setFocusPainted(false);
         button4.addMouseListener(new MouseAdapter() {
             @Override
@@ -315,7 +348,7 @@ public class FormLoad extends JDialog
 
     private void AddModbusGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(395,5,183, 319);
+        buttonPanel.setBounds(395,5,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Modbus"));
         int location_y = 24;
 
@@ -341,7 +374,7 @@ public class FormLoad extends JDialog
 
     private void AddOmronGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(586,5,183, 319);
+        buttonPanel.setBounds(586,5,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Omron [欧姆龙]"));
         int location_y = 24;
 
@@ -362,12 +395,29 @@ public class FormLoad extends JDialog
         buttonPanel.add(button1);
         location_y+=40;
 
+        JButton button2 = new JButton( "Fins-Udp");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormOmronFinsUdp form = new FormOmronFinsUdp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
+
         panel.add(buttonPanel);
     }
 
     private void AddKeyenceGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(777,5,183, 319);
+        buttonPanel.setBounds(777,5,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Keyence [基恩士]"));
         int location_y = 24;
 
@@ -410,7 +460,7 @@ public class FormLoad extends JDialog
 
     private void AddHslGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(9,336,183, 315);
+        buttonPanel.setBounds(9,296,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Hsl"));
         int location_y = 24;
 
@@ -448,13 +498,29 @@ public class FormLoad extends JDialog
         buttonPanel.add(button2);
         location_y+=40;
 
+        JButton button3 = new JButton( "Net Udp");
+        button3.setBounds(15,location_y,150, 32);
+        button3.setFocusPainted(false);
+        button3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormNetUdpClient form = new FormNetUdpClient();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button3);
+        location_y+=40;
 
         panel.add(buttonPanel);
     }
 
     private void AddMqttGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(395,336,183, 315);
+        buttonPanel.setBounds(395,296,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Mqtt Sync Client"));
         int location_y = 24;
 
@@ -480,7 +546,7 @@ public class FormLoad extends JDialog
 
     private void AddABGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(203,336,183, 315);
+        buttonPanel.setBounds(203,296,183, 279);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "AB plc [罗克韦尔]"));
         int location_y = 24;
 
