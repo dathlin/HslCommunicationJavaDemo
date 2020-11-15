@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class FormSiemensS7 extends JDialog
 {
@@ -216,6 +218,7 @@ public class FormSiemensS7 extends JDialog
         AddReadWrite(panelContent);
         AddReadBulk(panelContent);
         AddCoreRead(panelContent);
+        AddSpecialFunction(panelContent);
 
         panel.add(panelContent);
         this.panelContent = panelContent;
@@ -349,6 +352,100 @@ public class FormSiemensS7 extends JDialog
                 OperateResultExOne<byte[]> read = siemensS7Net.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button2);
+
+        panel.add(panelRead);
+    }
+
+    private SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+    public void AddSpecialFunction(JPanel panel){
+        JPanel panelRead = new JPanel();
+        panelRead.setLayout(null);
+        panelRead.setBounds(546,243,419, 278);
+        panelRead.setBorder(BorderFactory.createTitledBorder( "Special Function Test"));
+
+        JLabel label1 = new JLabel("Address：");
+        label1.setBounds(10, 94,100, 17);
+        panelRead.add(label1);
+
+        JTextField textField1 = new JTextField();
+        textField1.setBounds(78,91,152, 23);
+        textField1.setText("M100");
+        panelRead.add(textField1);
+
+        JLabel label2 = new JLabel("Value：");
+        label2.setBounds(10, 126,100, 17);
+        panelRead.add(label2);
+
+        JTextField textField2 = new JTextField();
+        textField2.setBounds(78,124,152, 23);
+        textField2.setText("");
+        panelRead.add(textField2);
+
+
+        JButton button1 = new JButton("R-Time");
+        button1.setFocusPainted(false);
+        button1.setBounds(236,88,82, 28);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button1.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResultExOne<Date> read = siemensS7Net.ReadDateTime(textField1.getText());
+                if(read.IsSuccess){
+                    textField2.setText(formatter.format(read.Content));
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button1);
+
+        JButton button2 = new JButton("W-Time");
+        button2.setFocusPainted(false);
+        button2.setBounds(324,88,82, 28);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button2.isEnabled() == false) return;
+                super.mouseClicked(e);
+
+                Date date = null;
+                try {
+                    date=formatter.parse(textField2.getText());
+                }
+                catch (Exception ex){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Date Parse Failed:" + ex.getMessage(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                OperateResult read = siemensS7Net.Write(textField1.getText(), date);
+                if(read.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     JOptionPane.showMessageDialog(

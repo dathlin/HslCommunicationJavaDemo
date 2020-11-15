@@ -369,6 +369,23 @@ public class FormLoad extends JDialog
         buttonPanel.add(button1);
         location_y+=40;
 
+        JButton button2 = new JButton( "Modbus RtuOverTcp");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormModbusRtuOverTcp form = new FormModbusRtuOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
+
         panel.add(buttonPanel);
     }
 

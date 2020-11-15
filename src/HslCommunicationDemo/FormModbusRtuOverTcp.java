@@ -4,6 +4,7 @@ import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.ModBus.ModbusRtuOverTcp;
 import HslCommunication.ModBus.ModbusTcpNet;
 
 import javax.swing.*;
@@ -11,11 +12,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormModbusTcp extends JDialog {
-
-
-    public FormModbusTcp(){
-        this.setTitle("Modbus Tcp Test Tool");
+public class FormModbusRtuOverTcp extends JDialog {
+    public FormModbusRtuOverTcp(){
+        this.setTitle("Modbus Rtu Over Tcp Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
         this.setModal(true);
@@ -29,10 +28,10 @@ public class FormModbusTcp extends JDialog {
 
         this.add(panel);
 
-        modbusTcpNet = new ModbusTcpNet();
+        modbusTcpNet = new ModbusRtuOverTcp();
     }
 
-    private ModbusTcpNet modbusTcpNet = null;
+    private ModbusRtuOverTcp modbusTcpNet = null;
     private JPanel panelContent = null;
     private String defaultAddress = "100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
@@ -51,7 +50,7 @@ public class FormModbusTcp extends JDialog {
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("Modbus Tcp");
+        JLabel label3 = new JLabel("Modbus RTU Over Tcp");
         label3.setForeground(Color.RED);
         label3.setBounds(540, 9,160, 17);
         panel.add(label3);
