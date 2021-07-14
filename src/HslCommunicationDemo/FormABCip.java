@@ -89,11 +89,11 @@ public class FormABCip extends JDialog
         panelConnect.add(textField2);
 
         JLabel label4 = new JLabel("Slot：");
-        label4.setBounds(393, 10,48, 17);
+        label4.setBounds(333, 17,48, 17);
         panelConnect.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(439,7,33, 23);
+        textField4.setBounds(379,14,53, 23);
         textField4.setText("0");
         panelConnect.add(textField4);
 
@@ -283,7 +283,7 @@ public class FormABCip extends JDialog
             public void mouseClicked(MouseEvent e) {
                 if (!button2.isEnabled()) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = allenBradleyNet.ReadCipFromServer(Arrays.asList(SoftBasic.HexStringToBytes(textField1.getText())));
+                OperateResultExOne<byte[]> read = allenBradleyNet.ReadCipFromServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }

@@ -1,5 +1,6 @@
 package HslCommunicationDemo;
 
+import HslCommunication.Authorization;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.NetHandle;
 import HslCommunication.Core.Types.OperateResultExOne;
@@ -10,6 +11,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.Console;
 import java.io.IOException;
 
 public class FormLoad extends JDialog
@@ -27,13 +29,19 @@ public class FormLoad extends JDialog
         AddMelsecGroup(panel);
         AddSiemensGroup(panel);
         AddModbusGroup(panel);
+        AddGeGroup(panel);
         AddOmronGroup(panel);
         AddKeyenceGroup(panel);
+        AddXinJEGroup(panel);
         AddHslGroup(panel);
         AddABGroup(panel);
+        AddInovanceGroup(panel);
         AddMqttGroup(panel);
+        AddFujiGroup(panel);
+        AddFatekGroup(panel);
+        AddDeltaGroup(panel);
+        AddPanasonicGroup(panel);
         this.add(panel);
-
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -124,6 +132,7 @@ public class FormLoad extends JDialog
         menuBar.setVisible(true);
         this.setJMenuBar(menuBar);
     }
+
 
     private void AddMelsecGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
@@ -300,7 +309,7 @@ public class FormLoad extends JDialog
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setVisible(false);
-                FormSiemensS7 form = new FormSiemensS7(SiemensPLCS.S200Smart);
+                FormSiemensS7200 form = new FormSiemensS7200(SiemensPLCS.S200Smart);
                 form.setVisible(true);
                 form.dispose();
                 setVisible(true);
@@ -317,7 +326,7 @@ public class FormLoad extends JDialog
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setVisible(false);
-                FormSiemensS7 form = new FormSiemensS7(SiemensPLCS.S200);
+                FormSiemensS7200 form = new FormSiemensS7200(SiemensPLCS.S200);
                 form.setVisible(true);
                 form.dispose();
                 setVisible(true);
@@ -348,7 +357,7 @@ public class FormLoad extends JDialog
 
     private void AddModbusGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(395,5,183, 279);
+        buttonPanel.setBounds(395,5,183, 160);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Modbus"));
         int location_y = 24;
 
@@ -386,13 +395,58 @@ public class FormLoad extends JDialog
         buttonPanel.add(button2);
         location_y+=40;
 
+        JButton button3 = new JButton( "Modbus Udp");
+        button3.setBounds(15, location_y,150, 32);
+        button3.setFocusPainted(false);
+        button3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormMelsecUdp form = new FormMelsecUdp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button3);
+        location_y+=40;
+
+        panel.add(buttonPanel);
+    }
+
+    private void AddGeGroup(JPanel panel){
+
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(395,170,183, 114);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "GE"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "SRTP");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormGeSRTPNet form = new FormGeSRTPNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+
         panel.add(buttonPanel);
     }
 
     private void AddOmronGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
         buttonPanel.setBounds(586,5,183, 279);
-        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Omron [欧姆龙]"));
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Omron PLC [欧姆龙]"));
         int location_y = 24;
 
         JButton button1 = new JButton( "Fins-Tcp");
@@ -429,12 +483,46 @@ public class FormLoad extends JDialog
         buttonPanel.add(button2);
         location_y+=40;
 
+        JButton button3 = new JButton( "HostLinkOverTcp");
+        button3.setBounds(15,location_y,150, 32);
+        button3.setFocusPainted(false);
+        button3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormOmronHostLinkOverTcp form = new FormOmronHostLinkOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button3);
+        location_y+=40;
+
+        JButton button4 = new JButton( "Cip");
+        button4.setBounds(15,location_y,150, 32);
+        button4.setFocusPainted(false);
+        button4.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormOmronCipNet form = new FormOmronCipNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button4);
+        location_y+=40;
+
         panel.add(buttonPanel);
     }
 
     private void AddKeyenceGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(777,5,183, 279);
+        buttonPanel.setBounds(777,5,183, 160);// 279
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Keyence [基恩士]"));
         int location_y = 24;
 
@@ -464,6 +552,49 @@ public class FormLoad extends JDialog
                 super.mouseClicked(e);
                 setVisible(false);
                 FormKeyenceAscii form = new FormKeyenceAscii();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
+
+        panel.add(buttonPanel);
+    }
+
+    private void AddXinJEGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(777,170,183, 114);// 279
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "XINJE [信捷]"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "XINJE TCP");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormXINJETcp form = new FormXINJETcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+        JButton button2 = new JButton( "Serial OverTcp");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormXinJESerialOverTcp form = new FormXinJESerialOverTcp();
                 form.setVisible(true);
                 form.dispose();
                 setVisible(true);
@@ -537,7 +668,7 @@ public class FormLoad extends JDialog
 
     private void AddMqttGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(395,296,183, 279);
+        buttonPanel.setBounds(395,296,183, 160);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Mqtt Sync Client"));
         int location_y = 24;
 
@@ -561,9 +692,53 @@ public class FormLoad extends JDialog
         panel.add(buttonPanel);
     }
 
+    private void AddFujiGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(395,461,183, 114);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Fuji PLC [富士]"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "SPB OverTcp");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormFujiSPBOverTcp form = new FormFujiSPBOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+        JButton button2 = new JButton( "SPH");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormFujiSPHNet form = new FormFujiSPHNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
+
+
+        panel.add(buttonPanel);
+    }
+
     private void AddABGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(203,296,183, 279);
+        buttonPanel.setBounds(203,296,183, 160);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "AB plc [罗克韦尔]"));
         int location_y = 24;
 
@@ -583,6 +758,148 @@ public class FormLoad extends JDialog
         });
         buttonPanel.add(button1);
         location_y+=40;
+
+        panel.add(buttonPanel);
+    }
+
+
+    private void AddInovanceGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(203,461,183, 114);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Inovance PLC [汇川]"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "Serial OverTcp");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormInovanceSerialOverTcp form = new FormInovanceSerialOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+        JButton button2 = new JButton( "Tcp");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormInovanceTcpNet form = new FormInovanceTcpNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
+
+
+        panel.add(buttonPanel);
+    }
+
+
+    private void AddFatekGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(586,296,183, 75);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Fatek PLC [永宏]"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "ProgramOverTcp");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormFatekProgramOverTcp form = new FormFatekProgramOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+        panel.add(buttonPanel);
+    }
+
+    private void AddDeltaGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(586,381,183, 75);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Delta PLC [台达]"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "Dvp Tcp Net");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormFatekProgramOverTcp form = new FormFatekProgramOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+        panel.add(buttonPanel);
+    }
+
+    private void AddPanasonicGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(586,461,183, 114);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Panasonic PLC [松下]"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "MC Binary");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormPanasonicMcNet form = new FormPanasonicMcNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+        JButton button2 = new JButton( "MewtocolOverTcp");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormPanasonicMewtocolOverTcp form = new FormPanasonicMewtocolOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
+
 
         panel.add(buttonPanel);
     }

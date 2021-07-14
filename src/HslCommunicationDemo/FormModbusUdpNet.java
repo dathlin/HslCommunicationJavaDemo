@@ -4,19 +4,17 @@ import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.Omron.OmronFinsNet;
+import HslCommunication.ModBus.ModbusTcpNet;
+import HslCommunication.ModBus.ModbusUdpNet;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormOmronFins extends JDialog {
-
-
-
-    public FormOmronFins(){
-        this.setTitle("Omrom Fins Test Tool");
+public class FormModbusUdpNet extends JDialog {
+    public FormModbusUdpNet(){
+        this.setTitle("Modbus Tcp Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
         this.setModal(true);
@@ -30,12 +28,12 @@ public class FormOmronFins extends JDialog {
 
         this.add(panel);
 
-        omronFinsNet = new OmronFinsNet();
+        modbusTcpNet = new ModbusUdpNet();
     }
 
-    private OmronFinsNet omronFinsNet = null;
+    private ModbusUdpNet modbusTcpNet = null;
     private JPanel panelContent = null;
-    private String defaultAddress = "D100";
+    private String defaultAddress = "100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
 
 
@@ -52,7 +50,7 @@ public class FormOmronFins extends JDialog {
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("Fins Tcp");
+        JLabel label3 = new JLabel("Modbus Tcp");
         label3.setForeground(Color.RED);
         label3.setBounds(540, 9,160, 17);
         panel.add(label3);
@@ -84,46 +82,32 @@ public class FormOmronFins extends JDialog {
 
         JTextField textField2 = new JTextField();
         textField2.setBounds(238,14,61, 23);
-        textField2.setText("9600");
+        textField2.setText("502");
         panelConnect.add(textField2);
 
-        JLabel label3 = new JLabel("PLC Unit：");
-        label3.setBounds(311, 4,77, 17);
+        JLabel label3 = new JLabel("Station：");
+        label3.setBounds(338, 17,56, 17);
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(387,1,40, 23);
-        textField3.setText("0");
+        textField3.setBounds(392,14,40, 23);
+        textField3.setText("1");
         panelConnect.add(textField3);
 
+
+        JCheckBox checkBox1 = new JCheckBox("Start from 0?");
+        checkBox1.setBounds(447,16,106, 21);
+        checkBox1.setSelected(true);
+        panelConnect.add(checkBox1);
+
         JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(450,1,80, 25);
+        comboBox1.setBounds(558,13,111, 25);
         comboBox1.addItem(DataFormat.ABCD);
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
         comboBox1.setSelectedItem(0);
         panelConnect.add(comboBox1);
-
-        JLabel label4 = new JLabel("SA1:");
-        label4.setBounds(311, 31,42, 17);
-        panelConnect.add(label4);
-
-        JTextField textField4 = new JTextField();
-        textField4.setBounds(358,28,45, 23);
-        textField4.setText("");
-        textField4.setEditable(false);
-        panelConnect.add(textField4);
-
-        JLabel label5 = new JLabel("DA1:");
-        label5.setBounds(434, 31,44, 17);
-        panelConnect.add(label5);
-
-        JTextField textField5 = new JTextField();
-        textField5.setBounds(481,28,45, 23);
-        textField5.setText("");
-        textField5.setEditable(false);
-        panelConnect.add(textField5);
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
@@ -143,31 +127,20 @@ public class FormOmronFins extends JDialog {
                 if (button1.isEnabled() == false)return;
                 super.mouseClicked(e);
                 try {
-                    omronFinsNet.setIpAddress(textField1.getText());
-                    omronFinsNet.setPort(Integer.parseInt(textField2.getText()));
-                    omronFinsNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
+                    modbusTcpNet.setIpAddress(textField1.getText());
+                    modbusTcpNet.setPort(Integer.parseInt(textField2.getText()));
+                    modbusTcpNet.setAddressStartWithZero(checkBox1.isSelected());
+                    modbusTcpNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
 
-                    OperateResult connect = omronFinsNet.ConnectServer();
-                    if(connect.IsSuccess){
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "Connect Success",
-                                "Result",
-                                JOptionPane.PLAIN_MESSAGE);
-                        DemoUtils.SetPanelEnabled(panelContent,true);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
-                        textField4.setText(String.valueOf(omronFinsNet.SA1));
-                        textField5.setText(String.valueOf(omronFinsNet.DA1));
-                        userControlReadWriteOp1.SetReadWriteNet(omronFinsNet, defaultAddress, 10);
-                    }
-                    else {
-                        JOptionPane.showMessageDialog(
-                                null,
-                                "Connect Failed:" + connect.ToMessageShowString(),
-                                "Result",
-                                JOptionPane.WARNING_MESSAGE);
-                    }
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Connect Success",
+                            "Result",
+                            JOptionPane.PLAIN_MESSAGE);
+                    DemoUtils.SetPanelEnabled(panelContent, true);
+                    button2.setEnabled(true);
+                    button1.setEnabled(false);
+                    userControlReadWriteOp1.SetReadWriteNet(modbusTcpNet, defaultAddress, 10);
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -183,8 +156,8 @@ public class FormOmronFins extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (!button2.isEnabled()) return;
-                if(omronFinsNet!=null){
-                    omronFinsNet.ConnectClose();
+                if(modbusTcpNet!=null){
+                    //modbusTcpNet.ConnectClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     DemoUtils.SetPanelEnabled(panelContent,false);
@@ -262,7 +235,7 @@ public class FormOmronFins extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = omronFinsNet.Read(textField1.getText(),Short.parseShort(textField2.getText()));
+                OperateResultExOne<byte[]> read = modbusTcpNet.Read(textField1.getText(),Short.parseShort(textField2.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }
@@ -312,7 +285,7 @@ public class FormOmronFins extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = omronFinsNet.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
+                OperateResultExOne<byte[]> read = modbusTcpNet.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }

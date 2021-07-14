@@ -7,6 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.github.dathlin:HslCommunication:2.0.2" level="project" />
+    <orderEntry type="library" name="com.github.dathlin:HslCommunication" level="project" />
   </component>
 </module>

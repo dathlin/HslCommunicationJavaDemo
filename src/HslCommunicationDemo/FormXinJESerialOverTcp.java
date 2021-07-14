@@ -1,27 +1,25 @@
 package HslCommunicationDemo;
 
 import HslCommunication.BasicFramework.SoftBasic;
+import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.Siemens.SiemensPLCS;
-import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunication.Profinet.XINJE.XinJESerialOverTcp;
+import HslCommunication.Profinet.XINJE.XinJESeries;
+import HslCommunication.Profinet.XINJE.XinJETcpNet;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
-public class FormSiemensS7 extends JDialog
-{
+public class FormXinJESerialOverTcp extends JDialog {
 
-    public FormSiemensS7(SiemensPLCS siemensPLCS){
-        this.setTitle("Siemens S7 Test Tool");
+    public FormXinJESerialOverTcp(){
+        this.setTitle("XINJE Tcp Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
         this.setModal(true);
-        this.siemensPLCS = siemensPLCS;
 
         JPanel panel = new JPanel();
         panel.setLayout(null);
@@ -32,13 +30,12 @@ public class FormSiemensS7 extends JDialog
 
         this.add(panel);
 
-        siemensS7Net = new SiemensS7Net(siemensPLCS);
+        plc = new XinJESerialOverTcp();
     }
 
-    private SiemensPLCS siemensPLCS = SiemensPLCS.S1200;
-    private SiemensS7Net siemensS7Net = null;
+    private XinJESerialOverTcp plc = null;
     private JPanel panelContent = null;
-    private String defaultAddress = "M100";
+    private String defaultAddress = "D100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
 
 
@@ -47,7 +44,7 @@ public class FormSiemensS7 extends JDialog
         label1.setBounds(11, 9,68, 17);
         panel.add(label1);
 
-        JLabel label5 = new JLabel("https://www.cnblogs.com/dathlin/p/9196129.html");
+        JLabel label5 = new JLabel("none");
         label5.setBounds(80, 9,400, 17);
         panel.add(label5);
 
@@ -55,13 +52,13 @@ public class FormSiemensS7 extends JDialog
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("s7-" + siemensPLCS.toString());
+        JLabel label3 = new JLabel("Modbus Rtu");
         label3.setForeground(Color.RED);
         label3.setBounds(540, 9,160, 17);
         panel.add(label3);
 
         JLabel label4 = new JLabel("By Richard Hu");
-        label4.setForeground(Color.ORANGE);
+        label4.setForeground(Color.magenta);
         label4.setBounds(887, 9,108, 17);
         panel.add(label4);
     }
@@ -87,64 +84,52 @@ public class FormSiemensS7 extends JDialog
 
         JTextField textField2 = new JTextField();
         textField2.setBounds(238,14,61, 23);
-        textField2.setText("102");
+        textField2.setText("502");
         panelConnect.add(textField2);
 
-        JLabel label3 = new JLabel("Rack：");
-        label3.setBounds(305, 10,48, 17);
+        JLabel label3 = new JLabel("Station：");
+        label3.setBounds(318, 17,56, 17);
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(354,7,63, 23);
-        textField3.setText("0");
+        textField3.setBounds(372,14,40, 23);
+        textField3.setText("1");
         panelConnect.add(textField3);
 
-        JLabel label4 = new JLabel("Slot：");
-        label4.setBounds(443, 10,48, 17);
+        JCheckBox checkBox1 = new JCheckBox("Start from 0?");
+        checkBox1.setBounds(427,16,106, 21);
+        checkBox1.setSelected(true);
+        panelConnect.add(checkBox1);
+
+        JComboBox<DataFormat> comboBox1 = new JComboBox<>();
+        comboBox1.setBounds(538,13,61, 25);
+        comboBox1.addItem(DataFormat.ABCD);
+        comboBox1.addItem(DataFormat.BADC);
+        comboBox1.addItem(DataFormat.CDAB);
+        comboBox1.addItem(DataFormat.DCBA);
+        comboBox1.setSelectedItem(0);
+        panelConnect.add(comboBox1);
+
+        JLabel label4 = new JLabel("Series:");
+        label4.setBounds(610,14,40, 23);
         panelConnect.add(label4);
 
-        JTextField textField4 = new JTextField();
-        textField4.setBounds(489,7,63, 23);
-        textField4.setText("0");
-        panelConnect.add(textField4);
-
-
-
-        if (this.siemensPLCS == SiemensPLCS.S400)
-        {
-            textField3.setText("0");
-            textField4.setText("3");
-        }
-        else if(this.siemensPLCS == SiemensPLCS.S1200)
-        {
-            textField3.setText("0");
-            textField4.setText("0");
-        }
-        else if (this.siemensPLCS == SiemensPLCS.S300)
-        {
-            textField3.setText("0");
-            textField4.setText("2");
-        }
-        else if (this.siemensPLCS == SiemensPLCS.S1500)
-        {
-            textField3.setText("0");
-            textField4.setText("0");
-        }
-
-
-        JLabel label5 = new JLabel("Not s7-200 smart");
-        label5.setBounds(337, 33,110, 17);
-        label5.setForeground(Color.GRAY);
-        panelConnect.add(label5);
+        JComboBox<XinJESeries> comboBox_Series = new JComboBox<>();
+        comboBox_Series.setBounds(660,13,61, 25);
+        comboBox_Series.addItem(XinJESeries.XC);
+        comboBox_Series.addItem(XinJESeries.XD);
+        comboBox_Series.addItem(XinJESeries.XL);
+        comboBox_Series.setSelectedItem(0);
+        panelConnect.add(comboBox_Series);
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(734,11,121, 28);
+        button2.setBounds(850,11,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(627,11,91, 28);
+        button1.setBounds(752,11,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -155,14 +140,13 @@ public class FormSiemensS7 extends JDialog
                 if (button1.isEnabled() == false)return;
                 super.mouseClicked(e);
                 try {
-                    siemensS7Net.setIpAddress(textField1.getText());
-                    siemensS7Net.setPort(Integer.parseInt(textField2.getText()));
+                    plc.setIpAddress(textField1.getText());
+                    plc.setPort(Integer.parseInt(textField2.getText()));
+                    plc.setAddressStartWithZero(checkBox1.isSelected());
+                    plc.setDataFormat((DataFormat) comboBox1.getSelectedItem());
+                    plc.Series = (XinJESeries) comboBox_Series.getSelectedItem();
 
-                    siemensS7Net.setRack((byte) Integer.parseInt(textField3.getText()));
-                    siemensS7Net.setSlot((byte) Integer.parseInt(textField4.getText()));
-
-
-                    OperateResult connect = siemensS7Net.ConnectServer();
+                    OperateResult connect = plc.ConnectServer();
                     if(connect.IsSuccess){
                         JOptionPane.showMessageDialog(
                                 null,
@@ -172,7 +156,7 @@ public class FormSiemensS7 extends JDialog
                         DemoUtils.SetPanelEnabled(panelContent,true);
                         button2.setEnabled(true);
                         button1.setEnabled(false);
-                        userControlReadWriteOp1.SetReadWriteNet(siemensS7Net, defaultAddress, 10);
+                        userControlReadWriteOp1.SetReadWriteNet(plc, defaultAddress, 10);
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -195,9 +179,9 @@ public class FormSiemensS7 extends JDialog
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
-                if(siemensS7Net!=null){
-                    siemensS7Net.ConnectClose();
+                if (!button2.isEnabled()) return;
+                if(plc !=null){
+                    plc.ConnectClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     DemoUtils.SetPanelEnabled(panelContent,false);
@@ -218,7 +202,6 @@ public class FormSiemensS7 extends JDialog
         AddReadWrite(panelContent);
         AddReadBulk(panelContent);
         AddCoreRead(panelContent);
-        AddSpecialFunction(panelContent);
 
         panel.add(panelContent);
         this.panelContent = panelContent;
@@ -267,28 +250,6 @@ public class FormSiemensS7 extends JDialog
         jsp.setBounds(83,56,425, 78);
         panelRead.add(jsp);
 
-        JButton button1 = new JButton("Order");
-        button1.setFocusPainted(false);
-        button1.setBounds(342,24,82, 28);
-        button1.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false) return;
-                super.mouseClicked(e);
-                OperateResultExOne<String> read = siemensS7Net.ReadOrderNumber();
-                if(read.IsSuccess){
-                    textArea1.setText(read.Content);
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Read Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button1);
 
         JButton button2 = new JButton("Read");
         button2.setFocusPainted(false);
@@ -298,7 +259,7 @@ public class FormSiemensS7 extends JDialog
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = siemensS7Net.Read(textField1.getText(),Short.parseShort(textField2.getText()));
+                OperateResultExOne<byte[]> read = plc.Read(textField1.getText(),Short.parseShort(textField2.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }
@@ -328,7 +289,6 @@ public class FormSiemensS7 extends JDialog
 
         JTextField textField1 = new JTextField();
         textField1.setBounds(83,27,337, 23);
-        textField1.setText(SoftBasic.ByteToHexString(SiemensS7Net.BuildReadCommand(defaultAddress,(short) 1).Content, ' '));
         panelRead.add(textField1);
 
         JLabel label3 = new JLabel("Result：");
@@ -349,103 +309,9 @@ public class FormSiemensS7 extends JDialog
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = siemensS7Net.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
+                OperateResultExOne<byte[]> read = plc.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Read Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button2);
-
-        panel.add(panelRead);
-    }
-
-    private SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-    public void AddSpecialFunction(JPanel panel){
-        JPanel panelRead = new JPanel();
-        panelRead.setLayout(null);
-        panelRead.setBounds(546,243,419, 278);
-        panelRead.setBorder(BorderFactory.createTitledBorder( "Special Function Test"));
-
-        JLabel label1 = new JLabel("Address：");
-        label1.setBounds(10, 94,100, 17);
-        panelRead.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(78,91,152, 23);
-        textField1.setText("M100");
-        panelRead.add(textField1);
-
-        JLabel label2 = new JLabel("Value：");
-        label2.setBounds(10, 126,100, 17);
-        panelRead.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(78,124,152, 23);
-        textField2.setText("");
-        panelRead.add(textField2);
-
-
-        JButton button1 = new JButton("R-Time");
-        button1.setFocusPainted(false);
-        button1.setBounds(236,88,82, 28);
-        button1.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false) return;
-                super.mouseClicked(e);
-                OperateResultExOne<Date> read = siemensS7Net.ReadDateTime(textField1.getText());
-                if(read.IsSuccess){
-                    textField2.setText(formatter.format(read.Content));
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Read Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button1);
-
-        JButton button2 = new JButton("W-Time");
-        button2.setFocusPainted(false);
-        button2.setBounds(324,88,82, 28);
-        button2.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (button2.isEnabled() == false) return;
-                super.mouseClicked(e);
-
-                Date date = null;
-                try {
-                    date=formatter.parse(textField2.getText());
-                }
-                catch (Exception ex){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Date Parse Failed:" + ex.getMessage(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
-                }
-
-                OperateResult read = siemensS7Net.Write(textField1.getText(), date);
-                if(read.IsSuccess){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Write Success",
-                            "Result",
-                            JOptionPane.INFORMATION_MESSAGE);
                 }
                 else {
                     JOptionPane.showMessageDialog(

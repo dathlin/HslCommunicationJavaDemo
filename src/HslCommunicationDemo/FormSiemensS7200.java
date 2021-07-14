@@ -13,10 +13,10 @@ import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FormSiemensS7 extends JDialog
+public class FormSiemensS7200 extends JDialog
 {
 
-    public FormSiemensS7(SiemensPLCS siemensPLCS){
+    public FormSiemensS7200(SiemensPLCS siemensPLCS){
         this.setTitle("Siemens S7 Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
@@ -90,22 +90,22 @@ public class FormSiemensS7 extends JDialog
         textField2.setText("102");
         panelConnect.add(textField2);
 
-        JLabel label3 = new JLabel("Rack：");
-        label3.setBounds(305, 10,48, 17);
+        JLabel label3 = new JLabel("LocalTSAP：");
+        label3.setBounds(305, 10,78, 17);
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(354,7,63, 23);
-        textField3.setText("0");
+        textField3.setBounds(384,7,53, 23);
+        textField3.setText("4D57");
         panelConnect.add(textField3);
 
-        JLabel label4 = new JLabel("Slot：");
-        label4.setBounds(443, 10,48, 17);
+        JLabel label4 = new JLabel("DestTSAP：");
+        label4.setBounds(443, 10,78, 17);
         panelConnect.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(489,7,63, 23);
-        textField4.setText("0");
+        textField4.setBounds(519,7,53, 23);
+        textField4.setText("4D57");
         panelConnect.add(textField4);
 
 
@@ -131,10 +131,9 @@ public class FormSiemensS7 extends JDialog
             textField4.setText("0");
         }
 
-
-        JLabel label5 = new JLabel("Not s7-200 smart");
+        JLabel label5 = new JLabel("16进制!!! [16 HEX]");
         label5.setBounds(337, 33,110, 17);
-        label5.setForeground(Color.GRAY);
+        label5.setForeground(Color.red);
         panelConnect.add(label5);
 
         JButton button2 = new JButton("Disconnect");
@@ -157,10 +156,11 @@ public class FormSiemensS7 extends JDialog
                 try {
                     siemensS7Net.setIpAddress(textField1.getText());
                     siemensS7Net.setPort(Integer.parseInt(textField2.getText()));
-
-                    siemensS7Net.setRack((byte) Integer.parseInt(textField3.getText()));
-                    siemensS7Net.setSlot((byte) Integer.parseInt(textField4.getText()));
-
+                    if (siemensPLCS == SiemensPLCS.S200)
+                    {
+                        siemensS7Net.setLocalTSAP((int)Long.parseLong(textField3.getText(), 16));
+                        siemensS7Net.setDestTSAP((int)Long.parseLong(textField4.getText(), 16));
+                    }
 
                     OperateResult connect = siemensS7Net.ConnectServer();
                     if(connect.IsSuccess){
