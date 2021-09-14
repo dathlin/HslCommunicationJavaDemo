@@ -116,7 +116,7 @@ public class FormPanasonicMewtocolOverTcp extends JDialog {
                 try {
                     plc.setIpAddress(textField1.getText());
                     plc.setPort(Integer.parseInt(textField2.getText()));
-                    plc.setStation(Byte.parseByte(textField4.getText()));
+                    plc.setStation(Integer.parseInt(textField4.getText()));
 
                     OperateResult connect = plc.ConnectServer();
                     if(connect.IsSuccess){

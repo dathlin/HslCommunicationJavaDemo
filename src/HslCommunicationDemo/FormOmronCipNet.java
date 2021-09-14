@@ -3,7 +3,6 @@ package HslCommunicationDemo;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.AllenBradley.AllenBradleyNet;
 import HslCommunication.Profinet.Omron.OmronCipNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 
@@ -29,10 +28,10 @@ public class FormOmronCipNet extends JDialog {
 
         this.add(panel);
 
-        allenBradleyNet = new OmronCipNet();
+        omronCipNet = new OmronCipNet();
     }
 
-    private OmronCipNet allenBradleyNet = null;
+    private OmronCipNet omronCipNet = null;
     private JPanel panelContent = null;
     private String defaultAddress = "A";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
@@ -114,11 +113,11 @@ public class FormOmronCipNet extends JDialog {
                 if (button1.isEnabled() == false)return;
                 super.mouseClicked(e);
                 try {
-                    allenBradleyNet.setIpAddress(textField1.getText());
-                    allenBradleyNet.setPort(Integer.parseInt(textField2.getText()));
-                    allenBradleyNet.setSlot(Byte.parseByte(textField4.getText()));
+                    omronCipNet.setIpAddress(textField1.getText());
+                    omronCipNet.setPort(Integer.parseInt(textField2.getText()));
+                    omronCipNet.setSlot(Byte.parseByte(textField4.getText()));
 
-                    OperateResult connect = allenBradleyNet.ConnectServer();
+                    OperateResult connect = omronCipNet.ConnectServer();
                     if(connect.IsSuccess){
                         JOptionPane.showMessageDialog(
                                 null,
@@ -128,7 +127,7 @@ public class FormOmronCipNet extends JDialog {
                         DemoUtils.SetPanelEnabled(panelContent,true);
                         button2.setEnabled(true);
                         button1.setEnabled(false);
-                        userControlReadWriteOp1.SetReadWriteNet(allenBradleyNet, defaultAddress, 1);
+                        userControlReadWriteOp1.SetReadWriteNet(omronCipNet, defaultAddress, 1);
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -152,8 +151,8 @@ public class FormOmronCipNet extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (button2.isEnabled() == false) return;
-                if(allenBradleyNet !=null){
-                    allenBradleyNet.ConnectClose();
+                if(omronCipNet !=null){
+                    omronCipNet.ConnectClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     DemoUtils.SetPanelEnabled(panelContent,false);
@@ -230,11 +229,16 @@ public class FormOmronCipNet extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = allenBradleyNet.Read(textField1.getText(),Short.parseShort(textField2.getText()));
-                if(read.IsSuccess){
-                    textArea1.setText(SoftBasic.ByteToHexString(read.Content));
+                OperateResultExOne<byte[]> read = null;
+                if (!textField1.getText().contains(";")) {
+                    read = omronCipNet.Read(textField1.getText(), Short.parseShort(textField2.getText()));
+                } else {
+                    read = omronCipNet.Read(textField1.getText().split(";"));
                 }
-                else {
+
+                if (read.IsSuccess) {
+                    textArea1.setText("Result：" + HslCommunication.BasicFramework.SoftBasic.ByteToHexString(read.Content));
+                } else {
                     JOptionPane.showMessageDialog(
                             null,
                             "Read Failed:" + read.ToMessageShowString(),
@@ -281,7 +285,7 @@ public class FormOmronCipNet extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (!button2.isEnabled()) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = allenBradleyNet.ReadCipFromServer(SoftBasic.HexStringToBytes(textField1.getText()));
+                OperateResultExOne<byte[]> read = omronCipNet.ReadCipFromServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }

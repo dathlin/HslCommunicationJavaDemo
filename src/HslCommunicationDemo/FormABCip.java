@@ -189,54 +189,59 @@ public class FormABCip extends JDialog
         panel.add(userControlReadWriteOp1);
     }
 
-    public void AddReadBulk(JPanel panel){
+    public void AddReadBulk(JPanel panel) {
         JPanel panelRead = new JPanel();
         panelRead.setLayout(null);
-        panelRead.setBounds(11,243,518, 154);
-        panelRead.setBorder(BorderFactory.createTitledBorder( "Read byte by Length"));
+        panelRead.setBounds(11, 243, 518, 154);
+        panelRead.setBorder(BorderFactory.createTitledBorder("Read byte by Length"));
 
         JLabel label1 = new JLabel("Address：");
-        label1.setBounds(9, 30,70, 17);
+        label1.setBounds(9, 30, 70, 17);
         panelRead.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(83,27,82, 23);
+        textField1.setBounds(83, 27, 82, 23);
         textField1.setText(defaultAddress);
         panelRead.add(textField1);
 
         JLabel label2 = new JLabel("Length：");
-        label2.setBounds(185, 30,60, 17);
+        label2.setBounds(185, 30, 60, 17);
         panelRead.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(234,27,102, 23);
+        textField2.setBounds(234, 27, 102, 23);
         textField2.setText("10");
         panelRead.add(textField2);
 
 
         JLabel label3 = new JLabel("Result：");
-        label3.setBounds(9, 58,70, 17);
+        label3.setBounds(9, 58, 70, 17);
         panelRead.add(label3);
 
         JTextArea textArea1 = new JTextArea();
         textArea1.setLineWrap(true);
         JScrollPane jsp = new JScrollPane(textArea1);
-        jsp.setBounds(83,56,425, 78);
+        jsp.setBounds(83, 56, 425, 78);
         panelRead.add(jsp);
 
         JButton button2 = new JButton("Read");
         button2.setFocusPainted(false);
-        button2.setBounds(426,24,82, 28);
+        button2.setBounds(426, 24, 82, 28);
         button2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = allenBradleyNet.Read(textField1.getText(),Short.parseShort(textField2.getText()));
-                if(read.IsSuccess){
-                    textArea1.setText(SoftBasic.ByteToHexString(read.Content));
+                OperateResultExOne<byte[]> read = null;
+                if (!textField1.getText().contains(";")) {
+                    read = allenBradleyNet.Read(textField1.getText(), Short.parseShort(textField2.getText()));
+                } else {
+                    read = allenBradleyNet.Read(textField1.getText().split(";"));
                 }
-                else {
+
+                if (read.IsSuccess) {
+                    textArea1.setText("Result：" + HslCommunication.BasicFramework.SoftBasic.ByteToHexString(read.Content));
+                } else {
                     JOptionPane.showMessageDialog(
                             null,
                             "Read Failed:" + read.ToMessageShowString(),

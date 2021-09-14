@@ -450,13 +450,63 @@ public class FormSiemensS7 extends JDialog
                 else {
                     JOptionPane.showMessageDialog(
                             null,
-                            "Read Failed:" + read.ToMessageShowString(),
+                            "Write Failed:" + read.ToMessageShowString(),
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
             }
         });
         panelRead.add(button2);
+
+        JButton button3 = new JButton("r-wstring");
+        button3.setFocusPainted(false);
+        button3.setBounds(236,121,86, 28);
+        button3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button3.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResultExOne<String> read = siemensS7Net.ReadWString(textField1.getText());
+                if(read.IsSuccess){
+                    textField2.setText(read.Content);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button3);
+
+        JButton button4 = new JButton("w-wstring");
+        button4.setFocusPainted(false);
+        button4.setBounds(326,121,90, 28);
+        button4.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button4.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResult write = siemensS7Net.WriteWString(textField1.getText(), textField2.getText());
+                if(write.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Failed:" + write.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button4);
 
         panel.add(panelRead);
     }
