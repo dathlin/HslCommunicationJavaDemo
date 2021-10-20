@@ -89,30 +89,34 @@ public class FormMqttSyncClient extends JDialog {
         textField2.setText("1883");
         panelConnect.add(textField2);
 
+        JCheckBox checkBox1 = new JCheckBox("RSA?");
+        checkBox1.setBounds(320,17,50,17);
+        panelConnect.add(checkBox1);
+
         JLabel label6 = new JLabel("ClientId：");
         label6.setBounds(8, 54,80, 17);
         panelConnect.add(label6);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(94, 51,149, 23);
+        textField3.setBounds(90, 51,250, 23);
         textField3.setText("");
         panelConnect.add(textField3);
 
         JLabel label7 = new JLabel("Name：");
-        label7.setBounds(249, 54,56, 17);
+        label7.setBounds(350, 54,56, 17);
         panelConnect.add(label7);
 
         JTextField textField9 = new JTextField();
-        textField9.setBounds(313, 51,91, 23);
+        textField9.setBounds(420, 51,100, 23);
         textField9.setText("");
         panelConnect.add(textField9);
 
         JLabel label8 = new JLabel("Pwd：");
-        label8.setBounds(420, 54,44, 17);
+        label8.setBounds(530, 54,50, 17);
         panelConnect.add(label8);
 
         JTextField textField10 = new JTextField();
-        textField10.setBounds(484, 51,91, 23);
+        textField10.setBounds(590, 51,100, 23);
         textField10.setText("");
         panelConnect.add(textField10);
 
@@ -136,13 +140,14 @@ public class FormMqttSyncClient extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (button1.isEnabled() == false)return;
                 super.mouseClicked(e);
-                try {
+                //try {
                     if(mqttSyncClient != null) mqttSyncClient.ConnectClose();
 
                     MqttConnectionOptions options = new MqttConnectionOptions();
                     options.IpAddress = textField1.getText();
                     options.Port = Integer.parseInt(textField2.getText());
                     options.ClientId = textField3.getText();
+                    options.UseRSAProvider = checkBox1.isSelected();
 
                     if(Utilities.IsStringNullOrEmpty(textField9.getText())&& Utilities.IsStringNullOrEmpty(textField10.getText())){
 
@@ -171,14 +176,14 @@ public class FormMqttSyncClient extends JDialog {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
-                }
-                catch (Exception ex){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Connect Failed\r\nReason:"+ex.getMessage(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+                //}
+//                catch (Exception ex){
+//                    JOptionPane.showMessageDialog(
+//                            null,
+//                            "Connect Failed\r\nReason:"+ex.getMessage(),
+//                            "Result",
+//                            JOptionPane.ERROR_MESSAGE);
+//                }
             }
         });
         button2.addMouseListener(new MouseAdapter() {

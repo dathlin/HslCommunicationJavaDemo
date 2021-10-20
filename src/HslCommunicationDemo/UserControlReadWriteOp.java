@@ -63,14 +63,14 @@ public class UserControlReadWriteOp extends JPanel {
 
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(83,27,165, 23);
+        textField1.setBounds(83,27,190, 23);
         textField1.setText(address);
         panelRead.add(textField1);
 
         textBox3 = textField1;
 
         JTextField textField_ReadLength = new JTextField();
-        textField_ReadLength.setBounds(254,27,42, 23);
+        textField_ReadLength.setBounds(280,27,42, 23);
         textField_ReadLength.setText("1");
         panelRead.add(textField_ReadLength);
 
@@ -81,12 +81,13 @@ public class UserControlReadWriteOp extends JPanel {
         JTextArea textArea1 = new JTextArea();
         textArea1.setLineWrap(true);
         JScrollPane jsp = new JScrollPane(textArea1);
-        jsp.setBounds(83,56,213, 164);
+        jsp.setBounds(83,56,238, 165);
         panelRead.add(jsp);
 
+        int leftButtonX = 335;
         JButton button1 = new JButton("r-bit");
         button1.setFocusPainted(false);
-        button1.setBounds(315,19,82, 28);
+        button1.setBounds( leftButtonX,19,82, 28);
         button1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -103,7 +104,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button_read_byte = new JButton("r-byte");
         button_read_byte.setFocusPainted(false);
-        button_read_byte.setBounds(415,19,82, 28);
+        button_read_byte.setBounds(leftButtonX + 90,19,82, 28);
         button_read_byte.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -127,7 +128,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button3 = new JButton("r-short");
         button3.setFocusPainted(false);
-        button3.setBounds(315,56,82, 28);
+        button3.setBounds(leftButtonX,56,82, 28);
         button3.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -145,7 +146,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button4 = new JButton("r-ushort");
         button4.setFocusPainted(false);
-        button4.setBounds(415,56,82, 28);
+        button4.setBounds(leftButtonX + 90,56,82, 28);
         button4.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -163,7 +164,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button5 = new JButton("r-int");
         button5.setFocusPainted(false);
-        button5.setBounds(315,90,82, 28);
+        button5.setBounds(leftButtonX,90,82, 28);
         button5.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -181,7 +182,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button6 = new JButton("r-uint");
         button6.setFocusPainted(false);
-        button6.setBounds(415,90,82, 28);
+        button6.setBounds(leftButtonX + 90,90,82, 28);
         button6.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -199,7 +200,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button7 = new JButton("r-long");
         button7.setFocusPainted(false);
-        button7.setBounds(315,124,82, 28);
+        button7.setBounds(leftButtonX,124,82, 28);
         button7.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -218,12 +219,12 @@ public class UserControlReadWriteOp extends JPanel {
         JButton button8 = new JButton("r-ulong");
         button8.setFocusPainted(false);
         button8.setVisible(false);
-        button8.setBounds(415,124,82, 28);
+        button8.setBounds(leftButtonX + 90,124,82, 28);
         panelRead.add(button8);
 
         JButton button9 = new JButton("r-float");
         button9.setFocusPainted(false);
-        button9.setBounds(315,158,82, 28);
+        button9.setBounds(leftButtonX,158,82, 28);
         button9.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -241,7 +242,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button10 = new JButton("r-double");
         button10.setFocusPainted(false);
-        button10.setBounds(415,158,82, 28);
+        button10.setBounds(leftButtonX + 90,158,82, 28);
         button10.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -259,11 +260,11 @@ public class UserControlReadWriteOp extends JPanel {
 
 
         JLabel label8 = new JLabel("Length:");
-        label8.setBounds(315,198,55, 17);
+        label8.setBounds(leftButtonX,198,55, 17);
         panelRead.add(label8);
 
         JTextField textField8 = new JTextField();
-        textField8.setBounds(358,195,41, 23);
+        textField8.setBounds(leftButtonX + 43,195,41, 23);
         textField8.setText("10");
         panelRead.add(textField8);
 
@@ -271,7 +272,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button11 = new JButton("r-string");
         button11.setFocusPainted(false);
-        button11.setBounds(415,192,82, 28);
+        button11.setBounds(leftButtonX + 90,192,82, 28);
         button11.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -311,7 +312,7 @@ public class UserControlReadWriteOp extends JPanel {
         panelWrite.add(textField2);
 
         JLabel label100 = new JLabel("Note: The value of \r\nthe string needs to be converted");
-        label100.setBounds(61, 82,147, 58);
+        label100.setBounds(11, 82,200, 100);
         panelWrite.add(label100);
 
         JButton button1 = new JButton("w-bit");

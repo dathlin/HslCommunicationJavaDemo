@@ -5,6 +5,7 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Core.Types.OperateResultExTwo;
 import HslCommunication.Profinet.Omron.OmronCipNet;
+import HslCommunication.Profinet.Omron.OmronConnectedCipNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 
 import javax.swing.*;
@@ -12,9 +13,9 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormOmronCipNet extends JDialog {
+public class FormOmronConnectedCipNet  extends JDialog {
 
-    public FormOmronCipNet(){
+    public FormOmronConnectedCipNet(){
         this.setTitle("Omron plc Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
@@ -29,10 +30,10 @@ public class FormOmronCipNet extends JDialog {
 
         this.add(panel);
 
-        omronCipNet = new OmronCipNet();
+        omronCipNet = new OmronConnectedCipNet();
     }
 
-    private OmronCipNet omronCipNet = null;
+    private OmronConnectedCipNet omronCipNet = null;
     private JPanel panelContent = null;
     private String defaultAddress = "A";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
@@ -51,9 +52,9 @@ public class FormOmronCipNet extends JDialog {
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("Cip");
+        JLabel label3 = new JLabel("Connected Cip");
         label3.setForeground(Color.RED);
-        label3.setBounds(540, 9,160, 17);
+        label3.setBounds(540, 9,260, 17);
         panel.add(label3);
 
         JLabel label4 = new JLabel("By Richard Hu");
@@ -86,16 +87,6 @@ public class FormOmronCipNet extends JDialog {
         textField2.setText("44818");
         panelConnect.add(textField2);
 
-        JLabel label4 = new JLabel("Slot：");
-        label4.setBounds(333, 12,48, 17);
-        panelConnect.add(label4);
-
-        JTextField textField4 = new JTextField();
-        textField4.setBounds(379,9,53, 23);
-        textField4.setText("0");
-        panelConnect.add(textField4);
-
-
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(584,6,121, 28);
@@ -116,7 +107,6 @@ public class FormOmronCipNet extends JDialog {
                 try {
                     omronCipNet.setIpAddress(textField1.getText());
                     omronCipNet.setPort(Integer.parseInt(textField2.getText()));
-                    omronCipNet.setSlot(Byte.parseByte(textField4.getText()));
 
                     OperateResult connect = omronCipNet.ConnectServer();
                     if(connect.IsSuccess){
@@ -232,12 +222,7 @@ public class FormOmronCipNet extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = null;
-                if (!textField1.getText().contains(";")) {
-                    read = omronCipNet.Read(textField1.getText(), Short.parseShort(textField2.getText()));
-                } else {
-                    read = omronCipNet.Read(textField1.getText().split(";"));
-                }
+                OperateResultExOne<byte[]> read = omronCipNet.Read(textField1.getText(), Short.parseShort(textField2.getText()));
 
                 if (read.IsSuccess) {
                     textArea1.setText("Result：" + HslCommunication.BasicFramework.SoftBasic.ByteToHexString(read.Content));
@@ -392,7 +377,7 @@ public class FormOmronCipNet extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (!button_read.isEnabled()) return;
-                OperateResultExTwo<Short, byte[]> read = omronCipNet.ReadTag(textField_address.getText(), Integer.parseInt(textField_length.getText()));
+                OperateResultExTwo<Short, byte[]> read = omronCipNet.ReadTag(textField_address.getText(), Short.parseShort(textField_length.getText()));
                 if (!read.IsSuccess) {
                     JOptionPane.showMessageDialog(
                             null,
@@ -414,19 +399,11 @@ public class FormOmronCipNet extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if(!button_read_type.isEnabled()) return;
-                OperateResultExOne<String> read = omronCipNet.ReadPlcType( );
-                if (read.IsSuccess)
-                {
-                    textArea_data.setText(read.Content);
-                }
-                else
-                {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Read Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
+                JOptionPane.showMessageDialog(
+                        null,
+                        omronCipNet.ProductName,
+                        "Result",
+                        JOptionPane.INFORMATION_MESSAGE);
             }
         });
         panelRead.add(button_read_type);

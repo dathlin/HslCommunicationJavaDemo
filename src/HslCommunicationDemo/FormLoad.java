@@ -7,6 +7,7 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Enthernet.SimplifyNet.NetSimplifyClient;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 
+import javax.imageio.plugins.jpeg.JPEGHuffmanTable;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -41,6 +42,7 @@ public class FormLoad extends JDialog
         AddFatekGroup(panel);
         AddDeltaGroup(panel);
         AddPanasonicGroup(panel);
+        AddRobotGroup(panel);
         this.add(panel);
 
         Thread thread = new Thread(new Runnable() {
@@ -223,6 +225,23 @@ public class FormLoad extends JDialog
             }
         });
         buttonPanel.add(button5);
+        location_y+=40;
+
+        JButton button6 = new JButton( "A-1E ASCII");
+        button6.setBounds(15,location_y,150, 32);
+        button6.setFocusPainted(false);
+        button6.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormMelsecA1EAsciiNet form = new FormMelsecA1EAsciiNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button6);
         location_y+=40;
 
         panel.add(buttonPanel);
@@ -515,6 +534,41 @@ public class FormLoad extends JDialog
             }
         });
         buttonPanel.add(button4);
+        location_y+=40;
+
+
+        JButton button6 = new JButton( "Connected Cip");
+        button6.setBounds(15,location_y,150, 32);
+        button6.setFocusPainted(false);
+        button6.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormOmronConnectedCipNet form = new FormOmronConnectedCipNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button6);
+        location_y+=40;
+
+        JButton button5 = new JButton( "C-Mode OverTcp");
+        button5.setBounds(15,location_y,150, 32);
+        button5.setFocusPainted(false);
+        button5.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormOmronHostLinkCModeOverTcp form = new FormOmronHostLinkCModeOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button5);
         location_y+=40;
 
         panel.add(buttonPanel);
@@ -900,6 +954,32 @@ public class FormLoad extends JDialog
         buttonPanel.add(button2);
         location_y+=40;
 
+
+        panel.add(buttonPanel);
+    }
+
+    private void AddRobotGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(777,296,183, 160);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Robot"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "Fanuc Robot");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormFanucInterfaceNet form = new FormFanucInterfaceNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
 
         panel.add(buttonPanel);
     }
