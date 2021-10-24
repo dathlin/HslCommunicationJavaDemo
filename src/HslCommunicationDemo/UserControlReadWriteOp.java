@@ -9,6 +9,7 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.*;
+import java.util.Date;
 
 public class UserControlReadWriteOp extends JPanel {
     public UserControlReadWriteOp() {
@@ -93,10 +94,15 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button1.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadBool(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Boolean> read = readWriteNet.ReadBool(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 } else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadBool(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<boolean[]> read = readWriteNet.ReadBool(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -111,7 +117,9 @@ public class UserControlReadWriteOp extends JPanel {
                 if (!button_read_byte.isEnabled()) return;
                 super.mouseClicked(e);
                 try{
+                    Date now = new Date();
                     OperateResultExOne<Byte> read = (OperateResultExOne<Byte>)readByteMethod.invoke(readWriteNet, textField1.getText());
+                    SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 catch (Exception ex){
@@ -134,11 +142,16 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button3.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadInt16(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Short> read = readWriteNet.ReadInt16(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<short[]> read = readWriteNet.ReadInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -152,11 +165,16 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button4.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadUInt16(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Integer> read = readWriteNet.ReadUInt16(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadUInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<int[]> read = readWriteNet.ReadUInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -170,11 +188,16 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button5.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadInt32(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Integer> read = readWriteNet.ReadInt32(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<int[]> read = readWriteNet.ReadInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -188,11 +211,16 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button6.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadUInt32(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Long> read = readWriteNet.ReadUInt32(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadUInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<long[]> read = readWriteNet.ReadUInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -206,11 +234,16 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button7.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadInt64(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Long> read = readWriteNet.ReadInt64(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadInt64(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<long[]> read = readWriteNet.ReadInt64(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -230,11 +263,16 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button9.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadFloat(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Float> read = readWriteNet.ReadFloat(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadFloat(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<float[]> read = readWriteNet.ReadFloat(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -248,11 +286,16 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (button10.isEnabled() == false) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 if (textField_ReadLength.getText().equals("1")) {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadDouble(textField1.getText()), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<Double> read = readWriteNet.ReadDouble(textField1.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
                 else {
-                    DemoUtils.ReadResultRender(readWriteNet.ReadDouble(textField1.getText(), Short.parseShort(textField_ReadLength.getText())), textField1.getText(), textArea1, jsp);
+                    OperateResultExOne<double[]> read = readWriteNet.ReadDouble(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                 }
             }
         });
@@ -278,7 +321,10 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button11.isEnabled()) return;
                 super.mouseClicked(e);
-                DemoUtils.ReadResultRender(readWriteNet.ReadString(textField1.getText(), Short.parseShort(textField8.getText())),textField1.getText(), textArea1, jsp );
+                Date now = new Date();
+                OperateResultExOne<String> read = readWriteNet.ReadString(textField1.getText(), Short.parseShort(textField8.getText()));
+                SetTimeSpend(now);
+                DemoUtils.ReadResultRender(read,textField1.getText(), textArea1, jsp );
             }
         });
         panelRead.add(button11);
@@ -311,7 +357,7 @@ public class UserControlReadWriteOp extends JPanel {
         textField2.setBounds(83,56,132, 23);
         panelWrite.add(textField2);
 
-        JLabel label100 = new JLabel("Note: The value of \r\nthe string needs to be converted");
+        JLabel label100 = new JLabel("<html>Note: The value of the string needs to be converted</html>");
         label100.setBounds(11, 82,200, 100);
         panelWrite.add(label100);
 
@@ -324,7 +370,10 @@ public class UserControlReadWriteOp extends JPanel {
                 if (!button1.isEnabled()) return;
                 super.mouseClicked(e);
                 try {
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), Boolean.parseBoolean(textField2.getText())), textField1.getText());
+                    Date now = new Date();
+                    OperateResult write = readWriteNet.Write(textField1.getText(), Boolean.parseBoolean(textField2.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -346,7 +395,9 @@ public class UserControlReadWriteOp extends JPanel {
                 if (!button2.isEnabled()) return;
                 super.mouseClicked(e);
                 try {
+                    Date now = new Date();
                     OperateResult write = (OperateResult)writeByteMethod.invoke(readWriteNet, textField1.getText(), Byte.parseByte(textField2.getText()));
+                    SetTimeSpend(now);
                     DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
@@ -369,8 +420,11 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button3.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), Short.parseShort(textField2.getText())), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), Short.parseShort(textField2.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -391,12 +445,15 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button4.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
                     int value = Integer.parseInt(textField2.getText());
                     if(value < 0 || value > 65535){
                         throw new Exception("Value must be between 0 - 65535");
                     }
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), (short) value), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), (short) value);
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -417,8 +474,11 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button5.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), Integer.parseInt(textField2.getText())), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), Integer.parseInt(textField2.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -439,12 +499,15 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button6.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
                     long value = Long.parseLong(textField2.getText());
                     if(value < 0L || value > 0xffffffffL){
                         throw new Exception("Value must be between 0 - 4294967295");
                     }
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), (int)value), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), (int)value);
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -465,8 +528,11 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button7.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), Long.parseLong(textField2.getText())), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), Long.parseLong(textField2.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -493,8 +559,11 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button9.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), Float.parseFloat(textField2.getText())), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), Float.parseFloat(textField2.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -516,8 +585,11 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button10.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), Double.parseDouble(textField2.getText())), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), Double.parseDouble(textField2.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -538,8 +610,11 @@ public class UserControlReadWriteOp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 if (!button11.isEnabled()) return;
                 super.mouseClicked(e);
+                Date now = new Date();
                 try {
-                    DemoUtils.WriteResultRender(readWriteNet.Write(textField1.getText(), textField2.getText()), textField1.getText());
+                    OperateResult write = readWriteNet.Write(textField1.getText(), textField2.getText());
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -551,6 +626,19 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button11);
+        label_TimeCost = new JLabel(TimeCost);
+        label_TimeCost.setBounds(9,181,150,21);
+        panelWrite.add(label_TimeCost);
+
         panel.add(panelWrite);
     }
+
+    private void SetTimeSpend(Date last)
+    {
+        long mill = new Date().getTime() - last.getTime();
+        label_TimeCost.setText(TimeCost + mill + " ms");
+    }
+
+    private JLabel label_TimeCost;
+    private final String TimeCost = "Time-Cost:";
 }

@@ -43,6 +43,7 @@ public class FormLoad extends JDialog
         AddDeltaGroup(panel);
         AddPanasonicGroup(panel);
         AddRobotGroup(panel);
+        AddYokogawaGroup((panel));
         this.add(panel);
 
         Thread thread = new Thread(new Runnable() {
@@ -253,8 +254,8 @@ public class FormLoad extends JDialog
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Siemens [西门子PLC]"));
         int location_y = 24;
 
-        JButton button1 = new JButton( "S7 1200");
-        button1.setBounds(15,location_y,150, 32);
+        JButton button1 = new JButton( "1200");
+        button1.setBounds(15,location_y,70, 32);
         button1.setFocusPainted(false);
         button1.addMouseListener(new MouseAdapter() {
             @Override
@@ -268,10 +269,9 @@ public class FormLoad extends JDialog
             }
         });
         buttonPanel.add(button1);
-        location_y+=40;
 
-        JButton button2 = new JButton( "S7 1500");
-        button2.setBounds(15,location_y,150, 32);
+        JButton button2 = new JButton( "1500");
+        button2.setBounds(95,location_y,70, 32);
         button2.setFocusPainted(false);
         button2.addMouseListener(new MouseAdapter() {
             @Override
@@ -369,6 +369,23 @@ public class FormLoad extends JDialog
             }
         });
         buttonPanel.add(button6);
+        location_y+=40;
+
+        JButton button8 = new JButton( "PPI OverTcp");
+        button8.setBounds(15,location_y,150, 32);
+        button8.setFocusPainted(false);
+        button8.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormSiemensPPIOverTcp form = new FormSiemensPPIOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button8);
         location_y+=40;
 
         panel.add(buttonPanel);
@@ -813,6 +830,23 @@ public class FormLoad extends JDialog
         buttonPanel.add(button1);
         location_y+=40;
 
+        JButton button2 = new JButton( "Micro Cip");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormAllenBradleyMicroCip form = new FormAllenBradleyMicroCip();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
+
         panel.add(buttonPanel);
     }
 
@@ -980,6 +1014,35 @@ public class FormLoad extends JDialog
         });
         buttonPanel.add(button1);
         location_y+=40;
+
+        panel.add(buttonPanel);
+    }
+
+
+    private void AddYokogawaGroup(JPanel panel){
+        JPanel buttonPanel = new JPanel(null);
+        buttonPanel.setBounds(777,461,183, 114);
+        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Yokogawa PLC [横河]"));
+        int location_y = 24;
+
+        JButton button1 = new JButton( "Link Tcp");
+        button1.setBounds(15,location_y,150, 32);
+        button1.setFocusPainted(false);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormYokogawaLinkTcp form = new FormYokogawaLinkTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button1);
+        location_y+=40;
+
+
 
         panel.add(buttonPanel);
     }

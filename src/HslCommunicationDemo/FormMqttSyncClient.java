@@ -90,7 +90,7 @@ public class FormMqttSyncClient extends JDialog {
         panelConnect.add(textField2);
 
         JCheckBox checkBox1 = new JCheckBox("RSA?");
-        checkBox1.setBounds(320,17,50,17);
+        checkBox1.setBounds(320,17,80,17);
         panelConnect.add(checkBox1);
 
         JLabel label6 = new JLabel("ClientId：");
