@@ -922,13 +922,13 @@ public class FormLoad extends JDialog
         panel.add(buttonPanel);
     }
 
-    private void AddDeltaGroup(JPanel panel){
+    private void AddYokogawaGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
         buttonPanel.setBounds(586,381,183, 75);
-        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Delta PLC [台达]"));
+        buttonPanel.setBorder(BorderFactory.createTitledBorder("Yokogawa PLC [横河]"));
         int location_y = 24;
 
-        JButton button1 = new JButton( "Dvp Tcp Net");
+        JButton button1 = new JButton( "Link Tcp");
         button1.setBounds(15,location_y,150, 32);
         button1.setFocusPainted(false);
         button1.addMouseListener(new MouseAdapter() {
@@ -936,7 +936,7 @@ public class FormLoad extends JDialog
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setVisible(false);
-                FormFatekProgramOverTcp form = new FormFatekProgramOverTcp();
+                FormYokogawaLinkTcp form = new FormYokogawaLinkTcp();
                 form.setVisible(true);
                 form.dispose();
                 setVisible(true);
@@ -944,6 +944,7 @@ public class FormLoad extends JDialog
         });
         buttonPanel.add(button1);
         location_y+=40;
+
 
         panel.add(buttonPanel);
     }
@@ -1019,13 +1020,14 @@ public class FormLoad extends JDialog
     }
 
 
-    private void AddYokogawaGroup(JPanel panel){
+    private void AddDeltaGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
         buttonPanel.setBounds(777,461,183, 114);
-        buttonPanel.setBorder(BorderFactory.createTitledBorder( "Yokogawa PLC [横河]"));
+        buttonPanel.setBorder(BorderFactory.createTitledBorder(  "Delta PLC [台达]"));
         int location_y = 24;
 
-        JButton button1 = new JButton( "Link Tcp");
+
+        JButton button1 = new JButton( "Tcp Net");
         button1.setBounds(15,location_y,150, 32);
         button1.setFocusPainted(false);
         button1.addMouseListener(new MouseAdapter() {
@@ -1033,7 +1035,7 @@ public class FormLoad extends JDialog
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setVisible(false);
-                FormYokogawaLinkTcp form = new FormYokogawaLinkTcp();
+                FormDeltaDvpTcpNet form = new FormDeltaDvpTcpNet();
                 form.setVisible(true);
                 form.dispose();
                 setVisible(true);
@@ -1043,6 +1045,22 @@ public class FormLoad extends JDialog
         location_y+=40;
 
 
+        JButton button2 = new JButton( "Serial Over Tcp");
+        button2.setBounds(15,location_y,150, 32);
+        button2.setFocusPainted(false);
+        button2.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormDeltaSerialOverTcp form = new FormDeltaSerialOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button2);
+        location_y+=40;
 
         panel.add(buttonPanel);
     }

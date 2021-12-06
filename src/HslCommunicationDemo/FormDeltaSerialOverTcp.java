@@ -3,19 +3,19 @@ package HslCommunicationDemo;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.Melsec.MelsecMcNet;
-import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunication.Profinet.Delta.DeltaSerialOverTcp;
+import HslCommunication.Profinet.Delta.DeltaSeries;
+import HslCommunication.Profinet.Delta.DeltaTcpNet;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormMelsecBinary extends JDialog
-{
+public class FormDeltaSerialOverTcp extends JDialog {
 
-    public FormMelsecBinary(){
-        this.setTitle("Melsec Plc Test Tool");
+    public FormDeltaSerialOverTcp(){
+        this.setTitle("Delta plc Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
         this.setModal(true);
@@ -29,12 +29,12 @@ public class FormMelsecBinary extends JDialog
 
         this.add(panel);
 
-        melsecMcNet = new MelsecMcNet();
+        plc = new DeltaSerialOverTcp();
     }
 
-    private MelsecMcNet melsecMcNet = null;
+    private DeltaSerialOverTcp plc = null;
     private JPanel panelContent = null;
-    private String defaultAddress = "D100";
+    private String defaultAddress = "M100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
 
 
@@ -43,7 +43,7 @@ public class FormMelsecBinary extends JDialog
         label1.setBounds(11, 9,68, 17);
         panel.add(label1);
 
-        JLabel label5 = new JLabel("https://www.cnblogs.com/dathlin/p/9176069.html");
+        JLabel label5 = new JLabel("https://www.hslcommunication.cn");
         label5.setBounds(80, 9,400, 17);
         panel.add(label5);
 
@@ -51,7 +51,7 @@ public class FormMelsecBinary extends JDialog
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("Qna-3E Binary");
+        JLabel label3 = new JLabel("Modbus Tcp");
         label3.setForeground(Color.RED);
         label3.setBounds(540, 9,160, 17);
         panel.add(label3);
@@ -83,18 +83,38 @@ public class FormMelsecBinary extends JDialog
 
         JTextField textField2 = new JTextField();
         textField2.setBounds(238,14,61, 23);
-        textField2.setText("6000");
+        textField2.setText("2000");
         panelConnect.add(textField2);
 
+        JLabel label4 = new JLabel("Station：");
+        label4.setBounds(333, 17,58, 17);
+        panelConnect.add(label4);
+
+        JTextField textField4 = new JTextField();
+        textField4.setBounds(389,14,53, 23);
+        textField4.setText("0");
+        panelConnect.add(textField4);
+
+
+        JLabel label3 = new JLabel("Series：");
+        label3.setBounds(460, 17,56, 17);
+        panelConnect.add(label3);
+
+        JComboBox<DeltaSeries> comboBox1 = new JComboBox<>();
+        comboBox1.setBounds(540,13,80, 25);
+        comboBox1.addItem(DeltaSeries.Dvp);
+        comboBox1.addItem(DeltaSeries.AS);
+        comboBox1.setSelectedItem(0);
+        panelConnect.add(comboBox1);
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
+        button2.setBounds(784,11,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
+        button1.setBounds(677,11,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -102,13 +122,15 @@ public class FormMelsecBinary extends JDialog
         button1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (button1.isEnabled() == false)return;
                 super.mouseClicked(e);
                 try {
-                    melsecMcNet.setIpAddress(textField1.getText());
-                    melsecMcNet.setPort(Integer.parseInt(textField2.getText()));
+                    plc.setIpAddress(textField1.getText());
+                    plc.setPort(Integer.parseInt(textField2.getText()));
+                    plc.setStation(Byte.parseByte(textField4.getText()));
+                    plc.SetSeries((DeltaSeries) comboBox1.getSelectedItem());
 
-                    OperateResult connect = melsecMcNet.ConnectServer();
+                    OperateResult connect = plc.ConnectServer();
                     if(connect.IsSuccess){
                         JOptionPane.showMessageDialog(
                                 null,
@@ -118,7 +140,7 @@ public class FormMelsecBinary extends JDialog
                         DemoUtils.SetPanelEnabled(panelContent,true);
                         button2.setEnabled(true);
                         button1.setEnabled(false);
-                        userControlReadWriteOp1.SetReadWriteNet(melsecMcNet, defaultAddress, 10);
+                        userControlReadWriteOp1.SetReadWriteNet(plc, defaultAddress, 1);
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -142,8 +164,8 @@ public class FormMelsecBinary extends JDialog
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (button2.isEnabled() == false) return;
-                if(melsecMcNet!=null){
-                    melsecMcNet.ConnectClose();
+                if(plc !=null){
+                    plc.ConnectClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     DemoUtils.SetPanelEnabled(panelContent,false);
@@ -197,7 +219,7 @@ public class FormMelsecBinary extends JDialog
         panelRead.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(234,27,49, 23);
+        textField2.setBounds(234,27,102, 23);
         textField2.setText("10");
         panelRead.add(textField2);
 
@@ -212,18 +234,17 @@ public class FormMelsecBinary extends JDialog
         jsp.setBounds(83,56,425, 78);
         panelRead.add(jsp);
 
-
         JButton button2 = new JButton("Read");
         button2.setFocusPainted(false);
-        button2.setBounds(436,24,72, 28);
+        button2.setBounds(426,24,82, 28);
         button2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = melsecMcNet.Read(textField1.getText(),Short.parseShort(textField2.getText()));
+                OperateResultExOne<byte[]> read = plc.Read(textField1.getText(),Short.parseShort(textField2.getText()));
                 if(read.IsSuccess){
-                    textArea1.setText(SoftBasic.ByteToHexString(read.Content, ' '));
+                    textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -235,29 +256,6 @@ public class FormMelsecBinary extends JDialog
             }
         });
         panelRead.add(button2);
-
-        JButton button3 = new JButton("plc type");
-        button3.setFocusPainted(false);
-        button3.setBounds(360,24,72, 28);
-        button3.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (button3.isEnabled() == false) return;
-                super.mouseClicked(e);
-                OperateResultExOne<String> read = melsecMcNet.ReadPlcType();
-                if(read.IsSuccess){
-                    textArea1.setText(read.Content);
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Read Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button3);
 
         panel.add(panelRead);
     }
@@ -293,9 +291,9 @@ public class FormMelsecBinary extends JDialog
         button2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button2.isEnabled() == false) return;
+                if (!button2.isEnabled()) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = melsecMcNet.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
+                OperateResultExOne<byte[]> read = plc.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }
@@ -309,7 +307,6 @@ public class FormMelsecBinary extends JDialog
             }
         });
         panelRead.add(button2);
-
         panel.add(panelRead);
     }
 }

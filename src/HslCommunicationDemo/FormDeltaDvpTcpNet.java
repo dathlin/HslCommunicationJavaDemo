@@ -1,11 +1,11 @@
 package HslCommunicationDemo;
 
 import HslCommunication.BasicFramework.SoftBasic;
+import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.Delta.DeltaDvpTcpNet;
-import HslCommunication.Profinet.FATEK.FatekProgramOverTcp;
-import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunication.Profinet.Delta.DeltaSeries;
+import HslCommunication.Profinet.Delta.DeltaTcpNet;
 
 import javax.swing.*;
 import java.awt.*;
@@ -29,10 +29,10 @@ public class FormDeltaDvpTcpNet extends JDialog {
 
         this.add(panel);
 
-        plc = new DeltaDvpTcpNet();
+        plc = new DeltaTcpNet();
     }
 
-    private DeltaDvpTcpNet plc = null;
+    private DeltaTcpNet plc = null;
     private JPanel panelContent = null;
     private String defaultAddress = "M100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
@@ -96,14 +96,25 @@ public class FormDeltaDvpTcpNet extends JDialog {
         panelConnect.add(textField4);
 
 
+        JLabel label3 = new JLabel("Series：");
+        label3.setBounds(460, 17,56, 17);
+        panelConnect.add(label3);
+
+        JComboBox<DeltaSeries> comboBox1 = new JComboBox<>();
+        comboBox1.setBounds(540,13,80, 25);
+        comboBox1.addItem(DeltaSeries.Dvp);
+        comboBox1.addItem(DeltaSeries.AS);
+        comboBox1.setSelectedItem(0);
+        panelConnect.add(comboBox1);
+
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
+        button2.setBounds(784,11,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
+        button1.setBounds(677,11,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -117,6 +128,7 @@ public class FormDeltaDvpTcpNet extends JDialog {
                     plc.setIpAddress(textField1.getText());
                     plc.setPort(Integer.parseInt(textField2.getText()));
                     plc.setStation(Byte.parseByte(textField4.getText()));
+                    plc.SetSeries((DeltaSeries) comboBox1.getSelectedItem());
 
                     OperateResult connect = plc.ConnectServer();
                     if(connect.IsSuccess){
@@ -260,7 +272,7 @@ public class FormDeltaDvpTcpNet extends JDialog {
 
         JTextField textField1 = new JTextField();
         textField1.setBounds(83,27,337, 23);
-        textField1.setText(SoftBasic.ByteToHexString(SiemensS7Net.BuildReadCommand(defaultAddress,(short) 1).Content, ' '));
+        textField1.setText("");
         panelRead.add(textField1);
 
         JLabel label3 = new JLabel("Result：");

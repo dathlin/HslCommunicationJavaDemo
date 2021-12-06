@@ -251,7 +251,7 @@ public class FormMelsecA1E extends JDialog {
 
         JTextField textField1 = new JTextField();
         textField1.setBounds(83,27,337, 23);
-        textField1.setText(SoftBasic.ByteToHexString(SiemensS7Net.BuildReadCommand(defaultAddress,(short) 1).Content, ' '));
+        textField1.setText("");
         panelRead.add(textField1);
 
         JLabel label3 = new JLabel("Result：");
