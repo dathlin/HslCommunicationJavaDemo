@@ -847,6 +847,23 @@ public class FormLoad extends JDialog
         buttonPanel.add(button2);
         location_y+=40;
 
+        JButton button3 = new JButton( "SLC Net");
+        button3.setBounds(15,location_y,150, 32);
+        button3.setFocusPainted(false);
+        button3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormAllenBradleySLCNet form = new FormAllenBradleySLCNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button3);
+        location_y+=40;
+
         panel.add(buttonPanel);
     }
 

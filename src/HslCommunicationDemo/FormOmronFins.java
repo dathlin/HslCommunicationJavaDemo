@@ -102,8 +102,12 @@ public class FormOmronFins extends JDialog {
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
-        comboBox1.setSelectedItem(0);
+        comboBox1.setSelectedIndex(2);
         panelConnect.add(comboBox1);
+
+        JCheckBox checkBox1 = new JCheckBox("String Reverse");
+        checkBox1.setBounds(580,17,140, 17);
+        panelConnect.add(checkBox1);
 
         JLabel label4 = new JLabel("SA1:");
         label4.setBounds(311, 31,42, 17);
@@ -146,6 +150,7 @@ public class FormOmronFins extends JDialog {
                     omronFinsNet.setIpAddress(textField1.getText());
                     omronFinsNet.setPort(Integer.parseInt(textField2.getText()));
                     omronFinsNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
+                    omronFinsNet.getByteTransform().setIsStringReverse(checkBox1.isSelected());
 
                     OperateResult connect = omronFinsNet.ConnectServer();
                     if(connect.IsSuccess){

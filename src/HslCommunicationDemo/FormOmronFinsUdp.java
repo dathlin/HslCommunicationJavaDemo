@@ -103,7 +103,7 @@ public class FormOmronFinsUdp extends JDialog {
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
-        comboBox1.setSelectedItem(0);
+        comboBox1.setSelectedIndex(2);
         panelConnect.add(comboBox1);
 
         JButton button2 = new JButton("Disconnect");
