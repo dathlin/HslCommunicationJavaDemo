@@ -415,7 +415,7 @@ public class FormFanucInterfaceNet extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (!button19.isEnabled()) return;
                 super.mouseClicked(e);
-                OperateResultExOne<boolean[]> read = fanucInterfaceNet.ReadSDO( 1, (short) 5 );
+                OperateResultExOne<boolean[]> read = fanucInterfaceNet.ReadSDO( 8001, (short) 5 );
                 if (read.IsSuccess)
                 {
                     textArea1.setText(SoftBasic.ArrayFormat(read.Content));

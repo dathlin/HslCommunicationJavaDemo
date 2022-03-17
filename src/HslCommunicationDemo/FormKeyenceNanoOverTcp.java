@@ -3,18 +3,18 @@ package HslCommunicationDemo;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.FATEK.FatekProgramOverTcp;
-import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunication.Profinet.Keyence.KeyenceNanoSerialOverTcp;
+import HslCommunication.Profinet.Keyence.KeyencePLCS;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormFatekProgramOverTcp extends JDialog {
+public class FormKeyenceNanoOverTcp extends JDialog {
 
-    public FormFatekProgramOverTcp(){
-        this.setTitle("Fatek plc Test Tool");
+    public FormKeyenceNanoOverTcp(){
+        this.setTitle("Keyence Plc Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
         this.setModal(true);
@@ -28,12 +28,12 @@ public class FormFatekProgramOverTcp extends JDialog {
 
         this.add(panel);
 
-        plc = new FatekProgramOverTcp();
+        plc = new KeyenceNanoSerialOverTcp();
     }
 
-    private FatekProgramOverTcp plc = null;
+    private KeyenceNanoSerialOverTcp plc = null;
     private JPanel panelContent = null;
-    private String defaultAddress = "D100";
+    private String defaultAddress = "DM100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
 
 
@@ -42,7 +42,7 @@ public class FormFatekProgramOverTcp extends JDialog {
         label1.setBounds(11, 9,68, 17);
         panel.add(label1);
 
-        JLabel label5 = new JLabel("https://www.hslcommunication.cn");
+        JLabel label5 = new JLabel("https://www.cnblogs.com/dathlin/p/9176069.html");
         label5.setBounds(80, 9,400, 17);
         panel.add(label5);
 
@@ -50,7 +50,7 @@ public class FormFatekProgramOverTcp extends JDialog {
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("Fatek Program OverTcp");
+        JLabel label3 = new JLabel("SPB OverTcp");
         label3.setForeground(Color.RED);
         label3.setBounds(540, 9,160, 17);
         panel.add(label3);
@@ -73,7 +73,7 @@ public class FormFatekProgramOverTcp extends JDialog {
 
         JTextField textField1 = new JTextField();
         textField1.setBounds(62,14,106, 23);
-        textField1.setText("192.168.0.10");
+        textField1.setText("127.0.0.1");
         panelConnect.add(textField1);
 
         JLabel label2 = new JLabel("Port：");
@@ -82,27 +82,31 @@ public class FormFatekProgramOverTcp extends JDialog {
 
         JTextField textField2 = new JTextField();
         textField2.setBounds(238,14,61, 23);
-        textField2.setText("2000");
+        textField2.setText("8501");
         panelConnect.add(textField2);
 
-        JLabel label4 = new JLabel("Station：");
-        label4.setBounds(333, 17,58, 17);
-        panelConnect.add(label4);
+        JLabel label3 = new JLabel("Station：");
+        label3.setBounds(338, 17,56, 17);
+        panelConnect.add(label3);
 
-        JTextField textField4 = new JTextField();
-        textField4.setBounds(389,14,53, 23);
-        textField4.setText("0");
-        panelConnect.add(textField4);
+        JTextField textField3 = new JTextField();
+        textField3.setBounds(392,14,40, 23);
+        textField3.setText("0");
+        panelConnect.add(textField3);
 
+        JCheckBox checkBox1 = new JCheckBox("Use Station?");
+        checkBox1.setBounds(447,16,106, 21);
+        checkBox1.setSelected(false);
+        panelConnect.add(checkBox1);
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
+        button2.setBounds(684,11,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
+        button1.setBounds(577,11,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -115,7 +119,8 @@ public class FormFatekProgramOverTcp extends JDialog {
                 try {
                     plc.setIpAddress(textField1.getText());
                     plc.setPort(Integer.parseInt(textField2.getText()));
-                    plc.setStation(Byte.parseByte(textField4.getText()));
+                    plc.Station = (byte) Integer.parseInt(textField3.getText());
+                    plc.UseStation = checkBox1.isSelected();
 
                     OperateResult connect = plc.ConnectServer();
                     if(connect.IsSuccess){
@@ -127,7 +132,7 @@ public class FormFatekProgramOverTcp extends JDialog {
                         DemoUtils.SetPanelEnabled(panelContent,true);
                         button2.setEnabled(true);
                         button1.setEnabled(false);
-                        userControlReadWriteOp1.SetReadWriteNet(plc, defaultAddress, 1);
+                        userControlReadWriteOp1.SetReadWriteNet(plc, defaultAddress, 10);
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -150,7 +155,7 @@ public class FormFatekProgramOverTcp extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!button2.isEnabled()) return;
                 if(plc !=null){
                     plc.ConnectClose();
                     button1.setEnabled(true);
@@ -173,7 +178,6 @@ public class FormFatekProgramOverTcp extends JDialog {
         AddReadWrite(panelContent);
         AddReadBulk(panelContent);
         AddCoreRead(panelContent);
-        AddFunction(panelContent);
 
         panel.add(panelContent);
         this.panelContent = panelContent;
@@ -207,7 +211,7 @@ public class FormFatekProgramOverTcp extends JDialog {
         panelRead.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(234,27,102, 23);
+        textField2.setBounds(234,27,80, 23);
         textField2.setText("10");
         panelRead.add(textField2);
 
@@ -222,6 +226,29 @@ public class FormFatekProgramOverTcp extends JDialog {
         jsp.setBounds(83,56,425, 78);
         panelRead.add(jsp);
 
+
+        JButton button1 = new JButton("Plc type");
+        button1.setFocusPainted(false);
+        button1.setBounds(326,24,82, 28);
+        button1.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button1.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResultExOne<KeyencePLCS> read = plc.ReadPlcType();
+                if(read.IsSuccess){
+                    textArea1.setText(read.Content.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button1);
         JButton button2 = new JButton("Read");
         button2.setFocusPainted(false);
         button2.setBounds(426,24,82, 28);
@@ -279,7 +306,7 @@ public class FormFatekProgramOverTcp extends JDialog {
         button2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button2.isEnabled()) return;
+                if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<byte[]> read = plc.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
@@ -294,103 +321,8 @@ public class FormFatekProgramOverTcp extends JDialog {
                 }
             }
         });
+
         panelRead.add(button2);
-        panel.add(panelRead);
-    }
-
-    public void AddFunction(JPanel panel){
-        JPanel panelRead = new JPanel();
-        panelRead.setLayout(null);
-        panelRead.setBounds(523, 223, 419, 310);
-        panelRead.setBorder(BorderFactory.createTitledBorder( "Special function test"));
-
-
-
-        JButton button_run = new JButton("Run");
-        button_run.setFocusPainted(false);
-        button_run.setBounds(24,24,82, 28);
-        button_run.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!button_run.isEnabled()) return;
-                super.mouseClicked(e);
-                OperateResult read = plc.Run();
-                if(read.IsSuccess){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Run Success",
-                            "Result",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Run Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button_run);
-
-
-        JButton button_stop = new JButton("Stop");
-        button_stop.setFocusPainted(false);
-        button_stop.setBounds(130,24,82, 28);
-        button_stop.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!button_stop.isEnabled()) return;
-                super.mouseClicked(e);
-                OperateResult read = plc.Stop();
-                if(read.IsSuccess){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Stop Success",
-                            "Result",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Stop Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button_stop);
-
-
-        JButton button_status = new JButton("Status");
-        button_status.setFocusPainted(false);
-        button_status.setBounds(24,62,82, 28);
-        button_status.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (!button_status.isEnabled()) return;
-                super.mouseClicked(e);
-                OperateResultExOne<boolean[]> read = plc.ReadStatus();
-                if(read.IsSuccess){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            read.Content[0] ? "Run" : "Stop",
-                            "Result",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Stop Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button_status);
-
-
-
 
         panel.add(panelRead);
     }
