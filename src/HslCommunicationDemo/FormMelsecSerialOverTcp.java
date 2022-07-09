@@ -1,21 +1,20 @@
 package HslCommunicationDemo;
 
 import HslCommunication.BasicFramework.SoftBasic;
-import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Profinet.Omron.OmronHostLinkCModeOverTcp;
-import HslCommunication.Profinet.Omron.OmronHostLinkOverTcp;
+import HslCommunication.Profinet.Melsec.MelsecFxSerialOverTcp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormOmronHostLinkCModeOverTcp extends JDialog {
+public class FormMelsecSerialOverTcp extends JDialog
+{
 
-    public FormOmronHostLinkCModeOverTcp(){
-        this.setTitle("Omrom HostLink C-Mode Test Tool");
+    public FormMelsecSerialOverTcp(){
+        this.setTitle("Melsec Plc Test Tool");
         this.setSize(1020, 684);
         this.setLocationRelativeTo(null);
         this.setModal(true);
@@ -29,10 +28,10 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
 
         this.add(panel);
 
-        omronFinsNet = new OmronHostLinkCModeOverTcp();
+        melsec = new MelsecFxSerialOverTcp();
     }
 
-    private OmronHostLinkCModeOverTcp omronFinsNet = null;
+    private MelsecFxSerialOverTcp melsec = null;
     private JPanel panelContent = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
@@ -43,7 +42,7 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
         label1.setBounds(11, 9,68, 17);
         panel.add(label1);
 
-        JLabel label5 = new JLabel("none");
+        JLabel label5 = new JLabel("https://www.cnblogs.com/dathlin/p/9176069.html");
         label5.setBounds(80, 9,400, 17);
         panel.add(label5);
 
@@ -51,9 +50,9 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
         label2.setBounds(466, 9,68, 17);
         panel.add(label2);
 
-        JLabel label3 = new JLabel("Fins HostLink C-Mode OverTcp");
+        JLabel label3 = new JLabel("MelsecSerialOverTcp");
         label3.setForeground(Color.RED);
-        label3.setBounds(540, 9,200, 17);
+        label3.setBounds(540, 9,160, 17);
         panel.add(label3);
 
         JLabel label4 = new JLabel("By Richard Hu");
@@ -74,7 +73,7 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
 
         JTextField textField1 = new JTextField();
         textField1.setBounds(62,14,106, 23);
-        textField1.setText("127.0.0.1");
+        textField1.setText("192.168.0.10");
         panelConnect.add(textField1);
 
         JLabel label2 = new JLabel("Port：");
@@ -83,35 +82,25 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
 
         JTextField textField2 = new JTextField();
         textField2.setBounds(238,14,61, 23);
-        textField2.setText("2000");
+        textField2.setText("5014");
         panelConnect.add(textField2);
 
-        JLabel label3 = new JLabel("Station：");
-        label3.setBounds(311, 17,77, 17);
-        panelConnect.add(label3);
+        JCheckBox checkBox1 = new JCheckBox("Use New Version");
+        checkBox1.setBounds(325, 11, 130, 21);
+        panelConnect.add(checkBox1);
 
-        JTextField textField3 = new JTextField();
-        textField3.setBounds(387,14,40, 23);
-        textField3.setText("0");
-        panelConnect.add(textField3);
-
-        JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(450,14,80, 25);
-        comboBox1.addItem(DataFormat.ABCD);
-        comboBox1.addItem(DataFormat.BADC);
-        comboBox1.addItem(DataFormat.CDAB);
-        comboBox1.addItem(DataFormat.DCBA);
-        comboBox1.setSelectedItem(DataFormat.CDAB);
-        panelConnect.add(comboBox1);
+        JCheckBox checkBox2 = new JCheckBox("Got?");
+        checkBox2.setBounds(478, 11, 77, 21);
+        panelConnect.add(checkBox2);
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(850,11,121, 28);
+        button2.setBounds(684,11,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(752,11,91, 28);
+        button1.setBounds(577,11,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -119,15 +108,15 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
         button1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!button1.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    omronFinsNet.setIpAddress(textField1.getText());
-                    omronFinsNet.setPort(Integer.parseInt(textField2.getText()));
-                    omronFinsNet.UnitNumber = (byte) Integer.parseInt(textField3.getText());
-                    omronFinsNet.getByteTransform().setDataFormat((DataFormat) comboBox1.getSelectedItem());
+                    melsec.setIpAddress(textField1.getText());
+                    melsec.setPort(Integer.parseInt(textField2.getText()));
+                    melsec.IsNewVersion = checkBox1.isSelected();
+                    melsec.setUseGot(checkBox2.isSelected());
 
-                    OperateResult connect = omronFinsNet.ConnectServer();
+                    OperateResult connect = melsec.ConnectServer();
                     if(connect.IsSuccess){
                         JOptionPane.showMessageDialog(
                                 null,
@@ -137,7 +126,7 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
                         DemoUtils.SetPanelEnabled(panelContent,true);
                         button2.setEnabled(true);
                         button1.setEnabled(false);
-                        userControlReadWriteOp1.SetReadWriteNet(omronFinsNet, defaultAddress, 10);
+                        userControlReadWriteOp1.SetReadWriteNet(melsec, defaultAddress, 10);
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -160,9 +149,9 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (!button2.isEnabled()) return;
-                if(omronFinsNet!=null){
-                    omronFinsNet.ConnectClose();
+                if (button2.isEnabled() == false) return;
+                if(melsec !=null){
+                    melsec.ConnectClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     DemoUtils.SetPanelEnabled(panelContent,false);
@@ -216,7 +205,7 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
         panelRead.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(234,27,62, 23);
+        textField2.setBounds(234,27,49, 23);
         textField2.setText("10");
         panelRead.add(textField2);
 
@@ -231,40 +220,18 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
         jsp.setBounds(83,56,425, 78);
         panelRead.add(jsp);
 
-        JButton button3 = new JButton("Plc Type");
-        button3.setFocusPainted(false);
-        button3.setBounds(326,24,92, 28);
-        button3.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                if (button3.isEnabled() == false) return;
-                super.mouseClicked(e);
-                OperateResultExOne<String> read = omronFinsNet.ReadPlcModel();
-                if(read.IsSuccess){
-                    textArea1.setText(read.Content);
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Read Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panelRead.add(button3);
 
         JButton button2 = new JButton("Read");
         button2.setFocusPainted(false);
-        button2.setBounds(426,24,82, 28);
+        button2.setBounds(436,24,72, 28);
         button2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = omronFinsNet.Read(textField1.getText(),Short.parseShort(textField2.getText()));
+                OperateResultExOne<byte[]> read = melsec.Read(textField1.getText(),Short.parseShort(textField2.getText()));
                 if(read.IsSuccess){
-                    textArea1.setText(SoftBasic.ByteToHexString(read.Content));
+                    textArea1.setText(SoftBasic.ByteToHexString(read.Content, ' '));
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -292,6 +259,7 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
 
         JTextField textField1 = new JTextField();
         textField1.setBounds(83,27,337, 23);
+        textField1.setText("");
         panelRead.add(textField1);
 
         JLabel label3 = new JLabel("Result：");
@@ -312,7 +280,7 @@ public class FormOmronHostLinkCModeOverTcp extends JDialog {
             public void mouseClicked(MouseEvent e) {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
-                OperateResultExOne<byte[]> read = omronFinsNet.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
+                OperateResultExOne<byte[]> read = melsec.ReadFromCoreServer(SoftBasic.HexStringToBytes(textField1.getText()));
                 if(read.IsSuccess){
                     textArea1.setText(SoftBasic.ByteToHexString(read.Content));
                 }

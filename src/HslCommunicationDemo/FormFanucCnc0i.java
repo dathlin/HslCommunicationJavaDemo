@@ -5,15 +5,26 @@ import HslCommunication.CNC.Fanuc.*;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Core.Types.OperateResultExTwo;
+import HslCommunication.Utilities;
 
 import javax.swing.*;
+import javax.swing.event.TreeSelectionEvent;
+import javax.swing.event.TreeSelectionListener;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Enumeration;
 
 public class FormFanucCnc0i extends JDialog {
 
@@ -176,13 +187,144 @@ public class FormFanucCnc0i extends JDialog {
         DemoUtils.SetPanelEnabled(this.panelContent,false);
     }
 
+    private String GetPathFromTree( DefaultMutableTreeNode treeNode )
+    {
+        if (treeNode.getParent() == null) return "//" + treeNode.toString() + "/";
+        if (treeNode.getUserObject() != null )
+        {
+            FileDirInfo fileDirInfo = (FileDirInfo)treeNode.getUserObject();
+            if (!fileDirInfo.IsDirectory)
+            {
+                return GetPathFromTree( (DefaultMutableTreeNode)treeNode.getParent() ) + fileDirInfo.Name;
+            }
+            else
+            {
+                return GetPathFromTree( (DefaultMutableTreeNode)treeNode.getParent() ) + fileDirInfo.Name + "/";
+            }
+        }
+        return GetPathFromTree((DefaultMutableTreeNode) treeNode.getParent() ) + treeNode.toString() + "/";
+    }
+
+    private void BrowerFile( DefaultMutableTreeNode treeNode )
+    {
+        OperateResultExOne<FileDirInfo[]> read = fanuc.ReadAllDirectoryAndFile( GetPathFromTree( treeNode ) );
+        if (read.IsSuccess)
+        {
+            for(int i = 0; i < read.Content.length; i++)
+            {
+                FileDirInfo fileDirInfo = read.Content[i];
+                DefaultMutableTreeNode node = new DefaultMutableTreeNode( fileDirInfo );
+                treeNode.add( node );
+
+                if (fileDirInfo.IsDirectory)
+                {
+
+                    //node.ImageKey = "Class_489";
+                    //node.SelectedImageKey = "Class_489";
+                    BrowerFile( node );
+                }
+                else
+                {
+                    //node.ImageKey = "file";
+                    //node.SelectedImageKey = "file";
+                }
+            }
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(
+                    null,
+                    "Read Failed:" + read.ToMessageShowString(),
+                    "Result",
+                    JOptionPane.ERROR_MESSAGE);
+        }
+    }
     public void AddReadWrite(JPanel panel){
         textArea8 = new JTextArea();
         textArea8.setLineWrap(true);
         JScrollPane jsp = new JScrollPane(textArea8);
-        jsp.setBounds(62,215,910, 321);
+        jsp.setBounds(215,229,756, 308);
         panel.add(jsp);
 
+        JLabel label14 = new JLabel("PATH:");
+        label14.setBounds(602,130,51,17);
+        panel.add(label14);
+
+        JTextField texBox_path = new JTextField("");
+        texBox_path.setBounds(656,127,316,23);
+        panel.add(texBox_path);
+
+        JTextField texBox9 = new JTextField("33");
+        texBox9.setBounds(656,154,105,23);
+        panel.add(texBox9);
+
+        FileDirInfo root = new FileDirInfo();
+        root.IsDirectory = true;
+        root.Name = "CNC_MEM";
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( root );
+        JTree jTree = new JTree(node);
+        jTree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
+                if (node != null){
+                    FileDirInfo fileDirInfo = (FileDirInfo)node.getUserObject();
+                    if (!fileDirInfo.IsDirectory)
+                    {
+                        textArea8.setText( fileDirInfo.toFileString( ) );
+                    }
+                    else
+                    {
+                        texBox_path.setText(GetPathFromTree( node ));
+
+                        ArrayList<String> list = new ArrayList<String>( );
+
+                        for(int i=0;i <node.getChildCount() ; i ++){
+                            DefaultMutableTreeNode child = (DefaultMutableTreeNode)node.getChildAt(i);
+                            FileDirInfo file = (FileDirInfo)child.getUserObject();
+                            if (!file.IsDirectory)
+                                list.add( file.toFileString( ) );
+                        }
+                        textArea8.setText("");
+                        for (int i =0; i< list.size(); i++){
+                            textArea8.append(list.get(i));
+                            textArea8.append("\r\n");
+                        }
+                    }
+                }
+            }
+        });
+        JScrollPane jsp2 = new JScrollPane(jTree);
+        jsp2.setBounds(5,229,204, 306);
+        panel.add(jsp2);
+
+        JButton button33 = new JButton("路径信息");
+        button33.setFocusPainted(false);
+        button33.setBounds(5,203,96, 23);
+        button33.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                node.removeAllChildren();
+                BrowerFile( node );
+                jTree.updateUI();
+            }
+        });
+        panel.add(button33);
+
+
+        JButton button34 = new JButton("清除");
+        button34.setFocusPainted(false);
+        button34.setBounds(115,203,96, 23);
+        button34.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                node.removeAllChildren();
+                jTree.updateUI();
+            }
+        });
+        panel.add(button34);
 
         JButton button3 = new JButton("系统状态");
         button3.setFocusPainted(false);
@@ -589,6 +731,30 @@ public class FormFanucCnc0i extends JDialog {
         });
         panel.add(button26);
 
+
+        JButton button32 = new JButton("系统信息");
+        button32.setFocusPainted(false);
+        button32.setBounds(827,42,96, 29);
+        button32.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResultExOne<FanucSysInfo> read = fanuc.ReadSysInfo();
+                if (read.IsSuccess){
+                    textArea8.setText(read.Content.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panel.add(button32);
+
         JButton button14 = new JButton("开机时间");
         button14.setFocusPainted(false);
         button14.setBounds(11,77,96, 29);
@@ -772,16 +938,12 @@ public class FormFanucCnc0i extends JDialog {
 
 
         JLabel label9 = new JLabel("程序号");
-        label9.setBounds(602,150,56,17);
+        label9.setBounds(602,157,56,17);
         panel.add(label9);
-
-        JTextField texBox9 = new JTextField("33");
-        texBox9.setBounds(656,147,105,23);
-        panel.add(texBox9);
 
         JButton button29 = new JButton("删除程序");
         button29.setFocusPainted(false);
-        button29.setBounds(774,144,96, 29);
+        button29.setBounds(774,151,96, 29);
         button29.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -808,12 +970,12 @@ public class FormFanucCnc0i extends JDialog {
 
         JButton button28 = new JButton("读取程序");
         button28.setFocusPainted(false);
-        button28.setBounds(876,144,96, 29);
+        button28.setBounds(876,151,96, 29);
         button28.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                OperateResultExOne<String> read = fanuc.ReadProgram(Integer.parseInt(texBox9.getText()));
+                OperateResultExOne<String> read = fanuc.ReadProgram(Integer.parseInt(texBox9.getText()), texBox_path.getText());
                 if (read.IsSuccess){
                     textArea8.setText(read.Content);
                 }
@@ -846,18 +1008,31 @@ public class FormFanucCnc0i extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+
+                String content = "";
                 String path = texBox7.getText();
-                File file = new File(path);
-                if (!file.exists()){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "file not exists:",
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                    return;
+                if (Utilities.IsStringNullOrEmpty(path) ){
+                    content = textArea8.getText();
+                }
+                else {
+                    File file = new File(path);
+                    if (!file.exists()){
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "file not exists:",
+                                "Result",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    try {
+                        content = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.US_ASCII);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
                 }
 
-                OperateResult read = fanuc.WriteProgramContent(texBox7.getText(), 512);
+                OperateResult read = fanuc.WriteProgramContent(
+                        content, 512, texBox_path.getText());
                 if (read.IsSuccess){
                     JOptionPane.showMessageDialog(
                             null,

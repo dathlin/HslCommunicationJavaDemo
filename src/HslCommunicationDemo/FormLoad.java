@@ -139,7 +139,7 @@ public class FormLoad extends JDialog
 
     private void AddMelsecGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(9,5,183, 279);
+        buttonPanel.setBounds(9,5,183, 279 + 45);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Melsec [三菱PLC]"));
         int location_y = 24;
 
@@ -245,6 +245,22 @@ public class FormLoad extends JDialog
         buttonPanel.add(button6);
         location_y+=40;
 
+        JButton button7 = new JButton( "FxSerialOverTcp");
+        button7.setBounds(15,location_y,150, 32);
+        button7.setFocusPainted(false);
+        button7.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormMelsecSerialOverTcp form = new FormMelsecSerialOverTcp();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button7);
+        location_y+=40;
         panel.add(buttonPanel);
     }
 
@@ -696,7 +712,7 @@ public class FormLoad extends JDialog
 
     private void AddHslGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(9,296,183, 279);
+        buttonPanel.setBounds(203,296,183, 160);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Hsl"));
         int location_y = 24;
 
@@ -826,7 +842,7 @@ public class FormLoad extends JDialog
 
     private void AddABGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(203,296,183, 160);
+        buttonPanel.setBounds(9,296 + 45, 183, 279 - 45);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "AB plc [罗克韦尔]"));
         int location_y = 24;
 
@@ -881,13 +897,30 @@ public class FormLoad extends JDialog
         buttonPanel.add(button3);
         location_y+=40;
 
+        JButton button4 = new JButton( "PCCC (1400)");
+        button4.setBounds(15,location_y,150, 32);
+        button4.setFocusPainted(false);
+        button4.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormAllenBradleyPcccNet form = new FormAllenBradleyPcccNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button4);
+        location_y+=40;
+
         panel.add(buttonPanel);
     }
 
 
     private void AddInovanceGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(203,461,183, 114);
+        buttonPanel.setBounds( 203,461,183, 114);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Inovance PLC [汇川]"));
         int location_y = 24;
 
