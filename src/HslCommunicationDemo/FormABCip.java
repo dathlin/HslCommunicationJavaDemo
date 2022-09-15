@@ -4,8 +4,10 @@ import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.AllenBradley.AllenBradleyNet;
+import HslCommunication.Profinet.AllenBradley.MessageRouter;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunication.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -75,7 +77,7 @@ public class FormABCip extends JDialog
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
+        textField1.setBounds(42,14,126, 23);
         textField1.setText("192.168.0.10");
         panelConnect.add(textField1);
 
@@ -89,23 +91,36 @@ public class FormABCip extends JDialog
         panelConnect.add(textField2);
 
         JLabel label4 = new JLabel("Slot：");
-        label4.setBounds(333, 17,48, 17);
+        label4.setBounds(313, 17,48, 17);
         panelConnect.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(379,14,53, 23);
+        textField4.setBounds(359,14,43, 23);
         textField4.setText("0");
         panelConnect.add(textField4);
+
+        JLabel label_router = new JLabel("Router");
+        label_router.setBounds(420, 17,47, 17);
+        panelConnect.add(label_router);
+
+        JTextField textField_router = new JTextField();
+        textField_router.setBounds(470,14,150, 23);
+        textField_router.setText("");
+        panelConnect.add(textField_router);
+
+        JLabel label_router_tip = new JLabel("if use router, example: 1.15.2.18.1.12");
+        label_router_tip.setBounds(401, 36,220, 17);
+        panelConnect.add(label_router_tip);
 
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
+        button2.setBounds(744,11,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
+        button1.setBounds(637,11,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -119,6 +134,10 @@ public class FormABCip extends JDialog
                     allenBradleyNet.setIpAddress(textField1.getText());
                     allenBradleyNet.setPort(Integer.parseInt(textField2.getText()));
                     allenBradleyNet.setSlot(Byte.parseByte(textField4.getText()));
+
+                    if(!Utilities.IsStringNullOrEmpty(textField_router.getText())){
+                        allenBradleyNet.setMessageRouter( new MessageRouter(textField_router.getText()));
+                    }
 
                     OperateResult connect = allenBradleyNet.ConnectServer();
                     if(connect.IsSuccess){

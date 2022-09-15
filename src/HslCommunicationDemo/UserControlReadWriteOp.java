@@ -1,5 +1,6 @@
 package HslCommunicationDemo;
 
+import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.IReadWriteNet;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
@@ -626,6 +627,34 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button11);
+
+        JButton button_write_hex = new JButton("w-hex");
+        button_write_hex.setFocusPainted(false);
+        button_write_hex.setBounds(226,197,82, 28);
+        button_write_hex.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!button_write_hex.isEnabled()) return;
+                super.mouseClicked(e);
+                Date now = new Date();
+                try {
+                    OperateResult write = readWriteNet.Write(textField1.getText(), SoftBasic.HexStringToBytes(textField2.getText()));
+                    SetTimeSpend(now);
+                    DemoUtils.WriteResultRender(write, textField1.getText());
+                }
+                catch (Exception ex){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Failed:" + ex.getMessage(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelWrite.add(button_write_hex);
+
+
+
         label_TimeCost = new JLabel(TimeCost);
         label_TimeCost.setBounds(9,181,150,21);
         panelWrite.add(label_TimeCost);

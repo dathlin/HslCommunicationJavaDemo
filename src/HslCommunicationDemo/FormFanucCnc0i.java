@@ -829,6 +829,41 @@ public class FormFanucCnc0i extends JDialog {
         });
         panel.add(button30);
 
+
+        JButton button40 = new JButton("操作信息");
+        button40.setFocusPainted(false);
+        button40.setBounds(521,77,96, 29);
+        button40.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResultExOne<FanucOperatorMessage[]> read = fanuc.ReadOperatorMessage();
+                if (read.IsSuccess){
+                    if (read.Content != null){
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < read.Content.length; i ++){
+                            sb.append("Number: " + read.Content[i].Number + " " + read.Content[i].Data);
+                            sb.append("\r\n");
+                        }
+                        textArea8.setText(sb.toString());
+                    }
+                    else {
+                        textArea8.setText("Null");
+                    }
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panel.add(button40);
+
+
         JLabel label2 = new JLabel("宏变量");
         label2.setBounds(8,123,56,17);
         panel.add(label2);

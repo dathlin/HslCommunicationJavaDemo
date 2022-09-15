@@ -368,6 +368,7 @@ public class FormSiemensS7 extends JDialog
     }
 
     private SimpleDateFormat formatter=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    private SimpleDateFormat formatterDate=new SimpleDateFormat("yyyy-MM-dd");
 
     public void AddSpecialFunction(JPanel panel){
         JPanel panelRead = new JPanel();
@@ -507,6 +508,72 @@ public class FormSiemensS7 extends JDialog
             }
         });
         panelRead.add(button4);
+
+
+
+        JButton button5 = new JButton("R-Date");
+        button5.setFocusPainted(false);
+        button5.setBounds(236,155,82, 28);
+        button5.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button5.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResultExOne<Date> read = siemensS7Net.ReadDate(textField1.getText());
+                if(read.IsSuccess){
+                    textField2.setText(formatterDate.format(read.Content));
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button5);
+
+        JButton button6 = new JButton("W-Date");
+        button6.setFocusPainted(false);
+        button6.setBounds(324,155,82, 28);
+        button6.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button6.isEnabled() == false) return;
+                super.mouseClicked(e);
+
+                Date date = null;
+                try {
+                    date=formatterDate.parse(textField2.getText());
+                }
+                catch (Exception ex){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Date Parse Failed:" + ex.getMessage(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                OperateResult read = siemensS7Net.WriteDate(textField1.getText(), date);
+                if(read.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button6);
 
         panel.add(panelRead);
     }

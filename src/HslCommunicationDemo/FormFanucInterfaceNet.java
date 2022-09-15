@@ -172,6 +172,10 @@ public class FormFanucInterfaceNet extends JDialog {
         panelContent.setBounds(0,0,968, 514);
         panelContent.setBorder(BorderFactory.createTitledBorder( ""));
 
+        JLabel label1 = new JLabel("Bool地址支持：SDO, SDI, RDI, RDO, UI, UO, SI, SO    字单位地址支持：GI, GO, D，其中D参考：");
+        label1.setBounds(6, 245,546, 17);
+        panelContent.add(label1);
+
         AddReadWrite(panelContent);
         AddReadBulk(panelContent);
 
@@ -227,7 +231,7 @@ public class FormFanucInterfaceNet extends JDialog {
     public void AddReadBulk(JPanel panel){
         JPanel panelRead = new JPanel();
         panelRead.setLayout(null);
-        panelRead.setBounds(7,252,954, 256);
+        panelRead.setBounds(7,262,954, 246);
         panelRead.setBorder(BorderFactory.createTitledBorder( "Single function test"));
 
         JLabel label1 = new JLabel("Area：");
