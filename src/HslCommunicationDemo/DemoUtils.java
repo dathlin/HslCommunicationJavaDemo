@@ -12,7 +12,7 @@ import java.util.Date;
 
 public class DemoUtils {
 
-    private static SimpleDateFormat dateFormat = new SimpleDateFormat("[HH:mm:ss] ");
+    public static SimpleDateFormat dateFormat = new SimpleDateFormat("[HH:mm:ss] ");
 
     /**
      * 将结果信息显示出来，在界面里进行显示

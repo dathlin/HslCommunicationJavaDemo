@@ -139,7 +139,7 @@ public class FormLoad extends JDialog
 
     private void AddMelsecGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(9,5,183, 279 + 45);
+        buttonPanel.setBounds(9,5,183, 279 + 45 + 45);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Melsec [三菱PLC]"));
         int location_y = 24;
 
@@ -210,6 +210,24 @@ public class FormLoad extends JDialog
         });
         buttonPanel.add(button4);
         location_y+=40;
+
+        JButton button100 = new JButton( "MC R Binary");
+        button100.setBounds(15, location_y,150, 32);
+        button100.setFocusPainted(false);
+        button100.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormMelsecMcRNet form = new FormMelsecMcRNet();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button100);
+        location_y+=40;
+
 
         JButton button5 = new JButton( "A-1E 二进制");
         button5.setBounds(15,location_y,150, 32);
@@ -409,7 +427,7 @@ public class FormLoad extends JDialog
 
     private void AddModbusGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(395,5,183, 160);
+        buttonPanel.setBounds(395,5,183, 206);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "Modbus"));
         int location_y = 24;
 
@@ -455,7 +473,7 @@ public class FormLoad extends JDialog
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 setVisible(false);
-                FormMelsecUdp form = new FormMelsecUdp();
+                FormModbusUdpNet form = new FormModbusUdpNet();
                 form.setVisible(true);
                 form.dispose();
                 setVisible(true);
@@ -464,13 +482,30 @@ public class FormLoad extends JDialog
         buttonPanel.add(button3);
         location_y+=40;
 
+        JButton button4 = new JButton( "Modbus Server");
+        button4.setBounds(15, location_y,150, 32);
+        button4.setFocusPainted(false);
+        button4.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                setVisible(false);
+                FormModbusServer form = new FormModbusServer();
+                form.setVisible(true);
+                form.dispose();
+                setVisible(true);
+            }
+        });
+        buttonPanel.add(button4);
+        location_y+=40;
+
         panel.add(buttonPanel);
     }
 
     private void AddGeGroup(JPanel panel){
 
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(395,170,183, 114);
+        buttonPanel.setBounds(395,216,183, 68);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "GE"));
         int location_y = 24;
 
@@ -842,7 +877,7 @@ public class FormLoad extends JDialog
 
     private void AddABGroup(JPanel panel){
         JPanel buttonPanel = new JPanel(null);
-        buttonPanel.setBounds(9,296 + 45, 183, 279 - 45);
+        buttonPanel.setBounds(9,296 + 45 + 45, 183, 279 - 45 - 45);
         buttonPanel.setBorder(BorderFactory.createTitledBorder( "AB plc [罗克韦尔]"));
         int location_y = 24;
 

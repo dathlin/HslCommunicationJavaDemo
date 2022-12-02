@@ -895,6 +895,32 @@ public class FormFanucCnc0i extends JDialog {
         });
         panel.add(button18);
 
+
+        JLabel label100 = new JLabel("路径：");
+        label100.setBounds(308,123,56,17);
+        panel.add(label100);
+
+        JTextField texBox100 = new JTextField( "1" );
+        texBox100.setBounds(362,120,50,23);
+        panel.add(texBox100);
+
+        JButton button100 = new JButton("设置路径");
+        button100.setFocusPainted(false);
+        button100.setBounds(435,117,96, 29);
+        button100.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                fanuc.setOperatePath(Short.parseShort(texBox100.getText()));
+                JOptionPane.showMessageDialog(
+                        null,
+                        "Set Success",
+                        "Result",
+                        JOptionPane.INFORMATION_MESSAGE);
+            }
+        });
+        panel.add(button100);
+
         JLabel label4 = new JLabel("起始");
         label4.setBounds(8,156,44,17);
         panel.add(label4);
