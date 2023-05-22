@@ -6,6 +6,7 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Core.Types.OperateResultExTwo;
 import HslCommunication.MQTT.MqttSyncClient;
+import HslCommunication.ModBus.ModbusTcpNet;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunication.Utilities;
@@ -59,11 +60,30 @@ public class Main {
         System.out.println("	");
         System.out.println("	Website：http://www.hslcommunication.cn  If you cannot access, please visit: http://118.24.36.220");
 
+//        ModbusTcpNet modbus = new ModbusTcpNet("127.0.0.1", 502, (byte) 1);
+//        modbus.SetPersistentConnection();
+//        while (true){
+//            try{
+//                Thread.sleep(1000);
+//            }
+//            catch (Exception ex){
+//
+//            }
+//
+//            OperateResultExOne<Short> read = modbus.ReadInt16("100");
+//            if (read.IsSuccess)
+//            {
+//                System.out.println(new Date().toString() + " Read success! " + read.Content.toString());
+//            }
+//            else {
+//                System.out.println(new Date().toString() + " Read failed! " + read.Message);
+//            }
+//        }
 
         // 在使用HslCommunication之前，需要先激活jar包，激活码需要根据授权来获得，激活的代码如下
         // Before using HslCommunication, you need to activate the jar package first.
         // The activation code needs to be obtained according to authorization. The activation code is as follows
-        if (Authorization.SetAuthorizationCode("[your code]")){
+        if (Authorization.SetAuthorizationCode("8ba6cfd8-920f-41cf-a364-a8527914c2e6")){
             System.out.println("Active success! [激活成功]");
         }
         else {

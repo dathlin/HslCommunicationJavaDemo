@@ -95,19 +95,28 @@ public class FormSiemensS7 extends JDialog
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(354,7,63, 23);
+        textField3.setBounds(354,7,50, 23);
         textField3.setText("0");
         panelConnect.add(textField3);
 
         JLabel label4 = new JLabel("Slot：");
-        label4.setBounds(443, 10,48, 17);
+        label4.setBounds(423, 10,48, 17);
         panelConnect.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(489,7,63, 23);
+        textField4.setBounds(469,7,50, 23);
         textField4.setText("0");
         panelConnect.add(textField4);
 
+        JLabel label6 = new JLabel("pdu：");
+        label6.setBounds(530, 10,48, 17);
+        panelConnect.add(label6);
+
+        JTextField textField6 = new JTextField();
+        textField6.setBounds(560,7,40, 23);
+        textField6.setText("0");
+        textField6.setEnabled(false);
+        panelConnect.add(textField6);
 
 
         if (this.siemensPLCS == SiemensPLCS.S400)
@@ -139,12 +148,12 @@ public class FormSiemensS7 extends JDialog
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(734,11,121, 28);
+        button2.setBounds(774,11,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(627,11,91, 28);
+        button1.setBounds(667,11,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -172,6 +181,7 @@ public class FormSiemensS7 extends JDialog
                         DemoUtils.SetPanelEnabled(panelContent,true);
                         button2.setEnabled(true);
                         button1.setEnabled(false);
+                        textField6.setText(String.valueOf(siemensS7Net.getPduLength()));
                         userControlReadWriteOp1.SetReadWriteNet(siemensS7Net, defaultAddress, 10);
                     }
                     else {
@@ -574,6 +584,72 @@ public class FormSiemensS7 extends JDialog
             }
         });
         panelRead.add(button6);
+
+
+
+        JButton button7 = new JButton("R-DTL");
+        button7.setFocusPainted(false);
+        button7.setBounds(236,189,82, 28);
+        button7.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button7.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResultExOne<Date> read = siemensS7Net.ReadDTLDataTime(textField1.getText());
+                if(read.IsSuccess){
+                    textField2.setText(formatter.format(read.Content));
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button7);
+
+        JButton button8 = new JButton("W-DTL");
+        button8.setFocusPainted(false);
+        button8.setBounds(324,189,82, 28);
+        button8.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button8.isEnabled() == false) return;
+                super.mouseClicked(e);
+
+                Date date = null;
+                try {
+                    date=formatter.parse(textField2.getText());
+                }
+                catch (Exception ex){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Date Parse Failed:" + ex.getMessage(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                OperateResult read = siemensS7Net.WriteDTLTime(textField1.getText(), date);
+                if(read.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(button8);
 
         panel.add(panelRead);
     }

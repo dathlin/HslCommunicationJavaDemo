@@ -6,6 +6,7 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.ModBus.ModbusRtuOverTcp;
 import HslCommunication.ModBus.ModbusTcpNet;
+import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +20,7 @@ public class FormModbusRtuOverTcp extends JDialog {
         this.setLocationRelativeTo(null);
         this.setModal(true);
 
+        modbusTcpNet = new ModbusRtuOverTcp();
         JPanel panel = new JPanel();
         panel.setLayout(null);
 
@@ -28,7 +30,6 @@ public class FormModbusRtuOverTcp extends JDialog {
 
         this.add(panel);
 
-        modbusTcpNet = new ModbusRtuOverTcp();
     }
 
     private ModbusRtuOverTcp modbusTcpNet = null;
@@ -72,7 +73,7 @@ public class FormModbusRtuOverTcp extends JDialog {
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
+        textField1.setBounds(52,14,116, 23);
         textField1.setText("192.168.0.10");
         panelConnect.add(textField1);
 
@@ -86,28 +87,33 @@ public class FormModbusRtuOverTcp extends JDialog {
         panelConnect.add(textField2);
 
         JLabel label3 = new JLabel("Station：");
-        label3.setBounds(338, 17,56, 17);
+        label3.setBounds(318, 17,56, 17);
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(392,14,40, 23);
+        textField3.setBounds(375,14,40, 23);
         textField3.setText("1");
         panelConnect.add(textField3);
 
 
         JCheckBox checkBox1 = new JCheckBox("Start from 0?");
-        checkBox1.setBounds(447,16,106, 21);
+        checkBox1.setBounds(427,16,106, 21);
         checkBox1.setSelected(true);
         panelConnect.add(checkBox1);
 
         JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(558,13,111, 25);
+        comboBox1.setBounds(548,13,70, 25);
         comboBox1.addItem(DataFormat.ABCD);
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
-        comboBox1.setSelectedItem(0);
+        comboBox1.setSelectedItem(DataFormat.CDAB);
         panelConnect.add(comboBox1);
+
+
+        JCheckBox checkBox2 = new JCheckBox("string reverse?");
+        checkBox2.setBounds(627,16,116, 21);
+        panelConnect.add(checkBox2);
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
@@ -131,6 +137,7 @@ public class FormModbusRtuOverTcp extends JDialog {
                     modbusTcpNet.setPort(Integer.parseInt(textField2.getText()));
                     modbusTcpNet.setAddressStartWithZero(checkBox1.isSelected());
                     modbusTcpNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
+                    modbusTcpNet.setStringReverse(checkBox2.isSelected());
 
                     OperateResult connect = modbusTcpNet.ConnectServer();
                     if(connect.IsSuccess){
@@ -188,6 +195,7 @@ public class FormModbusRtuOverTcp extends JDialog {
         AddReadWrite(panelContent);
         AddReadBulk(panelContent);
         AddCoreRead(panelContent);
+        panelContent.add(new ModbusSpecialControl(modbusTcpNet, this.defaultAddress));
 
         panel.add(panelContent);
         this.panelContent = panelContent;

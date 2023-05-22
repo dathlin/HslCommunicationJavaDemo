@@ -218,7 +218,6 @@ public class FormFanucCnc0i extends JDialog {
 
                 if (fileDirInfo.IsDirectory)
                 {
-
                     //node.ImageKey = "Class_489";
                     //node.SelectedImageKey = "Class_489";
                     BrowerFile( node );
@@ -1036,7 +1035,7 @@ public class FormFanucCnc0i extends JDialog {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                OperateResultExOne<String> read = fanuc.ReadProgram(Integer.parseInt(texBox9.getText()), texBox_path.getText());
+                OperateResultExOne<String> read = fanuc.ReadProgram(texBox9.getText(), texBox_path.getText());
                 if (read.IsSuccess){
                     textArea8.setText(read.Content);
                 }

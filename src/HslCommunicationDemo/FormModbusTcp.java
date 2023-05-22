@@ -5,6 +5,8 @@ import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.ModBus.ModbusTcpNet;
+import HslCommunicationDemo.PLC.Modbus.DemoModbusHelper;
+import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,6 +22,8 @@ public class FormModbusTcp extends JDialog {
         this.setLocationRelativeTo(null);
         this.setModal(true);
 
+        modbusTcpNet = new ModbusTcpNet();
+
         JPanel panel = new JPanel();
         panel.setLayout(null);
 
@@ -29,7 +33,6 @@ public class FormModbusTcp extends JDialog {
 
         this.add(panel);
 
-        modbusTcpNet = new ModbusTcpNet();
     }
 
     private ModbusTcpNet modbusTcpNet = null;
@@ -107,7 +110,7 @@ public class FormModbusTcp extends JDialog {
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
-        comboBox1.setSelectedItem(0);
+        comboBox1.setSelectedItem(DataFormat.CDAB);
         panelConnect.add(comboBox1);
 
         JButton button2 = new JButton("Disconnect");
@@ -189,6 +192,7 @@ public class FormModbusTcp extends JDialog {
         AddReadWrite(panelContent);
         AddReadBulk(panelContent);
         AddCoreRead(panelContent);
+        panelContent.add(new ModbusSpecialControl(modbusTcpNet, "100"));
 
         panel.add(panelContent);
         this.panelContent = panelContent;

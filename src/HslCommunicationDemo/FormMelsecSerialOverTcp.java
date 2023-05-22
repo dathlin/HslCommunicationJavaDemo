@@ -87,6 +87,7 @@ public class FormMelsecSerialOverTcp extends JDialog
 
         JCheckBox checkBox1 = new JCheckBox("Use New Version");
         checkBox1.setBounds(325, 11, 130, 21);
+        checkBox1.setSelected(true);
         panelConnect.add(checkBox1);
 
         JCheckBox checkBox2 = new JCheckBox("Got?");
