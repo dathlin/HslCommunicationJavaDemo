@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/HslCommunicationJavaDemo.iml" filepath="$PROJECT_DIR$/HslCommunicationJavaDemo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/HslCommunicationJavaDemo.iml" filepath="$PROJECT_DIR$/.idea/HslCommunicationJavaDemo.iml" />
     </modules>
   </component>
 </project>
