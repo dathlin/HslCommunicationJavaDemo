@@ -5,34 +5,32 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.ModBus.IModbus;
 
 import javax.swing.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
 public class ModbusSpecialControl extends JPanel {
 
-    public ModbusSpecialControl( IModbus modbus, String defaultAddress)
+    public ModbusSpecialControl( )
     {
-        this.modbus = modbus;
         this.setLayout(null);
-        this.setBounds(546,245,419, 272);
-        this.setBorder(BorderFactory.createTitledBorder( "0x17 Function Test"));
 
         JLabel label1 = new JLabel("Read Address：");
         label1.setBounds(10, 26,93, 17);
         this.add(label1);
 
-        JTextField textBox_readAddress = new JTextField();
-        textBox_readAddress.setBounds(108, 23,70, 23);
-        textBox_readAddress.setText(defaultAddress);
+        textBox_readAddress = new JTextField();
+        textBox_readAddress.setBounds(108, 23,150, 23);
+        textBox_readAddress.setText("");
         this.add(textBox_readAddress);
 
-
         JLabel label2 = new JLabel("Read len：");
-        label2.setBounds(180, 26,75, 17);
+        label2.setBounds(280, 26,75, 17);
         this.add(label2);
 
         JTextField textBox_readLength = new JTextField();
-        textBox_readLength.setBounds( 250, 23, 50, 23 );
+        textBox_readLength.setBounds( 350, 23, 50, 23 );
         textBox_readLength.setText("10");
         this.add(textBox_readLength);
 
@@ -41,17 +39,17 @@ public class ModbusSpecialControl extends JPanel {
         this.add(label3);
 
         JTextField textBox_writeAddress = new JTextField();
-        textBox_writeAddress.setBounds(108, 52,70, 23);
+        textBox_writeAddress.setBounds(108, 52,150, 23);
         textBox_writeAddress.setText("200");
         this.add(textBox_writeAddress);
 
         JLabel label4 = new JLabel("HexValue：");
-        label4.setBounds(180, 55,75, 17);
+        label4.setBounds(280, 55,75, 17);
         this.add(label4);
 
 
         JTextField textBox_writeValue = new JTextField();
-        textBox_writeValue.setBounds( 250, 52, 150, 23 );
+        textBox_writeValue.setBounds( 350, 52, 350, 23 );
         textBox_writeValue.setText("11 22 33 44");
         this.add(textBox_writeValue);
 
@@ -66,9 +64,8 @@ public class ModbusSpecialControl extends JPanel {
         this.add(jsp);
 
 
-
         JButton button = new JButton();
-        button.setBounds(305, 23, 100, 23);
+        button.setBounds(415, 23, 120, 23);
         button.setText("Read/Write");
         button.addMouseListener(new MouseAdapter() {
             @Override
@@ -80,7 +77,7 @@ public class ModbusSpecialControl extends JPanel {
                         textBox_writeAddress.getText(), SoftBasic.HexStringToBytes(textBox_writeValue.getText() ) );
 
                 if(read.IsSuccess){
-                    textArea1.setText(SoftBasic.ByteToHexString(read.Content));
+                    textArea1.setText(SoftBasic.ByteToHexString(read.Content, ' '));
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -92,8 +89,23 @@ public class ModbusSpecialControl extends JPanel {
             }
         });
         this.add(button);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                textBox_writeValue.setBounds( 350, 52, getWidth() - 360, 23 );
+                jsp.setBounds(108,80,getWidth() - 118, getHeight() - 85);
+                jsp.updateUI();
+            }
+        });
     }
 
+    public void SetReadWriteModbus( IModbus modbus, String defaultAddress ){
+        this.modbus = modbus;
+        textBox_readAddress.setText(defaultAddress);
+    }
 
     private IModbus modbus;
+    private JTextField textBox_readAddress;
 }

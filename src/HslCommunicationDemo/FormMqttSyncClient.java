@@ -14,109 +14,76 @@ import HslCommunication.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.UUID;
 
-public class FormMqttSyncClient extends JDialog {
+public class FormMqttSyncClient extends JPanel {
 
-    public FormMqttSyncClient(){
-        this.setTitle("Mqtt Sync Client Test Tool");
-        this.setSize(1020, 684);
-        this.setLocationRelativeTo(null);
-        this.setModal(true);
+    public FormMqttSyncClient(JTabbedPane tabbedPane){
+        setLayout(null);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
-
-        AddNormal(panel);
-        AddConnectSegment(panel);
-        AddContent(panel);
-
-        this.add(panel);
+        add( new UserControlReadWriteHead("Mqtt", tabbedPane, this));
+        AddConnectSegment(this);
+        AddContent(this);
     }
 
     private MqttSyncClient mqttSyncClient = null;
     private JPanel panelContent = null;
 
 
-    public void AddNormal(JPanel panel){
-        JLabel label1 = new JLabel("Blogs：");
-        label1.setBounds(11, 9,68, 17);
-        panel.add(label1);
-
-        JLabel label5 = new JLabel("https://www.cnblogs.com/dathlin");
-        label5.setBounds(80, 9,400, 17);
-        panel.add(label5);
-
-        JLabel label2 = new JLabel("Protocols");
-        label2.setBounds(466, 9,68, 17);
-        panel.add(label2);
-
-        JLabel label3 = new JLabel("Mqtt");
-        label3.setForeground(Color.RED);
-        label3.setBounds(540, 9,160, 17);
-        panel.add(label3);
-
-        JLabel label4 = new JLabel("By Richard Hu");
-        label4.setForeground(Color.ORANGE);
-        label4.setBounds(887, 9,108, 17);
-        panel.add(label4);
-    }
-
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = new JPanel();
-        panelConnect.setLayout(null);
-        panelConnect.setBounds(14,32,978, 83);
-        panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
+        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
 
         JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
+        label1.setBounds(8, 7,56, 17);
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
+        textField1.setBounds(62,4,106, 23);
         textField1.setText("127.0.0.1");
         panelConnect.add(textField1);
 
         JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
+        label2.setBounds(184, 7,56, 17);
         panelConnect.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
+        textField2.setBounds(238,4,61, 23);
         textField2.setText("1883");
         panelConnect.add(textField2);
 
         JCheckBox checkBox1 = new JCheckBox("RSA?");
-        checkBox1.setBounds(320,17,80,17);
+        checkBox1.setBounds(320,7,80,17);
         panelConnect.add(checkBox1);
 
         JLabel label6 = new JLabel("ClientId：");
-        label6.setBounds(8, 54,80, 17);
+        label6.setBounds(8, 34,80, 17);
         panelConnect.add(label6);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(90, 51,250, 23);
+        textField3.setBounds(90, 31,250, 23);
         textField3.setText("");
         panelConnect.add(textField3);
 
         JLabel label7 = new JLabel("Name：");
-        label7.setBounds(350, 54,56, 17);
+        label7.setBounds(350, 34,56, 17);
         panelConnect.add(label7);
 
         JTextField textField9 = new JTextField();
-        textField9.setBounds(420, 51,100, 23);
+        textField9.setBounds(420, 31,100, 23);
         textField9.setText("");
         panelConnect.add(textField9);
 
         JLabel label8 = new JLabel("Pwd：");
-        label8.setBounds(530, 54,50, 17);
+        label8.setBounds(530, 34,50, 17);
         panelConnect.add(label8);
 
         JTextField textField10 = new JTextField();
-        textField10.setBounds(590, 51,100, 23);
+        textField10.setBounds(590, 31,100, 23);
         textField10.setText("");
         panelConnect.add(textField10);
 
@@ -125,12 +92,12 @@ public class FormMqttSyncClient extends JDialog {
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
+        button2.setBounds(584,2,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
+        button1.setBounds(477,2,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -205,10 +172,7 @@ public class FormMqttSyncClient extends JDialog {
     }
 
     public void AddContent(JPanel panel){
-        JPanel panelContent = new JPanel();
-        panelContent.setLayout(null);
-        panelContent.setBounds(14,120,978, 507);
-        panelContent.setBorder(BorderFactory.createTitledBorder( ""));
+        JPanel panelContent = DemoUtils.CreateContentPanel(panel);
 
         JLabel label1 = new JLabel("Topic：");
         label1.setBounds(8, 11,60, 17);
@@ -230,7 +194,7 @@ public class FormMqttSyncClient extends JDialog {
         panelContent.add(jsp);
 
         JProgressBar sendProgressBar = new JProgressBar();
-        sendProgressBar.setBounds(61, 156, 893, 18);
+        sendProgressBar.setBounds(62, 156, 893, 18);
         panelContent.add(sendProgressBar);
 
         JButton button1 = new JButton("send");
@@ -319,5 +283,21 @@ public class FormMqttSyncClient extends JDialog {
         panel.add(panelContent);
         this.panelContent = panelContent;
         DemoUtils.SetPanelEnabled(this.panelContent,false);
+
+        panelContent.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                jsp.setBounds(62,36,panelContent.getWidth() - 65, 115);
+                jsp.updateUI();
+
+                jsp2.setBounds(62, 272,panelContent.getWidth() - 65, panelContent.getHeight() - 275);
+                jsp2.updateUI();
+
+                sendProgressBar.setBounds(62, 156, panelContent.getWidth() - 65, 18);
+                receiveProgressBar.setBounds(62, 246, panelContent.getWidth() - 65, 18);
+                button2.setBounds(panelContent.getWidth() - 94, 180,91, 28);
+            }
+        });
     }
 }

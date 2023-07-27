@@ -7,26 +7,20 @@ import HslCommunication.Enthernet.SimplifyNet.NetSimplifyClient;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.UUID;
 
-public class FormSimplifyNet extends JDialog {
+public class FormSimplifyNet extends JPanel {
 
-    public FormSimplifyNet(){
-        this.setTitle("SimplifyNet  Test Tool");
-        this.setSize(1020, 684);
-        this.setLocationRelativeTo(null);
-        this.setModal(true);
+    public FormSimplifyNet(JTabbedPane tabbedPane){
+        setLayout(null);
 
-        JPanel panel = new JPanel();
-        panel.setLayout(null);
-
-        AddNormal(panel);
-        AddConnectSegment(panel);
-        AddContent(panel);
-
-        this.add(panel);
+        add( new UserControlReadWriteHead("Hsl Protocol", tabbedPane, this));
+        AddConnectSegment(this);
+        AddContent(this);
         simplifyClient = new NetSimplifyClient();
     }
 
@@ -34,73 +28,46 @@ public class FormSimplifyNet extends JDialog {
     private JPanel panelContent = null;
 
 
-    public void AddNormal(JPanel panel){
-        JLabel label1 = new JLabel("Blogs：");
-        label1.setBounds(11, 9,68, 17);
-        panel.add(label1);
-
-        JLabel label5 = new JLabel("https://www.cnblogs.com/dathlin/p/9196129.html");
-        label5.setBounds(80, 9,400, 17);
-        panel.add(label5);
-
-        JLabel label2 = new JLabel("Protocols");
-        label2.setBounds(466, 9,68, 17);
-        panel.add(label2);
-
-        JLabel label3 = new JLabel("Hsl");
-        label3.setForeground(Color.RED);
-        label3.setBounds(540, 9,160, 17);
-        panel.add(label3);
-
-        JLabel label4 = new JLabel("By Richard Hu");
-        label4.setForeground(Color.ORANGE);
-        label4.setBounds(887, 9,108, 17);
-        panel.add(label4);
-    }
-
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = new JPanel();
-        panelConnect.setLayout(null);
-        panelConnect.setBounds(14,32,978, 83);
-        panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
+        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
 
         JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
+        label1.setBounds(8, 7,56, 17);
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
+        textField1.setBounds(62,4,106, 23);
         textField1.setText("192.168.0.10");
         panelConnect.add(textField1);
 
         JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
+        label2.setBounds(184, 7,56, 17);
         panelConnect.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
+        textField2.setBounds(238,4,61, 23);
         textField2.setText("12345");
         panelConnect.add(textField2);
 
 
         JLabel label3 = new JLabel("Token：");
-        label3.setBounds(8, 50,56, 17);
+        label3.setBounds(8, 32,56, 17);
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(62,47,384, 23);
+        textField3.setBounds(62,29,384, 23);
         textField3.setText("00000000-0000-0000-0000-000000000000");
         panelConnect.add(textField3);
 
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
+        button2.setBounds(584,2,121, 28);
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
+        button1.setBounds(477,2,91, 28);
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -162,10 +129,7 @@ public class FormSimplifyNet extends JDialog {
     }
 
     public void AddContent(JPanel panel){
-        JPanel panelContent = new JPanel();
-        panelContent.setLayout(null);
-        panelContent.setBounds(14,120,978, 507);
-        panelContent.setBorder(BorderFactory.createTitledBorder( ""));
+        JPanel panelContent = DemoUtils.CreateContentPanel(panel);
 
         JLabel label1 = new JLabel("指令头：");
         label1.setBounds(8, 11,60, 17);
@@ -249,6 +213,19 @@ public class FormSimplifyNet extends JDialog {
             }
         });
 
+        panelContent.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                jsp.setBounds(62,36,panelContent.getWidth() - 65, 138);
+                jsp.updateUI();
+
+                jsp2.setBounds(62, 214,panelContent.getWidth() - 65, panelContent.getHeight() - 217);
+                jsp2.updateUI();
+
+                button2.setBounds(panelContent.getWidth() - 94, 180,91, 28);
+            }
+        });
 
         panel.add(panelContent);
         this.panelContent = panelContent;

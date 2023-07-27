@@ -2,22 +2,44 @@ package HslCommunicationDemo;
 
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.IReadWriteNet;
+import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Core.Types.ValueLimit;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.lang.reflect.*;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class UserControlReadWriteOp extends JPanel {
-    public UserControlReadWriteOp() {
+    public UserControlReadWriteOp( ) {
         super();
-
+        setLayout(null);
         AddRead(this);
         AddWrite(this);
+    }
+
+    public UserControlReadWriteOp( JPanel parent ) {
+        super();
+        setLayout(null);
+        AddRead(this);
+        AddWrite(this);
+
+        setBounds(3,3,962, 265);
+        parent.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                setBounds(3,3,parent.getWidth() - 5, 265);
+            }
+        });
     }
 
     public void SetReadWriteNet( IReadWriteNet readWrite, String address, int strLength ) {
@@ -56,8 +78,16 @@ public class UserControlReadWriteOp extends JPanel {
     public void AddRead(JPanel panel){
         JPanel panelRead = new JPanel();
         panelRead.setLayout(null);
-        panelRead.setBounds(0,0,518, 234);
+        panelRead.setBounds(0,0,570, panel.getHeight() - 2);
         panelRead.setBorder(BorderFactory.createTitledBorder( "Read Single Test"));
+        panel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                panelRead.setBounds(0,0,panel.getWidth() - 420, panel.getHeight() - 2);
+            }
+        });
+
 
         JLabel label1 = new JLabel("Address：");
         label1.setBounds(9, 30,70, 17);
@@ -89,7 +119,7 @@ public class UserControlReadWriteOp extends JPanel {
         int leftButtonX = 335;
         JButton button1 = new JButton("r-bit");
         button1.setFocusPainted(false);
-        button1.setBounds( leftButtonX,19,82, 28);
+        button1.setBounds( leftButtonX,19,85, 28);
         button1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -111,7 +141,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button_read_byte = new JButton("r-byte");
         button_read_byte.setFocusPainted(false);
-        button_read_byte.setBounds(leftButtonX + 90,19,82, 28);
+        button_read_byte.setBounds(leftButtonX + 90,19,85, 28);
         button_read_byte.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -137,7 +167,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button3 = new JButton("r-short");
         button3.setFocusPainted(false);
-        button3.setBounds(leftButtonX,56,82, 28);
+        button3.setBounds(leftButtonX,56,85, 28);
         button3.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -160,7 +190,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button4 = new JButton("r-ushort");
         button4.setFocusPainted(false);
-        button4.setBounds(leftButtonX + 90,56,82, 28);
+        button4.setBounds(leftButtonX + 90,56,85, 28);
         button4.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -183,7 +213,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button5 = new JButton("r-int");
         button5.setFocusPainted(false);
-        button5.setBounds(leftButtonX,90,82, 28);
+        button5.setBounds(leftButtonX,90,85, 28);
         button5.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -206,7 +236,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button6 = new JButton("r-uint");
         button6.setFocusPainted(false);
-        button6.setBounds(leftButtonX + 90,90,82, 28);
+        button6.setBounds(leftButtonX + 90,90,85, 28);
         button6.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -229,7 +259,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button7 = new JButton("r-long");
         button7.setFocusPainted(false);
-        button7.setBounds(leftButtonX,124,82, 28);
+        button7.setBounds(leftButtonX,124,85, 28);
         button7.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -250,15 +280,10 @@ public class UserControlReadWriteOp extends JPanel {
         });
         panelRead.add(button7);
 
-        JButton button8 = new JButton("r-ulong");
-        button8.setFocusPainted(false);
-        button8.setVisible(false);
-        button8.setBounds(leftButtonX + 90,124,82, 28);
-        panelRead.add(button8);
 
         JButton button9 = new JButton("r-float");
         button9.setFocusPainted(false);
-        button9.setBounds(leftButtonX,158,82, 28);
+        button9.setBounds(leftButtonX,158,85, 28);
         button9.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -281,7 +306,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button10 = new JButton("r-double");
         button10.setFocusPainted(false);
-        button10.setBounds(leftButtonX + 90,158,82, 28);
+        button10.setBounds(leftButtonX + 90,158,85, 28);
         button10.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -314,37 +339,94 @@ public class UserControlReadWriteOp extends JPanel {
 
         textBox1 = textField8;
 
+        JLabel label9 = new JLabel("Encoding:");
+        label9.setBounds(leftButtonX,232,80, 17);
+        panelRead.add(label9);
+
+        JComboBox<String> comboBox_encode = new JComboBox<>();
+        comboBox_encode.setBounds(leftButtonX + 90,226,85, 28);
+        comboBox_encode.addItem("ASCII");
+        comboBox_encode.addItem("Unicode");
+        comboBox_encode.addItem("UnicodeBE");
+        comboBox_encode.addItem("UTF8");
+        comboBox_encode.addItem("GB2312");
+        comboBox_encode.setSelectedItem("ASCII");
+        panelRead.add(comboBox_encode);
+
         JButton button11 = new JButton("r-string");
         button11.setFocusPainted(false);
-        button11.setBounds(leftButtonX + 90,192,82, 28);
+        button11.setBounds(leftButtonX + 90,192,85, 28);
         button11.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!button11.isEnabled()) return;
                 super.mouseClicked(e);
                 Date now = new Date();
-                OperateResultExOne<String> read = readWriteNet.ReadString(textField1.getText(), Short.parseShort(textField8.getText()));
+                String encode = (String) comboBox_encode.getSelectedItem();
+                Charset charset = StandardCharsets.US_ASCII;
+                if (encode.equals("Unicode")) charset = StandardCharsets.UTF_16LE;
+                else if (encode.equals("UnicodeBE")) charset = StandardCharsets.UTF_16BE;
+                else if (encode.equals("UTF8")) charset = StandardCharsets.UTF_8;
+                else if (encode.equals("GB2312")) charset = Charset.forName("GBK");
+
+                OperateResultExOne<String> read = readWriteNet.ReadString(textField1.getText(), Short.parseShort(textField8.getText()), charset);
                 SetTimeSpend(now);
                 DemoUtils.ReadResultRender(read,textField1.getText(), textArea1, jsp );
             }
         });
         panelRead.add(button11);
 
+
+        panelRead.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                button1.setBounds(         panelRead.getWidth() - 185,19, 85, 28);
+                button_read_byte.setBounds(panelRead.getWidth() - 95, 19, 85, 28);
+                button3.setBounds(         panelRead.getWidth() - 185,56, 85, 28);
+                button4.setBounds(         panelRead.getWidth() - 95, 56, 85, 28);
+                button5.setBounds(         panelRead.getWidth() - 185,90, 85, 28);
+                button6.setBounds(         panelRead.getWidth() - 95, 90, 85, 28);
+                button7.setBounds(         panelRead.getWidth() - 185,124,85, 28);
+                button9.setBounds(         panelRead.getWidth() - 185,158,85, 28);
+                button10.setBounds(        panelRead.getWidth() - 95, 158,85, 28);
+                label8.setBounds(          panelRead.getWidth() - 185,198,55, 17);
+                textField8.setBounds(      panelRead.getWidth() - 185 + 43,195,41, 23);
+                button11.setBounds(        panelRead.getWidth() - 95,192,85, 28);
+                label9.setBounds(          panelRead.getWidth() - 185,232,80, 17);
+                comboBox_encode.setBounds( panelRead.getWidth() - 95,226,85, 28);
+
+                textField1.setBounds(83,27,panelRead.getWidth() - 335, 23);
+                textField_ReadLength.setBounds(panelRead.getWidth() - 247,27,55, 23);
+                jsp.setBounds(83,56,panelRead.getWidth() - 275, 165);
+                jsp.updateUI();
+            }
+        });
+
+
         panel.add(panelRead);
+
     }
 
     public void AddWrite(JPanel panel){
         JPanel panelWrite = new JPanel();
         panelWrite.setLayout(null);
-        panelWrite.setBounds(535,0,419, 234);
+        panelWrite.setBounds(572,0,420, panel.getHeight() - 2);
         panelWrite.setBorder(BorderFactory.createTitledBorder( "Write Single Test"));
+        panel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                panelWrite.setBounds(panel.getWidth() - 420,0,420, panel.getHeight() - 2);
+            }
+        });
 
         JLabel label1 = new JLabel("Address：");
         label1.setBounds(9, 30,70, 17);
         panelWrite.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(83,27,132, 23);
+        textField1.setBounds(83,27,147, 23);
         textField1.setText(address);
         panelWrite.add(textField1);
 
@@ -355,16 +437,16 @@ public class UserControlReadWriteOp extends JPanel {
         panelWrite.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(83,56,132, 23);
+        textField2.setBounds(83,56,147, 23);
         panelWrite.add(textField2);
 
-        JLabel label100 = new JLabel("<html>Note: The value of the string needs to be converted</html>");
-        label100.setBounds(11, 82,200, 100);
+        JLabel label100 = new JLabel("<html><span style=\"color:red\">Note: The value of the string needs to be converted<br />if bool: true,false,0,1<br />if array: [1,2,3]</span></html>");
+        label100.setBounds(11, 82,200, 80);
         panelWrite.add(label100);
 
         JButton button1 = new JButton("w-bit");
         button1.setFocusPainted(false);
-        button1.setBounds(226,24,82, 28);
+        button1.setBounds(236,24,82, 28);
         button1.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -415,7 +497,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button3 = new JButton("w-short");
         button3.setFocusPainted(false);
-        button3.setBounds(226,61,82, 28);
+        button3.setBounds(236,60,82, 28);
         button3.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -440,7 +522,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button4 = new JButton("w-ushort");
         button4.setFocusPainted(false);
-        button4.setBounds(323,61,86, 28);
+        button4.setBounds(323,60,86, 28);
         button4.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -469,7 +551,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button5 = new JButton("w-int");
         button5.setFocusPainted(false);
-        button5.setBounds(226,95,82, 28);
+        button5.setBounds(236,93,82, 28);
         button5.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -494,7 +576,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button6 = new JButton("w-uint");
         button6.setFocusPainted(false);
-        button6.setBounds(323,95,86, 28);
+        button6.setBounds(323,93,86, 28);
         button6.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -523,7 +605,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button7 = new JButton("w-long");
         button7.setFocusPainted(false);
-        button7.setBounds(226,129,82, 28);
+        button7.setBounds(236,126,82, 28);
         button7.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -549,12 +631,12 @@ public class UserControlReadWriteOp extends JPanel {
         JButton button8 = new JButton("w-ulong");
         button8.setFocusPainted(false);
         button8.setVisible(false);
-        button8.setBounds(323,129,86, 28);
+        button8.setBounds(323,126,86, 28);
         panelWrite.add(button8);
 
         JButton button9 = new JButton("w-float");
         button9.setFocusPainted(false);
-        button9.setBounds(226,163,82, 28);
+        button9.setBounds(236,159,82, 28);
         button9.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -580,7 +662,7 @@ public class UserControlReadWriteOp extends JPanel {
         JButton button10 = new JButton("w-double");
         button10.setMargin(new Insets(0,0,0,0));
         button10.setFocusPainted(false);
-        button10.setBounds(323,163,86, 28);
+        button10.setBounds(323,159,86, 28);
         button10.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -603,9 +685,23 @@ public class UserControlReadWriteOp extends JPanel {
         });
         panelWrite.add(button10);
 
+        JLabel label9 = new JLabel("Encoding:");
+        label9.setBounds(236,232,80, 17);
+        panelWrite.add(label9);
+
+        JComboBox<String> comboBox_encode = new JComboBox<>();
+        comboBox_encode.setBounds(323,226,85, 28);
+        comboBox_encode.addItem("ASCII");
+        comboBox_encode.addItem("Unicode");
+        comboBox_encode.addItem("UnicodeBE");
+        comboBox_encode.addItem("UTF8");
+        comboBox_encode.addItem("GB2312");
+        comboBox_encode.setSelectedItem("ASCII");
+        panelWrite.add(comboBox_encode);
+
         JButton button11 = new JButton("w-string");
         button11.setFocusPainted(false);
-        button11.setBounds(323,197,86, 28);
+        button11.setBounds(323,192,86, 28);
         button11.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -613,7 +709,15 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    OperateResult write = readWriteNet.Write(textField1.getText(), textField2.getText());
+                    String encode = (String) comboBox_encode.getSelectedItem();
+
+                    Charset charset = StandardCharsets.US_ASCII;
+                    if (encode.equals("Unicode")) charset = StandardCharsets.UTF_16LE;
+                    else if (encode.equals("UnicodeBE")) charset = StandardCharsets.UTF_16BE;
+                    else if (encode.equals("UTF8")) charset = StandardCharsets.UTF_8;
+                    else if (encode.equals("GB2312"))  charset = Charset.forName("GBK");
+
+                    OperateResult write = readWriteNet.Write(textField1.getText(), textField2.getText(), charset);
                     SetTimeSpend(now);
                     DemoUtils.WriteResultRender(write, textField1.getText());
                 }
@@ -630,7 +734,7 @@ public class UserControlReadWriteOp extends JPanel {
 
         JButton button_write_hex = new JButton("w-hex");
         button_write_hex.setFocusPainted(false);
-        button_write_hex.setBounds(226,197,82, 28);
+        button_write_hex.setBounds(236,192,82, 28);
         button_write_hex.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -656,8 +760,12 @@ public class UserControlReadWriteOp extends JPanel {
 
 
         label_TimeCost = new JLabel(TimeCost);
-        label_TimeCost.setBounds(9,181,150,21);
+        label_TimeCost.setBounds(9,172,150,21);
         panelWrite.add(label_TimeCost);
+
+        label_TimeCount = new JLabel("<html><span style=\"color:gray\">Max:&nbsp;" + valueLimit.MaxValue + "&nbsp;&nbsp;&nbsp;&nbsp;Min: " + valueLimit.MinValue + "<br />Avg:&nbsp;" + valueLimit.Average + "&nbsp;&nbsp;&nbsp;&nbsp;Tick:&nbsp;" + valueLimit.Count + "</span></html>");
+        label_TimeCount.setBounds(9, 193, 210, 42);
+        panelWrite.add(label_TimeCount);
 
         panel.add(panelWrite);
     }
@@ -666,8 +774,13 @@ public class UserControlReadWriteOp extends JPanel {
     {
         long mill = new Date().getTime() - last.getTime();
         label_TimeCost.setText(TimeCost + mill + " ms");
+
+        valueLimit.SetNewValue(mill);
+        label_TimeCount.setText("<html><span style=\"color:gray\">Max:&nbsp;" + valueLimit.MaxValue + "&nbsp;&nbsp;&nbsp;&nbsp;Min: " + valueLimit.MinValue + "<br />Avg:&nbsp;" + ((int)valueLimit.Average) + "&nbsp;&nbsp;&nbsp;&nbsp;Tick:&nbsp;" + valueLimit.Count + "</span></html>");
     }
 
     private JLabel label_TimeCost;
-    private final String TimeCost = "Time-Cost:";
+    private JLabel label_TimeCount;
+    private final String TimeCost = "Time-Cost: ";
+    private ValueLimit valueLimit = new ValueLimit();
 }

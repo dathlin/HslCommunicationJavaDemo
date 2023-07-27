@@ -7,6 +7,8 @@ import HslCommunication.Core.Types.OperateResultExOne;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -58,6 +60,22 @@ public class DemoUtils {
         }
     }
 
+    public static void OpResultRender(OperateResult result, String op ) {
+        if (result.IsSuccess) {
+            JOptionPane.showMessageDialog(
+                    null,
+                    dateFormat.format(new Date()) + "[" + op + "] Success",
+                    "Result",
+                    JOptionPane.INFORMATION_MESSAGE);
+        } else {
+            JOptionPane.showMessageDialog(
+                    null,
+                    dateFormat.format(new Date()) + "[" + op + "] Failed\r\nReason:" + result.ToMessageShowString(),
+                    "Result",
+                    JOptionPane.WARNING_MESSAGE);
+        }
+    }
+
     public static void BulkReadRenderResult(IReadWriteNet readWrite, JTextField addTextBox, JTextField lengthTextBox, JTextArea resultTextBox ) {
         try {
             OperateResultExOne<byte[]> read = readWrite.Read(addTextBox.getText(), Short.parseShort(lengthTextBox.getText()));
@@ -77,12 +95,71 @@ public class DemoUtils {
         //System.out.println("Component Length:" + components.length);
         for (Component component : components) {
             if (component instanceof JPanel) {
-                SetPanelEnabled((JPanel) component, enable);
-            } else {
+                JPanel panel1 = (JPanel) component;
+                panel1.setEnabled(enable);
+                SetPanelEnabled(panel1, enable);
+            }
+            else if (component instanceof JTabbedPane){
+                JTabbedPane tabbedPane = (JTabbedPane)component;
+                tabbedPane.setEnabled(enable);
+            }
+            else {
                 component.setEnabled(enable);
             }
         }
 
+    }
+
+    public static JPanel CreateConnectPanel( JPanel parent )
+    {
+        JPanel panelConnect = new JPanel( );
+        panelConnect.setLayout(null);
+        panelConnect.setBounds(3,28,1000, 59);
+        panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
+
+        parent.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                panelConnect.setBounds(3, 27, parent.getWidth() - 5, 59);
+            }
+        });
+        return panelConnect;
+    }
+
+    public static JPanel CreateContentPanel( JPanel parent )
+    {
+        JPanel panelConnect = new JPanel( );
+        panelConnect.setLayout(null);
+        panelConnect.setBounds(3,90,1000, 580);
+        panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
+
+        parent.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                panelConnect.setBounds(3, 90, parent.getWidth() - 5, parent.getHeight() - 92);
+            }
+        });
+        return panelConnect;
+    }
+
+    public static UserControlReadWriteDevice CreateDevicePanel( JPanel parent )
+    {
+        UserControlReadWriteDevice panelConnect = new UserControlReadWriteDevice( parent );
+        panelConnect.setLayout(null);
+        panelConnect.setBounds(3,90,1000, 580);
+        panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
+
+        parent.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                panelConnect.setBounds(3, 90, parent.getWidth() - 5, parent.getHeight() - 92);
+            }
+        });
+        parent.add(panelConnect);
+        return panelConnect;
     }
 
     public static String IpAddressInputWrong = "IpAddress input wrong";
@@ -91,4 +168,8 @@ public class DemoUtils {
     public static String BaudRateInputWrong = "Baud rate input wrong";
     public static String DataBitsInputWrong = "Data bit input wrong";
     public static String StopBitInputWrong = "Stop bit input wrong";
+
+
+    public static SimpleDateFormat FormatterDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public static SimpleDateFormat FormatterDate = new SimpleDateFormat("yyyy-MM-dd");
 }
