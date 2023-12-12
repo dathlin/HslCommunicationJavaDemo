@@ -2,6 +2,8 @@ package HslCommunicationDemo.PLC.AllenBradley;
 
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Profinet.AllenBradley.AllenBradleySLCNet;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -21,8 +23,12 @@ public class FormAllenBradleySLCNet extends JPanel
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(DemoAllenBradleyHelper.GetSLCAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private AllenBradleySLCNet allenBradleySLCNet = null;
     private String defaultAddress = "A9:0";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

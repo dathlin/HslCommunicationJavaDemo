@@ -6,6 +6,8 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Fuji.FujiSPBOverTcp;
 import HslCommunication.Profinet.Fuji.FujiSPHNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -26,8 +28,12 @@ public class FormFujiSPHNet extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(FujiHelper.GetSPHAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private FujiSPHNet plc = null;
     private String defaultAddress = "M1.100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

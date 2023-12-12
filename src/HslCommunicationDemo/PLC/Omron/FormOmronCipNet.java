@@ -6,7 +6,10 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Core.Types.OperateResultExTwo;
 import HslCommunication.Profinet.Omron.OmronCipNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.PLC.AllenBradley.DemoAllenBradleyHelper;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 import HslCommunicationDemo.UserControlReadWriteOp;
@@ -29,8 +32,12 @@ public class FormOmronCipNet extends JPanel {
         userControlReadWriteDevice.AddSpecialFunctionTab(cipControl, false, "CIP Function");
         userControlReadWriteDevice.setEnabled(false);
         cipControl.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(DemoAllenBradleyHelper.GetCIPAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private OmronCipNet omronCipNet = null;
     private String defaultAddress = "A";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

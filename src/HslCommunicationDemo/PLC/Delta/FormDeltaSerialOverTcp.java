@@ -6,6 +6,8 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Delta.DeltaSerialOverTcp;
 import HslCommunication.Profinet.Delta.DeltaSeries;
 import HslCommunication.Profinet.Delta.DeltaTcpNet;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -26,8 +28,12 @@ public class FormDeltaSerialOverTcp extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(DeltaHelper.GetDeviceAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private DeltaSerialOverTcp plc = null;
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

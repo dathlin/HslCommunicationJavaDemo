@@ -4,6 +4,8 @@ import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.ModBus.ModbusTcpNet;
 import HslCommunication.Profinet.MegMeet.MegMeetTcpNet;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -23,8 +25,12 @@ public class FormMegMeetTcpNet extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(MegMeetHelper.GetMegMeetAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private MegMeetTcpNet modbusTcpNet = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

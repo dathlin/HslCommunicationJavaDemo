@@ -5,6 +5,8 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Profinet.XINJE.XinJEInternalNet;
 import HslCommunication.Profinet.XINJE.XinJESerialOverTcp;
 import HslCommunication.Profinet.XINJE.XinJESeries;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -23,8 +25,12 @@ public class FormXinJEInternalNet extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(XinJEHelper.GetXinJEInternalAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private XinJEInternalNet plc = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

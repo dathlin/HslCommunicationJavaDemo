@@ -6,6 +6,8 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Panasonic.PanasonicMewtocolOverTcp;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunication.Profinet.Yokogawa.YokogawaLinkTcp;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -26,8 +28,12 @@ public class FormYokogawaLinkTcp extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(YokogawaHelper.GetYokogawaAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private YokogawaLinkTcp plc = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

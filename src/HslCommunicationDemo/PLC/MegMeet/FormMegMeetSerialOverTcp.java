@@ -4,6 +4,8 @@ import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.ModBus.ModbusRtuOverTcp;
 import HslCommunication.Profinet.MegMeet.MegMeetSerialOverTcp;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -22,8 +24,13 @@ public class FormMegMeetSerialOverTcp extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+
+        addressExampleControl = new AddressExampleControl(MegMeetHelper.GetMegMeetAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private MegMeetSerialOverTcp modbusTcpNet = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

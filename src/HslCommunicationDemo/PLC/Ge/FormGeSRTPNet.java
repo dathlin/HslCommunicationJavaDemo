@@ -5,6 +5,8 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.GE.GeSRTPNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -31,8 +33,12 @@ public class FormGeSRTPNet extends JPanel {
         userControlReadWriteDevice.AddSpecialFunctionTab(geControl, false, "GeControl");
         userControlReadWriteDevice.setEnabled(false);
         DemoUtils.SetPanelEnabled(geControl, false);
+
+        addressExampleControl = new AddressExampleControl(GeHelper.GetDeviceAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private GeSRTPNet plc = null;
     private String defaultAddress = "R1";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

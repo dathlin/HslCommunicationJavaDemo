@@ -6,6 +6,8 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.ModBus.ModbusRtuOverTcp;
 import HslCommunication.ModBus.ModbusTcpNet;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -29,8 +31,12 @@ public class FormModbusRtuOverTcp extends JPanel {
         userControlReadWriteDevice.AddSpecialFunctionTab(modbusSpecialControl, false, "0x17Funtion");
         userControlReadWriteDevice.setEnabled(false);
         modbusSpecialControl.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(DemoModbusHelper.GetModbusAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private ModbusRtuOverTcp modbusTcpNet = null;
     private String defaultAddress = "100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

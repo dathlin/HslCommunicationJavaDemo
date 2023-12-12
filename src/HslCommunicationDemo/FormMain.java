@@ -10,6 +10,7 @@ import HslCommunicationDemo.PLC.AllenBradley.FormABCip;
 import HslCommunicationDemo.PLC.AllenBradley.FormAllenBradleyMicroCip;
 import HslCommunicationDemo.PLC.AllenBradley.FormAllenBradleyPcccNet;
 import HslCommunicationDemo.PLC.AllenBradley.FormAllenBradleySLCNet;
+import HslCommunicationDemo.PLC.Beckhoff.FormBeckhoffAdsNet;
 import HslCommunicationDemo.PLC.Delta.FormDeltaDvpTcpNet;
 import HslCommunicationDemo.PLC.Delta.FormDeltaSerialOverTcp;
 import HslCommunicationDemo.PLC.Fanuc.FormFanucCnc0i;
@@ -33,10 +34,8 @@ import HslCommunicationDemo.PLC.Modbus.FormModbusUdpNet;
 import HslCommunicationDemo.PLC.Omron.*;
 import HslCommunicationDemo.PLC.Panasonic.FormPanasonicMcNet;
 import HslCommunicationDemo.PLC.Panasonic.FormPanasonicMewtocolOverTcp;
-import HslCommunicationDemo.PLC.Siemens.FormSiemensFW;
-import HslCommunicationDemo.PLC.Siemens.FormSiemensPPIOverTcp;
-import HslCommunicationDemo.PLC.Siemens.FormSiemensS7;
-import HslCommunicationDemo.PLC.Siemens.FormSiemensS7200;
+import HslCommunicationDemo.PLC.Siemens.*;
+import HslCommunicationDemo.PLC.Toyota.FormToyoPuc;
 import HslCommunicationDemo.PLC.XinJE.FormXINJETcp;
 import HslCommunicationDemo.PLC.XinJE.FormXinJEInternalNet;
 import HslCommunicationDemo.PLC.XinJE.FormXinJESerialOverTcp;
@@ -93,6 +92,7 @@ public class FormMain extends JDialog
         AddKeyenceGroup(node);
         AddXinJEGroup(node);
         AddABGroup(node);
+        AddBeckhoffGroup(node);
         AddInovanceGroup(node);
         AddMegmeetGroup(node);
         AddFatekGroup(node);
@@ -101,6 +101,7 @@ public class FormMain extends JDialog
         AddFujiGroup(node);
         AddDeltaGroup(node);
         AddGeGroup(node);
+        AddToyotaGroup(node);
         AddRobotGroup(node);
         AddMqttGroup(node);
         AddHslGroup(node);
@@ -287,6 +288,12 @@ public class FormMain extends JDialog
                 return new FormMelsecMcRNet(tabbedPane);
             }
         } );
+        AddTreeNode( node, "MC Server", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormMelsecMcServer(tabbedPane);
+            }
+        } );
         AddTreeNode( node, "A-1E 二进制", new FunctionOperate<JPanel>(){
             @Override
             public JPanel Action() {
@@ -371,6 +378,12 @@ public class FormMain extends JDialog
                 return new FormSiemensPPIOverTcp( tabbedPane );
             }
         } );
+        AddTreeNode( node, "S7 Server", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormSiemensS7Server( tabbedPane );
+            }
+        } );
 
         treeNode.add(node);
     }
@@ -405,6 +418,18 @@ public class FormMain extends JDialog
         treeNode.add(node);
     }
 
+    private void AddBeckhoffGroup(DefaultMutableTreeNode treeNode){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Beckhoff[倍福]");
+        AddTreeNode( node, "Ads Net", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormBeckhoffAdsNet( tabbedPane );
+            }
+        } );
+
+        treeNode.add(node);
+    }
+
     private void AddGeGroup(DefaultMutableTreeNode treeNode){
         DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Ge PLC[通用]");
         AddTreeNode( node, "Ge SRTP", new FunctionOperate<JPanel>(){
@@ -416,6 +441,19 @@ public class FormMain extends JDialog
 
         treeNode.add(node);
     }
+
+    private void AddToyotaGroup(DefaultMutableTreeNode treeNode){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Toyota PLC[丰田]");
+        AddTreeNode( node, "ToyoPuc Tcp", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormToyoPuc( tabbedPane );
+            }
+        } );
+
+        treeNode.add(node);
+    }
+
 
     private void AddOmronGroup(DefaultMutableTreeNode treeNode){
         DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Omron PLC [欧姆龙]");

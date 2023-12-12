@@ -8,6 +8,8 @@ import HslCommunication.Profinet.AllenBradley.MessageRouter;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunication.Utilities;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.Omron.OmronCipControl;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -34,7 +36,12 @@ public class FormABCip extends JPanel
         userControlReadWriteDevice.AddSpecialFunctionTab(cipControl, false, "CipFunction");
         userControlReadWriteDevice.setEnabled(false);
         cipControl.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(DemoAllenBradleyHelper.GetCIPAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
+
+    private AddressExampleControl addressExampleControl;
     private AllenBradleyNet allenBradleyNet = null;
     private String defaultAddress = "A";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

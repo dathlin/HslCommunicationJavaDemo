@@ -8,9 +8,9 @@ import HslCommunication.LogNet.Core.HslMessageDegree;
 import HslCommunication.LogNet.Core.ILogNet;
 import HslCommunication.ModBus.ModbusTcpNet;
 import HslCommunication.ModBus.ModbusTcpServer;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
+import HslCommunicationDemo.*;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,35 +28,34 @@ public class FormModbusServer extends JPanel {
 
         add( new UserControlReadWriteHead("Modbus Tcp Server", tabbedPane, this));
         AddConnectSegment(this);
-        AddContent(this);
 
         modbusTcpServer = new ModbusTcpServer();
+        userControlReadWriteDevice = DemoUtils.CreateServerPanel(this);
+        userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(DemoModbusHelper.GetModbusAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
 
         // 创建定时器
-        Timer timer = new Timer(1000, new ActionListener() {
+        timer = new Timer(1000, new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                if (textFieldOnline!= null)
-                    textFieldOnline.setText(String.valueOf(modbusTcpServer.GetOnlineCount()));
+                if (userControlReadWriteDevice!= null)
+                    userControlReadWriteDevice.getLogControl().SetOnlineText(modbusTcpServer.GetOnlineCount());
             }
         });
         timer.start();
 
     }
 
-    private ModbusTcpServer modbusTcpServer = null;
-    private JPanel panelContent = null;
+    private AddressExampleControl addressExampleControl;
+    private Timer timer;
     private String defaultAddress = "100";
-    private JTextArea textAreaLog = null;
-    private JTextField textFieldOnline = null;
-    private JScrollPane scrollPaneLog = null;
-    private UserControlReadWriteOp userControlReadWriteOp1 = null;
+    private ModbusTcpServer modbusTcpServer = null;
+    private UserControlReadWriteServer userControlReadWriteDevice = null;
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = new JPanel();
-        panelConnect.setLayout(null);
-        panelConnect.setBounds(14,32,978, 54);
-        panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
+        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
 
         JLabel label1 = new JLabel("Port：");
         label1.setBounds(8, 17,56, 17);
@@ -135,9 +134,7 @@ public class FormModbusServer extends JPanel {
 
                         @Override
                         public void WriteDebug(String keyWord, String text) {
-                            textAreaLog.append( DemoUtils.dateFormat.format(new Date()) + " " + keyWord + " " + text + "\r\n");
-                            JScrollBar scrollBar = scrollPaneLog.getVerticalScrollBar();
-                            scrollBar.setValue(scrollBar.getMaximum());
+                            userControlReadWriteDevice.getLogControl().WriteDebug(keyWord, text);
                         }
 
                         @Override
@@ -220,10 +217,10 @@ public class FormModbusServer extends JPanel {
                             "Start Success",
                             "Result",
                             JOptionPane.PLAIN_MESSAGE);
-                    DemoUtils.SetPanelEnabled(panelContent, true);
+
                     button2.setEnabled(true);
                     button1.setEnabled(false);
-                    userControlReadWriteOp1.SetReadWriteNet(modbusTcpServer, defaultAddress, 10);
+                    userControlReadWriteDevice.SetReadWriteNet(modbusTcpServer, defaultAddress, 10);
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -240,99 +237,16 @@ public class FormModbusServer extends JPanel {
                 super.mouseClicked(e);
                 if (!button2.isEnabled()) return;
                 if(modbusTcpServer!=null){
-                    modbusTcpServer.ConnectClose();
+                    modbusTcpServer.ServerClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
-                    DemoUtils.SetPanelEnabled(panelContent,false);
+                    userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
         panel.add(panelConnect);
-    }
-
-    public void AddContent(JPanel panel){
-        JPanel panelContent = new JPanel();
-        panelContent.setLayout(null);
-        panelContent.setBounds(14,95,978, 537);
-        panelContent.setBorder(BorderFactory.createTitledBorder( ""));
-
-        AddReadWrite(panelContent);
-        AddReadBulk(panelContent);
-
-        panel.add(panelContent);
-        this.panelContent = panelContent;
-        DemoUtils.SetPanelEnabled(this.panelContent,false);
-    }
-
-    public void AddReadWrite(JPanel panel){
-        userControlReadWriteOp1 = new UserControlReadWriteOp();
-        userControlReadWriteOp1.setLayout(null);
-        userControlReadWriteOp1.setBounds(11,2,962, 235);
-        panel.add(userControlReadWriteOp1);
-    }
-
-    public void AddReadBulk(JPanel panel){
-        JPanel panelRead = new JPanel();
-        panelRead.setLayout(null);
-        panelRead.setBounds(11,243,978, 400);
-        panelRead.setBorder(BorderFactory.createTitledBorder( "Read byte by Length"));
-
-        JLabel label1 = new JLabel("Online：");
-        label1.setBounds(9, 30,70, 17);
-        panelRead.add(label1);
-
-        textFieldOnline = new JTextField();
-        textFieldOnline.setBounds(83,27,82, 23);
-        textFieldOnline.setText("0");
-        panelRead.add(textFieldOnline);
-
-//        JLabel label2 = new JLabel("Length：");
-//        label2.setBounds(185, 30,60, 17);
-//        panelRead.add(label2);
-//
-//        JTextField textField2 = new JTextField();
-//        textField2.setBounds(234,27,102, 23);
-//        textField2.setText("10");
-//        panelRead.add(textField2);
-
-
-        JLabel label3 = new JLabel("Result：");
-        label3.setBounds(9, 58,70, 17);
-        panelRead.add(label3);
-
-        textAreaLog = new JTextArea();
-        textAreaLog.setLineWrap(true);
-        scrollPaneLog = new JScrollPane(textAreaLog);
-        scrollPaneLog.setBounds(83,56,865, 230);
-        panelRead.add(scrollPaneLog);
-
-
-//        JButton button2 = new JButton("Read");
-//        button2.setFocusPainted(false);
-//        button2.setBounds(426,24,82, 28);
-//        button2.addMouseListener(new MouseAdapter() {
-//            @Override
-//            public void mouseClicked(MouseEvent e) {
-//                if (button2.isEnabled() == false) return;
-//                super.mouseClicked(e);
-//                OperateResultExOne<byte[]> read = modbusTcpServer.Read(textField1.getText(),Short.parseShort(textField2.getText()));
-//                if(read.IsSuccess){
-//                    textAreaLog.setText(SoftBasic.ByteToHexString(read.Content));
-//                }
-//                else {
-//                    JOptionPane.showMessageDialog(
-//                            null,
-//                            "Read Failed:" + read.ToMessageShowString(),
-//                            "Result",
-//                            JOptionPane.ERROR_MESSAGE);
-//                }
-//            }
-//        });
-//        panelRead.add(button2);
-
-        panel.add(panelRead);
     }
 
 }

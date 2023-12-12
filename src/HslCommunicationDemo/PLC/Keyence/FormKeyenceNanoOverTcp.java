@@ -5,6 +5,8 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Keyence.KeyenceNanoSerialOverTcp;
 import HslCommunication.Profinet.Keyence.KeyencePLCS;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -25,8 +27,12 @@ public class FormKeyenceNanoOverTcp extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(KeyenceHelper.GetKeyenceKvAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private KeyenceNanoSerialOverTcp plc = null;
     private String defaultAddress = "DM100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

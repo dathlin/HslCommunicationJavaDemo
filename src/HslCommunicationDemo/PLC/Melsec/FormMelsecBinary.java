@@ -2,7 +2,10 @@ package HslCommunicationDemo.PLC.Melsec;
 
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Profinet.Melsec.MelsecMcNet;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.PLC.Modbus.DemoModbusHelper;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
@@ -23,8 +26,12 @@ public class FormMelsecBinary extends JPanel
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.AddSpecialFunctionTab(melsecMcControl, false, "MelsecFunction");
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(DemoMelsecHelper.GetMcAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private MelsecMcNet melsecMcNet = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

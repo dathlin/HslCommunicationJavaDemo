@@ -5,6 +5,8 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.FATEK.FatekProgramOverTcp;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -28,8 +30,12 @@ public class FormFatekProgramOverTcp extends JPanel {
         userControlReadWriteDevice.AddSpecialFunctionTab(fatekFunction, false, "FatekFunction");
         userControlReadWriteDevice.setEnabled(false);
         DemoUtils.SetPanelEnabled(fatekFunction, false);
+
+        addressExampleControl = new AddressExampleControl(FatekHelper.GetDeviceAddressExamples());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private FatekProgramOverTcp plc = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

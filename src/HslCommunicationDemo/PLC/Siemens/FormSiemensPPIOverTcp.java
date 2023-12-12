@@ -6,6 +6,9 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Fuji.FujiSPBOverTcp;
 import HslCommunication.Profinet.Siemens.SiemensPPIOverTcp;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunication.Utilities;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -26,8 +29,12 @@ public class FormSiemensPPIOverTcp extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(SiemensHelper.GetSiemensPPIAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private SiemensPPIOverTcp plc = null;
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

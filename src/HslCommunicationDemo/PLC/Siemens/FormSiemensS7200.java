@@ -3,8 +3,11 @@ package HslCommunicationDemo.PLC.Siemens;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Profinet.Siemens.Helper.SiemensS7Helper;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -32,8 +35,12 @@ public class FormSiemensS7200 extends JPanel
         userControlReadWriteDevice.AddSpecialFunctionTab(siemensS7Control, false, "S7Control");
         userControlReadWriteDevice.setEnabled(false);
         siemensS7Control.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(SiemensHelper.GetSiemensS7Address());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private SiemensPLCS siemensPLCS = SiemensPLCS.S1200;
     private SiemensS7Net siemensS7Net = null;
     private String defaultAddress = "M100";

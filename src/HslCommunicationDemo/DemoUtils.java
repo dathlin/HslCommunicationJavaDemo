@@ -2,8 +2,10 @@ package HslCommunicationDemo;
 
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.IReadWriteNet;
+import HslCommunication.Core.Types.Array;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 
 import javax.swing.*;
 import java.awt.*;
@@ -110,18 +112,22 @@ public class DemoUtils {
 
     }
 
-    public static JPanel CreateConnectPanel( JPanel parent )
+    public static JPanel CreateConnectPanel( JPanel parent ) {
+        return CreateConnectPanel(parent, 59);
+    }
+
+    public static JPanel CreateConnectPanel( JPanel parent, int height )
     {
         JPanel panelConnect = new JPanel( );
         panelConnect.setLayout(null);
-        panelConnect.setBounds(3,28,1000, 59);
+        panelConnect.setBounds(3,28,1000, height);
         panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
 
         parent.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                panelConnect.setBounds(3, 27, parent.getWidth() - 5, 59);
+                panelConnect.setBounds(3, 27, parent.getWidth() - 5, height);
             }
         });
         return panelConnect;
@@ -129,16 +135,20 @@ public class DemoUtils {
 
     public static JPanel CreateContentPanel( JPanel parent )
     {
+        return CreateContentPanel(parent, 90);
+    }
+    public static JPanel CreateContentPanel( JPanel parent, int y )
+    {
         JPanel panelConnect = new JPanel( );
         panelConnect.setLayout(null);
-        panelConnect.setBounds(3,90,1000, 580);
+        panelConnect.setBounds(3,y,1000, 580);
         panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
 
         parent.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                panelConnect.setBounds(3, 90, parent.getWidth() - 5, parent.getHeight() - 92);
+                panelConnect.setBounds(3, y, parent.getWidth() - 5, parent.getHeight() - y - 2);
             }
         });
         return panelConnect;
@@ -146,7 +156,31 @@ public class DemoUtils {
 
     public static UserControlReadWriteDevice CreateDevicePanel( JPanel parent )
     {
+        return CreateDevicePanel(parent, 90);
+    }
+
+    public static UserControlReadWriteDevice CreateDevicePanel( JPanel parent, int y )
+    {
         UserControlReadWriteDevice panelConnect = new UserControlReadWriteDevice( parent );
+        panelConnect.setLayout(null);
+        panelConnect.setBounds(3,y,1000, 580);
+        panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
+
+        parent.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                panelConnect.setBounds(3, y, parent.getWidth() - 5, parent.getHeight() - y - 2);
+            }
+        });
+        parent.add(panelConnect);
+        return panelConnect;
+    }
+
+
+    public static UserControlReadWriteServer CreateServerPanel( JPanel parent )
+    {
+        UserControlReadWriteServer panelConnect = new UserControlReadWriteServer( parent );
         panelConnect.setLayout(null);
         panelConnect.setBounds(3,90,1000, 580);
         panelConnect.setBorder(BorderFactory.createTitledBorder( ""));
@@ -160,6 +194,19 @@ public class DemoUtils {
         });
         parent.add(panelConnect);
         return panelConnect;
+    }
+
+    public static DeviceAddressExample[] GetAddressExamples( DeviceAddressExample[] array1, DeviceAddressExample[] array2 ) {
+        DeviceAddressExample[] array3 = new DeviceAddressExample[array1.length + array2.length];
+        System.arraycopy(array1, 0, array3, 0, array1.length);
+        System.arraycopy(array2, 0, array3, array1.length, array2.length);
+        return array3;
+    }
+    public static DeviceAddressExample[] GetAddressExamples( DeviceAddressExample[] array1, DeviceAddressExample deviceAddressExample ){
+        return GetAddressExamples(array1, new DeviceAddressExample[]{deviceAddressExample});
+    }
+    public static DeviceAddressExample[] GetAddressExamples( DeviceAddressExample[] array1, DeviceAddressExample deviceAddressExample1, DeviceAddressExample deviceAddressExample2 ) {
+        return GetAddressExamples(array1, new DeviceAddressExample[]{deviceAddressExample1, deviceAddressExample2});
     }
 
     public static String IpAddressInputWrong = "IpAddress input wrong";

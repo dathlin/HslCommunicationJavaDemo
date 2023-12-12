@@ -9,10 +9,7 @@ import HslCommunication.Core.Types.ValueLimit;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.lang.reflect.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
@@ -130,11 +127,15 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Boolean> read = readWriteNet.ReadBool(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 } else {
                     OperateResultExOne<boolean[]> read = readWriteNet.ReadBool(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button1);
@@ -152,6 +153,7 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Byte> read = (OperateResultExOne<Byte>)readByteMethod.invoke(readWriteNet, textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -160,6 +162,8 @@ public class UserControlReadWriteOp extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button_read_byte);
@@ -178,12 +182,16 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Short> read = readWriteNet.ReadInt16(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<short[]> read = readWriteNet.ReadInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected()) { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button3);
@@ -201,12 +209,16 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Integer> read = readWriteNet.ReadUInt16(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<int[]> read = readWriteNet.ReadUInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button4);
@@ -224,12 +236,16 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Integer> read = readWriteNet.ReadInt32(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<int[]> read = readWriteNet.ReadInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button5);
@@ -247,12 +263,16 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Long> read = readWriteNet.ReadUInt32(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<long[]> read = readWriteNet.ReadUInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button6);
@@ -270,12 +290,16 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Long> read = readWriteNet.ReadInt64(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<long[]> read = readWriteNet.ReadInt64(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button7);
@@ -294,12 +318,16 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Float> read = readWriteNet.ReadFloat(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<float[]> read = readWriteNet.ReadFloat(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button9);
@@ -317,12 +345,16 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Double> read = readWriteNet.ReadDouble(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<double[]> read = readWriteNet.ReadDouble(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button10);
@@ -372,6 +404,10 @@ public class UserControlReadWriteOp extends JPanel {
                 OperateResultExOne<String> read = readWriteNet.ReadString(textField1.getText(), Short.parseShort(textField8.getText()), charset);
                 SetTimeSpend(now);
                 DemoUtils.ReadResultRender(read,textField1.getText(), textArea1, jsp );
+                if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
+
+
+                if(checkBox_read_timer != null && checkBox_read_timer.isSelected()) button_read_timer = (JButton) e.getComponent();
             }
         });
         panelRead.add(button11);
@@ -403,10 +439,97 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
 
+        // 定时读取的部分实现
+        JTextField textField_ReadTimer = new JTextField();
+        textField_ReadTimer.setBounds(180,226,55, 23);
+        textField_ReadTimer.setText("1000");
+        panelRead.add(textField_ReadTimer);
+
+        JLabel label40 = new JLabel("ms");
+        label40.setBounds(238, 229,30, 17);
+        panelRead.add(label40);
+
+        JLabel label41 = new JLabel("Tick: 0");
+        label41.setBounds(270, 229,100, 17);
+        panelRead.add(label41);
+
+        checkBox_read_timer = new JCheckBox("Read Timer");
+        checkBox_read_timer.setBounds(80, 226, 100, 21);
+        checkBox_read_timer.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                if (checkBox_read_timer.isSelected()){
+                    // 选中
+                    int timer_interval = 1000;
+                    try{
+                        timer_interval = Integer.parseInt(textField_ReadTimer.getText());
+                    }
+                    catch (Exception ex)
+                    {
+                        JOptionPane.showMessageDialog(
+                            null,
+                            "Read time interval input wrong! " + ex.getMessage(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+                    if (timer_interval <= 0)
+                    {
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "Read time interval can not below 0!",
+                                "Result",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
+                    }
+
+                    if (timer_read!=null) {
+                        timer_read.stop();
+                    }
+                    timer_read = new Timer(timer_interval, new ActionListener() {
+                        @Override
+                        public void actionPerformed(ActionEvent e) {
+                            if (button_read_timer!=null){
+
+                                MouseEvent event = new MouseEvent(button_read_timer, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), 0,  0,0,1,true);
+                                for (MouseListener listener : button_read_timer.getMouseListeners()) {
+                                    listener.mouseClicked(event);
+                                }
+                                //button_read_timer.doClick();
+                                read_tick_count++;
+                                label41.setText("Tick: " + read_tick_count );
+                            }
+                        }
+                    });
+                    timer_read.start();
+                    button_read_timer = null;
+                    read_tick_count = 0;
+                }
+                else {
+                    // 没有选中
+                    if (timer_read!=null) {
+                        timer_read.stop();
+                    }
+                    button_read_timer = null;
+//                    JOptionPane.showMessageDialog(
+//                            null,
+//                            "No Selected",
+//                            "Result",
+//                            JOptionPane.PLAIN_MESSAGE);
+                }
+            }
+        });
+        panelRead.add(checkBox_read_timer);
 
         panel.add(panelRead);
 
+
     }
+
+    private Timer timer_read;
+    private JButton button_read_timer;
+    private long read_tick_count = 0;
+    private JCheckBox checkBox_read_timer;
 
     public void AddWrite(JPanel panel){
         JPanel panelWrite = new JPanel();

@@ -4,6 +4,8 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Melsec.MelsecA3CNetOverTcp;
 import HslCommunication.Profinet.Melsec.MelsecFxLinksOverTcp;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -24,8 +26,12 @@ public class FormMelsecA3CNetOverTcp extends JPanel {
         userControlReadWriteDevice.AddSpecialFunctionTab(fxLinksControl, false, "FxLinksFunction");
         userControlReadWriteDevice.setEnabled(false);
         DemoUtils.SetPanelEnabled(fxLinksControl, false);
+
+        addressExampleControl = new AddressExampleControl(DemoMelsecHelper.GetMcAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
+    private AddressExampleControl addressExampleControl;
     private MelsecA3CNetOverTcp melsec = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;

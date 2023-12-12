@@ -7,6 +7,8 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Inovance.InovanceSerialOverTcp;
 import HslCommunication.Profinet.Inovance.InovanceSeries;
 import HslCommunication.Profinet.Inovance.InovanceTcpNet;
+import HslCommunicationDemo.Demo.AddressExampleControl;
+import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -27,11 +29,15 @@ public class FormInovanceSerialOverTcp extends JPanel {
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
+
+        addressExampleControl = new AddressExampleControl(InovanceHelper.GetInovanceAddress());
+        userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
 
     private InovanceSerialOverTcp plc = null;
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private AddressExampleControl addressExampleControl;
 
 
     public void AddConnectSegment(JPanel panel){
