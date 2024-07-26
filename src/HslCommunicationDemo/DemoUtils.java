@@ -209,6 +209,31 @@ public class DemoUtils {
         return GetAddressExamples(array1, new DeviceAddressExample[]{deviceAddressExample1, deviceAddressExample2});
     }
 
+    public static JTextField CreateIpAddressTextBox( JPanel panelConnect ) {
+        JLabel label1 = new JLabel("Ip：");
+        label1.setBounds(8, 17, 56, 17);
+        panelConnect.add(label1);
+
+        JTextField textField1 = new JTextField();
+        textField1.setBounds(60, 14, 200, 23);
+        textField1.setText("127.0.0.1");
+        panelConnect.add(textField1);
+
+        return textField1;
+    }
+
+    public static JTextField CreateIpPortTextBox( JPanel panelConnect, String port ) {
+        JLabel label1 = new JLabel("Port：");
+        label1.setBounds(270, 17, 56, 17);
+        panelConnect.add(label1);
+
+        JTextField textField2 = new JTextField();
+        textField2.setBounds(320, 14, 61, 23);
+        textField2.setText(port);
+        panelConnect.add(textField2);
+        return textField2;
+    }
+
     public static String IpAddressInputWrong = "IpAddress input wrong";
     public static String PortInputWrong = "Port input wrong";
     public static String SlotInputWrong = "Slot input wrong";

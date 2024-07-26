@@ -2,9 +2,7 @@ package HslCommunicationDemo.PLC.Fanuc;
 
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.CNC.Fanuc.*;
-import HslCommunication.Core.Types.OperateResult;
-import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Core.Types.OperateResultExTwo;
+import HslCommunication.Core.Types.*;
 import HslCommunication.Utilities;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -308,6 +306,95 @@ public class FormFanucCnc0i extends JPanel {
             }
         });
         panel.add(button34);
+
+        JLabel label200 = new JLabel("诊断号:");
+        label200.setBounds( 218, 212, 80, 23 );
+        panel.add(label200);
+
+        JTextField textBox_Diagnoss_number = new JTextField();
+        textBox_Diagnoss_number.setBounds( 300, 213, 80, 23 );
+        textBox_Diagnoss_number.setText("208");
+        panel.add(textBox_Diagnoss_number);
+
+        JLabel label201 = new JLabel("长度:");
+        label201.setBounds( 385, 212, 60, 23 );
+        panel.add(label201);
+
+        JTextField textBox_Diagnoss_length = new JTextField();
+        textBox_Diagnoss_length.setBounds( 450, 213, 50, 23 );
+        textBox_Diagnoss_length.setText("1");
+        panel.add(textBox_Diagnoss_length);
+
+        JLabel label202 = new JLabel("轴:");
+        label202.setBounds(505, 212, 30, 23);
+        panel.add(label202);
+
+        JTextField textBox_Diagnoss_axis = new JTextField();
+        textBox_Diagnoss_axis.setBounds( 540, 213, 30, 23 );
+        textBox_Diagnoss_axis.setText("-1");
+        panel.add(textBox_Diagnoss_axis);
+
+        JButton button103 = new JButton("读诊断");
+        button103.setFocusPainted(false);
+        button103.setBounds(580,213,96, 23);
+        button103.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int number = 0;
+                try{
+                    number = Integer.parseInt(textBox_Diagnoss_number.getText());
+                }
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Number input failed:",
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int length = 0;
+                try{
+                    length = Integer.parseInt(textBox_Diagnoss_length.getText());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Length input failed:",
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                int axis = 0;
+                try{
+                    axis = Integer.parseInt(textBox_Diagnoss_axis.getText());
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Axis input failed:",
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+
+                OperateResultExOne<double[]> read = fanuc.ReadDiagnoss(number, length, axis );
+                if (read.IsSuccess){
+                    StringBuilder stringBuilder = new StringBuilder();
+                    for (int i = 0; i < read.Content.length; i++){
+                        stringBuilder.append(read.Content[i] + Environment.NewLine);
+                    }
+                    textArea8.setText(stringBuilder.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panel.add(button103);
+
 
         JButton button3 = new JButton("系统状态");
         button3.setFocusPainted(false);
@@ -845,6 +932,72 @@ public class FormFanucCnc0i extends JPanel {
             }
         });
         panel.add(button40);
+
+        JButton button41 = new JButton("轴名称列表");
+        button41.setFocusPainted(false);
+        button41.setBounds(623,77,96, 29);
+        button41.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResultExOne<String[]> read = fanuc.ReadAxisNames();
+                if (read.IsSuccess){
+                    if (read.Content != null){
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < read.Content.length; i ++){
+                            sb.append(read.Content[i]);
+                            sb.append("\r\n");
+                        }
+                        textArea8.setText(sb.toString());
+                    }
+                    else {
+                        textArea8.setText("Null");
+                    }
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panel.add(button41);
+
+        JButton button42 = new JButton("主轴名称");
+        button42.setFocusPainted(false);
+        button42.setBounds(725,77,96, 29);
+        button42.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResultExOne<String[]> read = fanuc.ReadSpindleNames();
+                if (read.IsSuccess){
+                    if (read.Content != null){
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < read.Content.length; i ++){
+                            sb.append(read.Content[i]);
+                            sb.append("\r\n");
+                        }
+                        textArea8.setText(sb.toString());
+                    }
+                    else {
+                        textArea8.setText("Null");
+                    }
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        panel.add(button42);
 
 
         JLabel label2 = new JLabel("宏变量");

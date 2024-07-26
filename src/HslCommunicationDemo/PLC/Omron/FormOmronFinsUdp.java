@@ -6,6 +6,7 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Omron.OmronFinsNet;
 import HslCommunication.Profinet.Omron.OmronFinsUdp;
+import HslCommunication.Profinet.Omron.OmronPlcType;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
@@ -68,13 +69,22 @@ public class FormOmronFinsUdp extends JPanel {
         panelConnect.add(textField4);
 
         JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(558,13,111, 25);
+        comboBox1.setBounds(550,13,80, 25);
         comboBox1.addItem(DataFormat.ABCD);
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
         comboBox1.setSelectedIndex(2);
         panelConnect.add(comboBox1);
+
+
+        JComboBox<OmronPlcType> comboBox2 = new JComboBox<>();
+        comboBox2.setBounds(640,13,80, 25);
+        comboBox2.addItem(OmronPlcType.CSCJ);
+        comboBox2.addItem(OmronPlcType.CV);
+        comboBox2.setSelectedIndex(0);
+        panelConnect.add(comboBox2);
+
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
@@ -98,7 +108,7 @@ public class FormOmronFinsUdp extends JPanel {
                     omronFinsNet.setPort(Integer.parseInt(textField2.getText()));
                     omronFinsNet.SA1 = (byte) Integer.parseInt(textField4.getText());
                     omronFinsNet.getByteTransform().setDataFormat((DataFormat) comboBox1.getSelectedItem());
-
+                    omronFinsNet.setPlcType((OmronPlcType)comboBox2.getSelectedItem());
                     button2.setEnabled(true);
                     button1.setEnabled(false);
                     userControlReadWriteDevice.SetReadWriteNet(omronFinsNet, defaultAddress, 10);

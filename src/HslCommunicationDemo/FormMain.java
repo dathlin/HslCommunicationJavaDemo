@@ -6,6 +6,8 @@ import HslCommunication.Core.Types.FunctionOperate;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Enthernet.SimplifyNet.NetSimplifyClient;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
+import HslCommunication.StringResources;
+import HslCommunicationDemo.Instrument.FormRkcTemperatureControllerOverTcp;
 import HslCommunicationDemo.PLC.AllenBradley.FormABCip;
 import HslCommunicationDemo.PLC.AllenBradley.FormAllenBradleyMicroCip;
 import HslCommunicationDemo.PLC.AllenBradley.FormAllenBradleyPcccNet;
@@ -16,11 +18,14 @@ import HslCommunicationDemo.PLC.Delta.FormDeltaSerialOverTcp;
 import HslCommunicationDemo.PLC.Fanuc.FormFanucCnc0i;
 import HslCommunicationDemo.PLC.Fanuc.FormFanucInterfaceNet;
 import HslCommunicationDemo.PLC.Fatek.FormFatekProgramOverTcp;
+import HslCommunicationDemo.PLC.Fuji.FormFujiCSTNet;
 import HslCommunicationDemo.PLC.Fuji.FormFujiSPBOverTcp;
 import HslCommunicationDemo.PLC.Fuji.FormFujiSPHNet;
 import HslCommunicationDemo.PLC.Ge.FormGeSRTPNet;
 import HslCommunicationDemo.PLC.Inovance.FormInovanceSerialOverTcp;
 import HslCommunicationDemo.PLC.Inovance.FormInovanceTcpNet;
+import HslCommunicationDemo.PLC.Invt.FormInvtModbusRtuOverTcp;
+import HslCommunicationDemo.PLC.Invt.FormInvtModbusTcp;
 import HslCommunicationDemo.PLC.Keyence.FormKeyenceAscii;
 import HslCommunicationDemo.PLC.Keyence.FormKeyenceBinary;
 import HslCommunicationDemo.PLC.Keyence.FormKeyenceNanoOverTcp;
@@ -32,13 +37,18 @@ import HslCommunicationDemo.PLC.Modbus.FormModbusServer;
 import HslCommunicationDemo.PLC.Modbus.FormModbusTcp;
 import HslCommunicationDemo.PLC.Modbus.FormModbusUdpNet;
 import HslCommunicationDemo.PLC.Omron.*;
+import HslCommunicationDemo.PLC.OpenProtocol.FormOpenProtocol;
 import HslCommunicationDemo.PLC.Panasonic.FormPanasonicMcNet;
 import HslCommunicationDemo.PLC.Panasonic.FormPanasonicMewtocolOverTcp;
 import HslCommunicationDemo.PLC.Siemens.*;
 import HslCommunicationDemo.PLC.Toyota.FormToyoPuc;
+import HslCommunicationDemo.PLC.WeCon.FormWeConModbusRtuOverTcp;
+import HslCommunicationDemo.PLC.WeCon.FormWeConModbusTcp;
 import HslCommunicationDemo.PLC.XinJE.FormXINJETcp;
 import HslCommunicationDemo.PLC.XinJE.FormXinJEInternalNet;
 import HslCommunicationDemo.PLC.XinJE.FormXinJESerialOverTcp;
+import HslCommunicationDemo.PLC.YASKAWA.FormYASKAWAMemobusTcpNet;
+import HslCommunicationDemo.PLC.YASKAWA.FormYASKAWAMemobusUdpNet;
 import HslCommunicationDemo.PLC.Yokogawa.FormYokogawaLinkTcp;
 
 import javax.swing.*;
@@ -95,13 +105,18 @@ public class FormMain extends JDialog
         AddBeckhoffGroup(node);
         AddInovanceGroup(node);
         AddMegmeetGroup(node);
+        AddWeConGroup(node);
+        AddInvtGroup(node);
         AddFatekGroup(node);
         AddYokogawaGroup(node);
         AddPanasonicGroup(node);
+        AddYASKAWAGroup(node);
         AddFujiGroup(node);
         AddDeltaGroup(node);
         AddGeGroup(node);
         AddToyotaGroup(node);
+        AddInstrumentGroup(node);
+        AddOpenProtocolGroup(node);
         AddRobotGroup(node);
         AddMqttGroup(node);
         AddHslGroup(node);
@@ -142,6 +157,7 @@ public class FormMain extends JDialog
             @Override
             public void mouseClicked(MouseEvent e) {
                 FormMain.Language = 1;
+                StringResources.SetLanguageChinese();
                 JOptionPane.showMessageDialog(
                         null,
                         "已选择中文！\r\nChinese selected",
@@ -157,6 +173,7 @@ public class FormMain extends JDialog
             @Override
             public void mouseClicked(MouseEvent e) {
                 FormMain.Language = 2;
+                StringResources.SeteLanguageEnglish();
                 JOptionPane.showMessageDialog(
                         null,
                         "已选择英文！\r\nEnglish selected",
@@ -590,6 +607,12 @@ public class FormMain extends JDialog
                 return new FormFujiSPHNet( tabbedPane );
             }
         } );
+        AddTreeNode( node, "FujiCST", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormFujiCSTNet( tabbedPane );
+            }
+        } );
 
         treeNode.add(node);
     }
@@ -630,6 +653,39 @@ public class FormMain extends JDialog
         treeNode.add(node);
     }
 
+    private void AddWeConGroup(DefaultMutableTreeNode treeNode){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( "WeCon PLC [维控]");
+        AddTreeNode( node, "WeCon ModbusTcp", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormWeConModbusTcp( tabbedPane );
+            }
+        } );
+        AddTreeNode( node, "WeCon RtuOverTcp", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormWeConModbusRtuOverTcp( tabbedPane );
+            }
+        } );
+        treeNode.add(node);
+    }
+
+    private void AddInvtGroup(DefaultMutableTreeNode treeNode){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Invt PLC [英威腾]");
+        AddTreeNode( node, "Invt ModbusTcp", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormInvtModbusTcp( tabbedPane );
+            }
+        } );
+        AddTreeNode( node, "Invt RtuOverTcp", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormInvtModbusRtuOverTcp( tabbedPane );
+            }
+        } );
+        treeNode.add(node);
+    }
 
     private void AddFatekGroup(DefaultMutableTreeNode treeNode){
         DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Fatek PLC [永宏]");
@@ -649,6 +705,24 @@ public class FormMain extends JDialog
             @Override
             public JPanel Action() {
                 return new FormYokogawaLinkTcp( tabbedPane );
+            }
+        } );
+
+        treeNode.add(node);
+    }
+
+    private void AddYASKAWAGroup(DefaultMutableTreeNode treeNode){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( "YASKAWA PLC [安川]");
+        AddTreeNode( node, "MemobusTcpNet", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormYASKAWAMemobusTcpNet( tabbedPane );
+            }
+        } );
+        AddTreeNode( node, "MemobusUdpNet", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormYASKAWAMemobusUdpNet( tabbedPane );
             }
         } );
 
@@ -692,6 +766,19 @@ public class FormMain extends JDialog
         treeNode.add(node);
     }
 
+    private void AddInstrumentGroup(DefaultMutableTreeNode treeNode){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Instrument[仪器仪表]");
+        AddTreeNode( node, "RkcOverTcp", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormRkcTemperatureControllerOverTcp( tabbedPane );
+            }
+        } );
+
+
+        treeNode.add(node);
+    }
+
     private void AddRobotGroup(DefaultMutableTreeNode treeNode){
         DefaultMutableTreeNode node = new DefaultMutableTreeNode( "Robot & CNC");
         AddTreeNode( node, "Fanuc Robot", new FunctionOperate<JPanel>(){
@@ -704,6 +791,18 @@ public class FormMain extends JDialog
             @Override
             public JPanel Action() {
                 return new FormFanucCnc0i( tabbedPane );
+            }
+        } );
+
+        treeNode.add(node);
+    }
+
+    private void AddOpenProtocolGroup(DefaultMutableTreeNode treeNode){
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( "OpenProtocol");
+        AddTreeNode( node, "Open Protocol", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormOpenProtocol( tabbedPane );
             }
         } );
 

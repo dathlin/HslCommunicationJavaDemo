@@ -1,5 +1,6 @@
 package HslCommunicationDemo.Demo;
 
+import HslCommunication.LogNet.Core.HslMessageItem;
 import HslCommunicationDemo.DemoUtils;
 
 import javax.swing.*;
@@ -58,14 +59,17 @@ public class ServerLogControl extends JPanel {
         textFieldOnline.setText(String.valueOf(count));
     }
 
-    /**
-     * 写日志信息
-     * @param keyWord 关键字
-     * @param text 消息信息
-     */
-    public void WriteDebug(String keyWord, String text) {
+    public void SetLogRender( boolean render ){
+        renderLogCheckBox.setSelected(render);
+    }
+
+    public void SetOnlineDisEnable(){
+        textFieldOnline.setEnabled(false);
+    }
+
+    public void WriteLog(HslMessageItem messageItem){
         if (renderLogCheckBox.isSelected()) {
-            textAreaLog.append(DemoUtils.dateFormat.format(new Date()) + " " + keyWord + " " + text + "\r\n");
+            textAreaLog.append(messageItem.toString() + "\r\n");
             JScrollBar scrollBar = scrollPaneLog.getVerticalScrollBar();
             scrollBar.setValue(scrollBar.getMaximum());
         }

@@ -52,11 +52,14 @@ public class DemoMelsecHelper {
                         new DeviceAddressExample( "Y0",  "输出继电器",       true, true, "默认16进制，如果需要8进制，使用0开头 Y011" ),
                         new DeviceAddressExample( "L0",  "锁存继电器",       true, true, "" ),
                         new DeviceAddressExample( "B0",  "链接继电器",       true, true, "16进制地址" ),
+                        new DeviceAddressExample( "S0",  "步进继电器",       true, true, "" ),
+                        new DeviceAddressExample( "F0",  "报警器",           true, true, "" ),
                         new DeviceAddressExample( "D0",  "数据寄存器",       false, true, "" ),
                         new DeviceAddressExample( "W0",  "链接寄存器",       false, true, "16进制地址" ),
                         new DeviceAddressExample( "R0",  "文件寄存器",       false, true, "" ),
                         new DeviceAddressExample( "Z0",  "变址寄存器",       false, true, "" ),
-                        new DeviceAddressExample( "ZR0", "ZR文件寄存器",     false, true, "" )
+                        new DeviceAddressExample( "ZR0", "ZR文件寄存器",     false, true, "" ),
+                        new DeviceAddressExample( "D100.1",  "数据寄存器",       true, false, "可以访问字寄存器的位" )
                 };
     }
 

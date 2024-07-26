@@ -5,6 +5,7 @@ import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Omron.OmronFinsNet;
+import HslCommunication.Profinet.Omron.OmronPlcType;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
@@ -27,6 +28,9 @@ public class FormOmronFins extends JPanel {
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
 
+        finsControl = new OmronFinsControl();
+        userControlReadWriteDevice.AddSpecialFunctionTab( finsControl, false,"Fins Function");
+
         addressExampleControl = new AddressExampleControl(DemoOmronHelper.GetOmronAddressExamples());
         userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
@@ -35,6 +39,7 @@ public class FormOmronFins extends JPanel {
     private OmronFinsNet omronFinsNet = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private OmronFinsControl finsControl = null;
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -75,26 +80,34 @@ public class FormOmronFins extends JPanel {
         comboBox1.setSelectedIndex(2);
         panelConnect.add(comboBox1);
 
+        JComboBox<OmronPlcType> comboBox2 = new JComboBox<>();
+        comboBox2.setBounds(580,30,80, 25);
+        comboBox2.addItem(OmronPlcType.CSCJ);
+        comboBox2.addItem(OmronPlcType.CV);
+        comboBox2.setSelectedIndex(0);
+        panelConnect.add(comboBox2);
+
+
         JCheckBox checkBox1 = new JCheckBox("String Reverse");
-        checkBox1.setBounds(580,17,140, 17);
+        checkBox1.setBounds(580,4,140, 17);
         panelConnect.add(checkBox1);
 
         JLabel label4 = new JLabel("SA1:");
-        label4.setBounds(311, 31,42, 17);
+        label4.setBounds(311, 33,42, 17);
         panelConnect.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(358,28,45, 23);
+        textField4.setBounds(358,30,45, 23);
         textField4.setText("");
         textField4.setEditable(false);
         panelConnect.add(textField4);
 
         JLabel label5 = new JLabel("DA1:");
-        label5.setBounds(434, 31,44, 17);
+        label5.setBounds(434, 33,44, 17);
         panelConnect.add(label5);
 
         JTextField textField5 = new JTextField();
-        textField5.setBounds(481,28,45, 23);
+        textField5.setBounds(481,30,45, 23);
         textField5.setText("");
         textField5.setEditable(false);
         panelConnect.add(textField5);
@@ -121,6 +134,7 @@ public class FormOmronFins extends JPanel {
                     omronFinsNet.setPort(Integer.parseInt(textField2.getText()));
                     omronFinsNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
                     omronFinsNet.getByteTransform().setIsStringReverse(checkBox1.isSelected());
+                    omronFinsNet.setPlcType((OmronPlcType)comboBox2.getSelectedItem());
 
                     OperateResult connect = omronFinsNet.ConnectServer();
                     if(connect.IsSuccess){
@@ -134,6 +148,7 @@ public class FormOmronFins extends JPanel {
                         textField4.setText(String.valueOf(omronFinsNet.SA1));
                         textField5.setText(String.valueOf(omronFinsNet.DA1));
                         userControlReadWriteDevice.SetReadWriteNet(omronFinsNet, defaultAddress, 10);
+                        finsControl.SetOmronFins(omronFinsNet);
                     }
                     else {
                         JOptionPane.showMessageDialog(

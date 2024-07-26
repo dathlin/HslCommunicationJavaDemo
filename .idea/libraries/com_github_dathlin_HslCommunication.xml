@@ -1,14 +1,14 @@
 <component name="libraryTable">
   <library name="com.github.dathlin:HslCommunication" type="repository">
-    <properties maven-id="com.github.dathlin:HslCommunication:3.7.0" />
+    <properties maven-id="com.github.dathlin:HslCommunication:3.8.0" />
     <CLASSES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/github/dathlin/HslCommunication/3.7.0/HslCommunication-3.7.0.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/dathlin/HslCommunication/3.8.0/HslCommunication-3.8.0.jar!/" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$MAVEN_REPOSITORY$/com/github/dathlin/HslCommunication/3.7.0/HslCommunication-3.7.0-javadoc.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/dathlin/HslCommunication/3.8.0/HslCommunication-3.8.0-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$MAVEN_REPOSITORY$/com/github/dathlin/HslCommunication/3.7.0/HslCommunication-3.7.0-sources.jar!/" />
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/dathlin/HslCommunication/3.8.0/HslCommunication-3.8.0-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

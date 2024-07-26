@@ -3,8 +3,12 @@ package HslCommunicationDemo;
 import HslCommunication.Core.Net.IReadWriteNet;
 import HslCommunication.Core.Net.NetworkBase.NetworkDoubleBase;
 import HslCommunication.Core.Net.NetworkBase.NetworkUdpBase;
+import HslCommunication.LogNet.Core.HslMessageItem;
+import HslCommunication.LogNet.Core.LogNetBase;
 import HslCommunicationDemo.Demo.BatchReadControl;
 import HslCommunicationDemo.Demo.MessageReadControl;
+import HslCommunicationDemo.Demo.ServerLogControl;
+import sun.rmi.runtime.Log;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,6 +48,11 @@ public class UserControlReadWriteDevice extends JPanel {
 
         messageReadControl = new MessageReadControl();
         tabbedPane.add("MessageRead", messageReadControl);
+
+        logControl = new ServerLogControl();
+        tabbedPane.add( "MessageLog", logControl );
+        logControl.SetLogRender(false);
+        logControl.SetOnlineDisEnable();
     }
 
     /**
@@ -96,6 +105,20 @@ public class UserControlReadWriteDevice extends JPanel {
             this.messageReadControl.SetReadWriteNet((NetworkUdpBase)readWrite, "");
         }
 
+        readWrite.setLogNet( new LogNetBase() {
+            /**
+             * 在日志存储到文件之前调用的方法，只需要重写本方法，就可以实现任意的信息输出<br />
+             * The method that is called before the log is stored in a file only needs to be overridden to achieve arbitrary information output
+             *
+             * @param message 等待记录的消息
+             */
+            @Override
+            public void BeforeSaveToFile(HslMessageItem message) {
+                super.BeforeSaveToFile(message);
+                logControl.WriteLog(message);
+            }
+        });
+
         setEnabled(true);
     }
 
@@ -111,9 +134,14 @@ public class UserControlReadWriteDevice extends JPanel {
         if (show) this.tabbedPane.setSelectedComponent(control);
     }
 
+    public UserControlReadWriteOp getUserControlReadWriteOp(){
+        return userControlReadWriteOp;
+    }
+
     private BatchReadControl batchReadControl;
     private MessageReadControl messageReadControl;
     private UserControlReadWriteOp userControlReadWriteOp;
     private JTabbedPane tabbedPane;
+    private ServerLogControl logControl;
 
 }

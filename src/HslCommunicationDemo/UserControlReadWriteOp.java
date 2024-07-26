@@ -3,9 +3,11 @@ package HslCommunicationDemo;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.IReadWriteNet;
 import HslCommunication.Core.Transfer.DataFormat;
+import HslCommunication.Core.Types.HslExtension;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Core.Types.ValueLimit;
+import HslCommunication.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
@@ -61,6 +63,30 @@ public class UserControlReadWriteOp extends JPanel {
         }
     }
 
+    public void EnableRKC( )
+    {
+        button_read_bool.setEnabled(false);
+        button_read_byte.setEnabled(false);
+        button_read_short.setEnabled(false);
+        button_read_ushort.setEnabled(false);
+        button_read_int.setEnabled(false);
+        button_read_uint.setEnabled(false);
+        button_read_long.setEnabled(false);
+        button_read_float.setEnabled(false);
+        button_read_string.setEnabled(false);
+
+        button_write_bool.setEnabled(false);
+        button_write_byte.setEnabled(false);
+        button_write_short.setEnabled(false);
+        button_write_ushort.setEnabled(false);
+        button_write_int.setEnabled(false);
+        button_write_uint.setEnabled(false);
+        button_write_long.setEnabled(false);
+        button_write_float.setEnabled(false);
+        button_write_hex.setEnabled(false);
+        button_write_string.setEnabled(false);
+    }
+
     private String address = "";
     private IReadWriteNet readWriteNet;
     private Method readByteMethod = null;
@@ -71,6 +97,25 @@ public class UserControlReadWriteOp extends JPanel {
     private JTextField textBox1;
     private JButton button_read_byte;
     private JButton button23;
+
+    private JButton button_read_bool;
+    private JButton button_read_short;
+    private JButton button_read_ushort;
+    private JButton button_read_int;
+    private JButton button_read_uint;
+    private JButton button_read_long;
+    private JButton button_read_float;
+    private JButton button_read_string;
+    private JButton button_write_bool;
+    private JButton button_write_byte;
+    private JButton button_write_short;
+    private JButton button_write_ushort;
+    private JButton button_write_int;
+    private JButton button_write_uint;
+    private JButton button_write_long;
+    private JButton button_write_float;
+    private JButton button_write_hex;
+    private JButton button_write_string;
 
     public void AddRead(JPanel panel){
         JPanel panelRead = new JPanel();
@@ -139,6 +184,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button1);
+        button_read_bool = button1;
 
         JButton button_read_byte = new JButton("r-byte");
         button_read_byte.setFocusPainted(false);
@@ -195,6 +241,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button3);
+        button_read_short = button3;
 
         JButton button4 = new JButton("r-ushort");
         button4.setFocusPainted(false);
@@ -222,6 +269,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button4);
+        button_read_ushort = button4;
 
         JButton button5 = new JButton("r-int");
         button5.setFocusPainted(false);
@@ -249,6 +297,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button5);
+        button_read_int = button5;
 
         JButton button6 = new JButton("r-uint");
         button6.setFocusPainted(false);
@@ -276,6 +325,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button6);
+        button_read_uint = button6;
 
         JButton button7 = new JButton("r-long");
         button7.setFocusPainted(false);
@@ -303,6 +353,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button7);
+        button_read_long = button7;
 
 
         JButton button9 = new JButton("r-float");
@@ -331,6 +382,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button9);
+        button_read_float = button9;
 
         JButton button10 = new JButton("r-double");
         button10.setFocusPainted(false);
@@ -411,6 +463,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelRead.add(button11);
+        button_read_string = button11;
 
 
         panelRead.addComponentListener(new ComponentAdapter() {
@@ -576,10 +629,22 @@ public class UserControlReadWriteOp extends JPanel {
                 if (!button1.isEnabled()) return;
                 super.mouseClicked(e);
                 try {
+                    String input = textField2.getText();
                     Date now = new Date();
-                    OperateResult write = readWriteNet.Write(textField1.getText(), Boolean.parseBoolean(textField2.getText()));
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    if (input.startsWith("[") && input.endsWith("]")){
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToBoolArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
+                    else {
+                        boolean value = false;
+                        if (input.equals("1")) value = true;
+                        else if (input.equals("0")) value = false;
+                        else value = Boolean.parseBoolean(input);
+                        OperateResult write = readWriteNet.Write(textField1.getText(), value);
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -591,6 +656,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button1);
+        button_write_bool = button1;
 
         JButton button2 = new JButton("w-byte");
         button2.setFocusPainted(false);
@@ -601,10 +667,19 @@ public class UserControlReadWriteOp extends JPanel {
                 if (!button2.isEnabled()) return;
                 super.mouseClicked(e);
                 try {
+                    String input = textField2.getText();
                     Date now = new Date();
-                    OperateResult write = (OperateResult)writeByteMethod.invoke(readWriteNet, textField1.getText(), Byte.parseByte(textField2.getText()));
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+
+                    if (input.startsWith("[") && input.endsWith("]")){
+                        OperateResult write = readWriteNet.Write( textField1.getText(), HslExtension.StringToByteArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
+                    else {
+                        OperateResult write = (OperateResult)writeByteMethod.invoke(readWriteNet, textField1.getText(), Byte.parseByte(textField2.getText()));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -617,6 +692,7 @@ public class UserControlReadWriteOp extends JPanel {
         });
         panelWrite.add(button2);
         this.button23 = button2;
+        button_write_byte = button2;
 
         JButton button3 = new JButton("w-short");
         button3.setFocusPainted(false);
@@ -628,9 +704,17 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    OperateResult write = readWriteNet.Write(textField1.getText(), Short.parseShort(textField2.getText()));
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    String input = textField2.getText();
+                    if (input.startsWith("[") && input.endsWith("]")) {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToShortArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
+                    else {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), Short.parseShort(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -642,6 +726,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button3);
+        button_write_short = button3;
 
         JButton button4 = new JButton("w-ushort");
         button4.setFocusPainted(false);
@@ -653,13 +738,21 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    int value = Integer.parseInt(textField2.getText());
-                    if(value < 0 || value > 65535){
-                        throw new Exception("Value must be between 0 - 65535");
+                    String input = textField2.getText();
+                    if (input.startsWith("[") && input.endsWith("]")) {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToUShortArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
                     }
-                    OperateResult write = readWriteNet.Write(textField1.getText(), (short) value);
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    else {
+                        int value = Integer.parseInt(input);
+                        if(value < 0 || value > 65535){
+                            throw new Exception("Value must be between 0 - 65535");
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), (short) value);
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -671,6 +764,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button4);
+        button_write_ushort = button4;
 
         JButton button5 = new JButton("w-int");
         button5.setFocusPainted(false);
@@ -682,9 +776,17 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    OperateResult write = readWriteNet.Write(textField1.getText(), Integer.parseInt(textField2.getText()));
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    String input = textField2.getText();
+                    if (input.startsWith("[") && input.endsWith("]")) {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToIntArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
+                    else{
+                        OperateResult write = readWriteNet.Write(textField1.getText(), Integer.parseInt(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -696,6 +798,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button5);
+        button_write_int = button5;
 
         JButton button6 = new JButton("w-uint");
         button6.setFocusPainted(false);
@@ -707,13 +810,21 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    long value = Long.parseLong(textField2.getText());
-                    if(value < 0L || value > 0xffffffffL){
-                        throw new Exception("Value must be between 0 - 4294967295");
+                    String input = textField2.getText();
+                    if (input.startsWith("[") && input.endsWith("]")) {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToUIntArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
                     }
-                    OperateResult write = readWriteNet.Write(textField1.getText(), (int)value);
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    else {
+                        long value = Long.parseLong(input);
+                        if(value < 0L || value > 0xffffffffL){
+                            throw new Exception("Value must be between 0 - 4294967295");
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), (int)value);
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -725,6 +836,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button6);
+        button_write_uint = button6;
 
         JButton button7 = new JButton("w-long");
         button7.setFocusPainted(false);
@@ -736,9 +848,17 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    OperateResult write = readWriteNet.Write(textField1.getText(), Long.parseLong(textField2.getText()));
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    String input = textField2.getText();
+                    if (input.startsWith("[") && input.endsWith("]")) {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToLongArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
+                    else {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), Long.parseLong(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -750,6 +870,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button7);
+        button_write_long = button7;
 
         JButton button8 = new JButton("w-ulong");
         button8.setFocusPainted(false);
@@ -767,9 +888,17 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    OperateResult write = readWriteNet.Write(textField1.getText(), Float.parseFloat(textField2.getText()));
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    String input = textField2.getText();
+                    if (input.startsWith("[") && input.endsWith("]")) {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToFloatArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
+                    else{
+                        OperateResult write = readWriteNet.Write(textField1.getText(), Float.parseFloat(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -781,6 +910,8 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button9);
+        button_write_float = button9;
+
 
         JButton button10 = new JButton("w-double");
         button10.setMargin(new Insets(0,0,0,0));
@@ -793,9 +924,17 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 try {
-                    OperateResult write = readWriteNet.Write(textField1.getText(), Double.parseDouble(textField2.getText()));
-                    SetTimeSpend(now);
-                    DemoUtils.WriteResultRender(write, textField1.getText());
+                    String input = textField2.getText();
+                    if (input.startsWith("[") && input.endsWith("]")) {
+                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToDoubleArray(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
+                    else{
+                        OperateResult write = readWriteNet.Write(textField1.getText(), Double.parseDouble(input));
+                        SetTimeSpend(now);
+                        DemoUtils.WriteResultRender(write, textField1.getText());
+                    }
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -854,6 +993,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button11);
+        button_write_string = button11;
 
         JButton button_write_hex = new JButton("w-hex");
         button_write_hex.setFocusPainted(false);
@@ -879,6 +1019,7 @@ public class UserControlReadWriteOp extends JPanel {
             }
         });
         panelWrite.add(button_write_hex);
+        this.button_write_hex = button_write_hex;
 
 
 

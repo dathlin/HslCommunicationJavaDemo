@@ -5,7 +5,9 @@ import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.LogNet.Core.HslMessageDegree;
+import HslCommunication.LogNet.Core.HslMessageItem;
 import HslCommunication.LogNet.Core.ILogNet;
+import HslCommunication.LogNet.Core.LogNetBase;
 import HslCommunication.ModBus.ModbusTcpNet;
 import HslCommunication.ModBus.ModbusTcpServer;
 import HslCommunicationDemo.*;
@@ -117,99 +119,17 @@ public class FormModbusServer extends JPanel {
                     modbusTcpServer.UseModbusRtuOverTcp = checkBox1.isSelected();
                     modbusTcpServer.EnableWrite = checkBox2.isSelected();
                     modbusTcpServer.ServerStart(Integer.parseInt(textField1.getText()));
-                    modbusTcpServer.setLogNet(new ILogNet() {
+                    modbusTcpServer.setLogNet(new LogNetBase(){
+                        /**
+                         * 在日志存储到文件之前调用的方法，只需要重写本方法，就可以实现任意的信息输出<br />
+                         * The method that is called before the log is stored in a file only needs to be overridden to achieve arbitrary information output
+                         *
+                         * @param message 等待记录的消息
+                         */
                         @Override
-                        public int LogSaveMode() {
-                            return 0;
-                        }
-
-                        @Override
-                        public void RecordMessage(HslMessageDegree degree, String keyWord, String text) {
-
-                        }
-
-                        @Override
-                        public void WriteDebug(String text) {
-                        }
-
-                        @Override
-                        public void WriteDebug(String keyWord, String text) {
-                            userControlReadWriteDevice.getLogControl().WriteDebug(keyWord, text);
-                        }
-
-                        @Override
-                        public void WriteDescription(String description) {
-
-                        }
-
-                        @Override
-                        public void WriteError(String text) {
-
-                        }
-
-                        @Override
-                        public void WriteError(String keyWord, String text) {
-
-                        }
-
-                        @Override
-                        public void WriteException(String keyWord, Exception ex) {
-
-                        }
-
-                        @Override
-                        public void WriteException(String keyWord, String text, Exception ex) {
-
-                        }
-
-                        @Override
-                        public void WriteFatal(String text) {
-
-                        }
-
-                        @Override
-                        public void WriteFatal(String keyWord, String text) {
-
-                        }
-
-                        @Override
-                        public void WriteInfo(String text) {
-
-                        }
-
-                        @Override
-                        public void WriteInfo(String keyWord, String text) {
-
-                        }
-
-                        @Override
-                        public void WriteNewLine() {
-
-                        }
-
-                        @Override
-                        public void WriteWarn(String text) {
-
-                        }
-
-                        @Override
-                        public void WriteWarn(String keyWord, String text) {
-
-                        }
-
-                        @Override
-                        public void SetMessageDegree(HslMessageDegree degree) {
-
-                        }
-
-                        @Override
-                        public void FiltrateKeyword(String keyword) {
-
-                        }
-
-                        @Override
-                        public String[] GetExistLogFileNames() {
-                            return new String[0];
+                        public void BeforeSaveToFile(HslMessageItem message) {
+                            super.BeforeSaveToFile(message);
+                            userControlReadWriteDevice.getLogControl().WriteLog(message);
                         }
                     });
                     JOptionPane.showMessageDialog(
