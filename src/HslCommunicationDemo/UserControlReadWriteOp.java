@@ -16,6 +16,8 @@ import java.lang.reflect.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class UserControlReadWriteOp extends JPanel {
     public UserControlReadWriteOp( ) {
@@ -584,6 +586,66 @@ public class UserControlReadWriteOp extends JPanel {
     private long read_tick_count = 0;
     private JCheckBox checkBox_read_timer;
 
+    private boolean checkStringValueArray( String value ) {
+        Pattern pattern = Pattern.compile("^\\[\\d+-\\d+\\]$");
+        return pattern.matcher(value).find();
+    }
+    private long[] getValueArray( String value ) {
+        Pattern pattern = Pattern.compile("-?[0-9]+");
+        Matcher matcher = pattern.matcher(value);
+
+        long start = Long.parseLong(matcher.group());
+        long end = Long.parseLong(matcher.group());
+        long[] buffer = new long[(int) (Math.abs(end - start)) + 1];
+        boolean plus = start < end;
+        for (int i = 0; i < buffer.length; i++) {
+            if (plus)
+                buffer[i] = start + i;
+            else
+                buffer[i] = start - i;
+        }
+        return buffer;
+    }
+    private short[] getInt16Array( String value ) {
+        long[] buffer = getValueArray(value);
+        short[] shorts = new short[buffer.length];
+        for (int i = 0; i < buffer.length; i++) {
+            shorts[i] = (short) buffer[i];
+        }
+        return shorts;
+    }
+    private int[] getInt32Array( String value ) {
+        long[] buffer = getValueArray(value);
+        int[] ints = new int[buffer.length];
+        for (int i = 0; i < buffer.length; i++) {
+            ints[i] = (int) buffer[i];
+        }
+        return ints;
+    }
+    private long[] getInt64Array( String value ) {
+        long[] buffer = getValueArray(value);
+        return buffer;
+    }
+
+    private float[] getFloatArray( String value ) {
+        long[] buffer = getValueArray(value);
+        float[] floats = new float[buffer.length];
+        for (int i = 0; i < buffer.length; i++) {
+            floats[i] = (float) buffer[i];
+        }
+        return floats;
+    }
+
+    private double[] getDoubleArray( String value ) {
+        long[] buffer = getValueArray(value);
+        double[] doubles = new double[buffer.length];
+        for (int i = 0; i < buffer.length; i++) {
+            doubles[i] = (double) buffer[i];
+        }
+        return doubles;
+    }
+
+
     public void AddWrite(JPanel panel){
         JPanel panelWrite = new JPanel();
         panelWrite.setLayout(null);
@@ -612,12 +674,14 @@ public class UserControlReadWriteOp extends JPanel {
         label2.setBounds(9, 58,70, 17);
         panelWrite.add(label2);
 
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(83,56,147, 23);
-        panelWrite.add(textField2);
+        JTextArea textField2 = new JTextArea();
+        textField2.setLineWrap(true);
+        JScrollPane jsp_write = new JScrollPane(textField2);
+        jsp_write.setBounds(83,56,147, 70);
+        panelWrite.add(jsp_write);
 
-        JLabel label100 = new JLabel("<html><span style=\"color:red\">Note: The value of the string needs to be converted<br />if bool: true,false,0,1<br />if array: [1,2,3]</span></html>");
-        label100.setBounds(11, 82,200, 80);
+        JLabel label100 = new JLabel("<html><span style=\"color:red\">Note: String value can be converted<br />if bool: true,false,0,1<br />if array: [1,2,3]</span></html>");
+        label100.setBounds(11, 118,200, 80);
         panelWrite.add(label100);
 
         JButton button1 = new JButton("w-bit");
@@ -706,7 +770,14 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToShortArray(input));
+                        short[] values = null;
+                        if (checkStringValueArray(input)){
+                            values = getInt16Array(input);
+                        }
+                        else {
+                            values = HslExtension.StringToShortArray(input);
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
@@ -740,7 +811,14 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToUShortArray(input));
+                        short[] values = null;
+                        if (checkStringValueArray(input)){
+                            values = getInt16Array(input);
+                        }
+                        else {
+                            values = HslExtension.StringToUShortArray(input);
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
@@ -778,7 +856,14 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToIntArray(input));
+                        int[] values = null;
+                        if (checkStringValueArray(input)){
+                            values = getInt32Array(input);
+                        }
+                        else {
+                            values = HslExtension.StringToIntArray(input);
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
@@ -812,7 +897,14 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToUIntArray(input));
+                        int[] values = null;
+                        if (checkStringValueArray(input)){
+                            values = getInt32Array(input);
+                        }
+                        else {
+                            values = HslExtension.StringToUIntArray(input);
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
@@ -850,7 +942,14 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToLongArray(input));
+                        long[] values = null;
+                        if (checkStringValueArray(input)){
+                            values = getInt64Array(input);
+                        }
+                        else {
+                            values = HslExtension.StringToLongArray(input);
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
@@ -890,7 +989,14 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToFloatArray(input));
+                        float[] values = null;
+                        if (checkStringValueArray(input)){
+                            values = getFloatArray(input);
+                        }
+                        else {
+                            values = HslExtension.StringToFloatArray(input);
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
@@ -926,7 +1032,14 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToDoubleArray(input));
+                        double[] values = null;
+                        if (checkStringValueArray(input)){
+                            values = getDoubleArray(input);
+                        }
+                        else {
+                            values = HslExtension.StringToDoubleArray(input);
+                        }
+                        OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
@@ -1024,7 +1137,7 @@ public class UserControlReadWriteOp extends JPanel {
 
 
         label_TimeCost = new JLabel(TimeCost);
-        label_TimeCost.setBounds(9,172,150,21);
+        label_TimeCost.setBounds(9,180,150,21);
         panelWrite.add(label_TimeCost);
 
         label_TimeCount = new JLabel("<html><span style=\"color:gray\">Max:&nbsp;" + valueLimit.MaxValue + "&nbsp;&nbsp;&nbsp;&nbsp;Min: " + valueLimit.MinValue + "<br />Avg:&nbsp;" + valueLimit.Average + "&nbsp;&nbsp;&nbsp;&nbsp;Tick:&nbsp;" + valueLimit.Count + "</span></html>");

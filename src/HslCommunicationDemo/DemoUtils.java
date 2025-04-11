@@ -210,25 +210,30 @@ public class DemoUtils {
     }
 
     public static JTextField CreateIpAddressTextBox( JPanel panelConnect ) {
+        return CreateIpAddressTextBox( panelConnect, 17 );
+    }
+    public static JTextField CreateIpAddressTextBox( JPanel panelConnect, int y ) {
         JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17, 56, 17);
+        label1.setBounds(7, y , 50, 17);
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(60, 14, 200, 23);
+        textField1.setBounds(60, y - 3, 200, 23);
         textField1.setText("127.0.0.1");
         panelConnect.add(textField1);
-
         return textField1;
     }
 
     public static JTextField CreateIpPortTextBox( JPanel panelConnect, String port ) {
+        return CreateIpPortTextBox( panelConnect, port, 17 );
+    }
+    public static JTextField CreateIpPortTextBox( JPanel panelConnect, String port, int y ) {
         JLabel label1 = new JLabel("Port：");
-        label1.setBounds(270, 17, 56, 17);
+        label1.setBounds(270, y, 56, 17);
         panelConnect.add(label1);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(320, 14, 61, 23);
+        textField2.setBounds(320, y - 3, 61, 23);
         textField2.setText(port);
         panelConnect.add(textField2);
         return textField2;

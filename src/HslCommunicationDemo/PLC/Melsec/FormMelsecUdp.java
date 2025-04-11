@@ -88,6 +88,7 @@ public class FormMelsecUdp extends JPanel {
                 super.mouseClicked(e);
                 if (button2.isEnabled() == false) return;
                 if(melsecMcNet!=null){
+                    melsecMcNet.Close();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     userControlReadWriteDevice.setEnabled(false);

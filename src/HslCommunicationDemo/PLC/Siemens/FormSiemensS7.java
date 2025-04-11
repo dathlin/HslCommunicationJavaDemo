@@ -35,6 +35,9 @@ public class FormSiemensS7 extends JPanel
         userControlReadWriteDevice.setEnabled(false);
         siemensS7Control.setEnabled(false);
 
+        writeControl = new SiemensS7WriteControl();
+        userControlReadWriteDevice.AddSpecialFunctionTab(writeControl, false, "S7WriteFunction");
+        writeControl.setEnabled(false);
 
         addressExampleControl = new AddressExampleControl(SiemensHelper.GetSiemensS7Address());
         userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
@@ -46,6 +49,7 @@ public class FormSiemensS7 extends JPanel
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private SiemensS7Control siemensS7Control;
+    private SiemensS7WriteControl writeControl;
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -162,6 +166,8 @@ public class FormSiemensS7 extends JPanel
                         userControlReadWriteDevice.SetReadWriteNet(siemensS7Net, defaultAddress, 10);
                         siemensS7Control.setEnabled(true);
                         siemensS7Control.SetReadWriteS7(siemensS7Net);
+                        writeControl.SetSiemensS7Net(siemensS7Net);
+                        writeControl.setEnabled(true);
                     }
                     else {
                         JOptionPane.showMessageDialog(

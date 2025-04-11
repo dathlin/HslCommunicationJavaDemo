@@ -24,6 +24,7 @@ public class DemoModbusHelper {
                         new DeviceAddressExample( "s=2;x=4;100",     "[Word] 输入寄存器",    false, true, "读取站号2，输入寄存器数据" ),
                         new DeviceAddressExample( "w=16;100",        "[Word] 保持寄存器",    true, false, "Write(string, short)时，使用0x10功能码写入" ),
                         new DeviceAddressExample( "x=7;w=8;100",     "自定义规则时",         false, true, "读取使用7功能码，写入使用8功能码" ),
+                        new DeviceAddressExample( "file=0;100",      "[Word] 文件寄存器",    false, true, "读取使用0x14功能码，写入使用0x15功能码, flie是文件号" ),
                 };
     }
 

@@ -7,6 +7,7 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Enthernet.SimplifyNet.NetSimplifyClient;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.StringResources;
+import HslCommunicationDemo.Instrument.FormDLT645OverTcp;
 import HslCommunicationDemo.Instrument.FormRkcTemperatureControllerOverTcp;
 import HslCommunicationDemo.PLC.AllenBradley.FormABCip;
 import HslCommunicationDemo.PLC.AllenBradley.FormAllenBradleyMicroCip;
@@ -510,6 +511,12 @@ public class FormMain extends JDialog
                 return new FormOmronHostLinkCModeOverTcp( tabbedPane );
             }
         } );
+        AddTreeNode( node, "Fins-TcpServer", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormOmronFinsServer( tabbedPane );
+            }
+        } );
 
         treeNode.add(node);
 
@@ -774,7 +781,12 @@ public class FormMain extends JDialog
                 return new FormRkcTemperatureControllerOverTcp( tabbedPane );
             }
         } );
-
+        AddTreeNode( node, "DLT645-2007 Tcp", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormDLT645OverTcp( tabbedPane );
+            }
+        } );
 
         treeNode.add(node);
     }
@@ -815,6 +827,12 @@ public class FormMain extends JDialog
             @Override
             public JPanel Action() {
                 return new FormMqttSyncClient( tabbedPane );
+            }
+        } );
+        AddTreeNode( node, "MqttClient", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormMqttClient( tabbedPane );
             }
         } );
 

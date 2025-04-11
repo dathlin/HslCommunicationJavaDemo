@@ -2,7 +2,7 @@
 ![Build status](https://img.shields.io/badge/Build-Success-green.svg) ![NetFramework](https://img.shields.io/badge/Language-java-orange.svg) ![JDK status](https://img.shields.io/badge/JDK-1.8.0-green.svg) ![IDE status](https://img.shields.io/badge/Intellij%20Idea-Community-red.svg) ![copyright status](https://img.shields.io/badge/CopyRight-Richard.Hu-brightgreen.svg) 
 
 ## CopyRight
-(C) 2017 - 2023 Richard.Hu, All Rights Reserved
+(C) 2017 - 2025 Richard.Hu, All Rights Reserved
 
 ## What is HSL
 This is an industrial IoT based, computer communications architecture implementation, integrated with most of the basic functional implementation of industrial software development, 
@@ -34,7 +34,15 @@ for equipment suppliers, based on HSL to develop the host computer software syst
 
 ## Install From Maven
 ```
-com.github.dathlin.HslCommunication
+io.github.dathlin.HslCommunication
+```
+Snippets
+```
+<dependency>
+    <groupId>io.github.dathlin</groupId>
+    <artifactId>HslCommunication</artifactId>
+    <version>3.9.0</version>
+</dependency>
 ```
 
 ## About HslCommunication 商业授权(Business license)

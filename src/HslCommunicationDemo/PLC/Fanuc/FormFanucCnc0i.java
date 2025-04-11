@@ -24,10 +24,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.Enumeration;
+import java.util.*;
 
 public class FormFanucCnc0i extends JPanel {
 
@@ -145,10 +142,28 @@ public class FormFanucCnc0i extends JPanel {
     public void AddContent(JPanel panel){
         JPanel panelContent = DemoUtils.CreateContentPanel(panel);
 
-        AddReadWrite(panelContent);
+
+        tabbedPane = new JTabbedPane( );
+        tabbedPane.setBounds(3, 270, 1000, 680);
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                tabbedPane.setBounds(1, 1, panelContent.getWidth() - 3, panelContent.getHeight() - 3);
+            }
+        });
+        panelContent.add(tabbedPane);
+
+        JPanel panelContent1 = new JPanel();
+        panelContent1.setLayout(null);
+        AddReadWrite(panelContent1);
+
+        tabbedPane.addTab("Basic Test", panelContent1);
+        tabbedPane.addTab("File Test", AddFileOperate());
+
 
         panel.add(panelContent);
-        this.panelContent = panelContent;
+        this.panelContent = panelContent1;
         DemoUtils.SetPanelEnabled(this.panelContent,false);
     }
 
@@ -204,108 +219,37 @@ public class FormFanucCnc0i extends JPanel {
         }
     }
     public void AddReadWrite(JPanel panel){
+
+        JLabel label301 = new JLabel("Receive:");
+        label301.setBounds( 5, 215, 100, 23 );
+        panel.add(label301);
+
         textArea8 = new JTextArea();
         textArea8.setLineWrap(true);
         JScrollPane jsp = new JScrollPane(textArea8);
-        jsp.setBounds(215,239,756, 308);
+        jsp.setBounds(5,239,756, 308);
         panel.add(jsp);
 
-        JLabel label14 = new JLabel("PATH:");
-        label14.setBounds(602,130,51,17);
-        panel.add(label14);
+        JLabel label303 = new JLabel("Code:");
+        label303.setBounds( 5, 300, 50, 23 );
+        panel.add(label303);
 
-        JTextField texBox_path = new JTextField("//CNC_MEM/USER/PATH1/");
-        texBox_path.setBounds(656,127,316,23);
-        panel.add(texBox_path);
-
-        JTextField texBox9 = new JTextField("O33");
-        texBox9.setBounds(656,154,105,23);
-        panel.add(texBox9);
-
-        FileDirInfo root = new FileDirInfo();
-        root.IsDirectory = true;
-        root.Name = "CNC_MEM";
-        DefaultMutableTreeNode node = new DefaultMutableTreeNode( root );
-        JTree jTree = new JTree(node);
-        jTree.addTreeSelectionListener(new TreeSelectionListener() {
-            @Override
-            public void valueChanged(TreeSelectionEvent e) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
-                if (node != null){
-                    FileDirInfo fileDirInfo = (FileDirInfo)node.getUserObject();
-                    if (!fileDirInfo.IsDirectory)
-                    {
-                        textArea8.setText( fileDirInfo.toFileString( ) );
-                        texBox9.setText( fileDirInfo.Name);
-                        if (node.getParent() != null)
-                        {
-                            texBox_path.setText(GetPathFromTree(  (DefaultMutableTreeNode)node.getParent() ) ) ;
-                        }
-                    }
-                    else
-                    {
-                        texBox_path.setText(GetPathFromTree( node ));
-
-                        ArrayList<String> list = new ArrayList<String>( );
-
-                        for(int i=0;i <node.getChildCount() ; i ++){
-                            DefaultMutableTreeNode child = (DefaultMutableTreeNode)node.getChildAt(i);
-                            FileDirInfo file = (FileDirInfo)child.getUserObject();
-                            if (!file.IsDirectory)
-                                list.add( file.toFileString( ) );
-                        }
-                        textArea8.setText("");
-                        for (int i =0; i< list.size(); i++){
-                            textArea8.append(list.get(i));
-                            textArea8.append("\r\n");
-                        }
-                    }
-                }
-            }
-        });
-        JScrollPane jsp2 = new JScrollPane(jTree);
-        jsp2.setBounds(5,239,204, 306);
-        panel.add(jsp2);
-
+        JTextArea textArea_code = new JTextArea();
+        textArea_code.setLineWrap(true);
+        JScrollPane jsp_code = new JScrollPane(textArea_code);
+        jsp_code.setBounds(5,300, 756, 45);
+        panel.add(jsp_code);
 
         panel.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                jsp.setBounds(215,239,panel.getWidth() - 220, panel.getHeight() - 242);
+                jsp.setBounds(5,239,panel.getWidth() - 10, panel.getHeight() - 242 - 50);
                 jsp.updateUI();
-                jsp2.setBounds(5,239,204, panel.getHeight() - 242);
-                jsp2.updateUI();
+                label303.setBounds( 5, panel.getHeight() - 48, 50, 23 );
+                jsp_code.setBounds(55,panel.getHeight() - 48, panel.getWidth() - 60, 45);
             }
         });
-
-        JButton button33 = new JButton("路径信息");
-        button33.setFocusPainted(false);
-        button33.setBounds(5,213,96, 23);
-        button33.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                node.removeAllChildren();
-                BrowerFile( node );
-                jTree.updateUI();
-            }
-        });
-        panel.add(button33);
-
-
-        JButton button34 = new JButton("清除");
-        button34.setFocusPainted(false);
-        button34.setBounds(115,213,96, 23);
-        button34.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                node.removeAllChildren();
-                jTree.updateUI();
-            }
-        });
-        panel.add(button34);
 
         JLabel label200 = new JLabel("诊断号:");
         label200.setBounds( 218, 212, 80, 23 );
@@ -378,11 +322,7 @@ public class FormFanucCnc0i extends JPanel {
 
                 OperateResultExOne<double[]> read = fanuc.ReadDiagnoss(number, length, axis );
                 if (read.IsSuccess){
-                    StringBuilder stringBuilder = new StringBuilder();
-                    for (int i = 0; i < read.Content.length; i++){
-                        stringBuilder.append(read.Content[i] + Environment.NewLine);
-                    }
-                    textArea8.setText(stringBuilder.toString());
+                    textArea8.setText( "读诊断: " + Arrays.toString(read.Content) );
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -391,9 +331,94 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                textArea_code.setText("OperateResultExOne<double[]> read = fanuc.ReadDiagnoss(" + number + ", " + length + ", " + axis + " );");
             }
         });
         panel.add(button103);
+
+        JLabel label302 = new JLabel("刀组号:");
+        label302.setBounds(680, 212, 50, 23);
+        panel.add(label302);
+
+        JTextField textBox_daozu = new JTextField();
+        textBox_daozu.setBounds( 730, 213, 30, 23 );
+        textBox_daozu.setText("2");
+        panel.add(textBox_daozu);
+
+        JButton button302 = new JButton("读刀组寿命");
+        button302.setFocusPainted(false);
+        button302.setBounds(765,213,110, 23);
+        button302.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int number = 0;
+                try{
+                    number = Integer.parseInt(textBox_daozu.getText());
+                }
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Number input failed:",
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                OperateResultExOne<ToolInformation> read = fanuc.ReadToolInfoByGroup((short) number);
+                if (read.IsSuccess){
+                    textArea8.setText(read.Content.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                textArea_code.setText("OperateResultExOne<ToolInformation> read = fanuc.ReadToolInfoByGroup((short) " + number + ");");
+            }
+        });
+        panel.add(button302);
+
+        JButton button303 = new JButton("清除刀组号");
+        button303.setFocusPainted(false);
+        button303.setBounds(880,213,110, 23);
+        button303.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                int number = 0;
+                try{
+                    number = Integer.parseInt(textBox_daozu.getText());
+                }
+                catch (Exception ex) {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Number input failed:",
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                    return;
+                }
+                OperateResult clear = fanuc.ClearToolGroup( number, number);
+                if (clear.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Clear Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + clear.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                textArea_code.setText( "OperateResult clear = fanuc.ClearToolGroup( " + number + ", " + number + ");" );
+            }
+        });
+        panel.add(button303);
+
 
 
         JButton button3 = new JButton("系统状态");
@@ -415,6 +440,7 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                textArea_code.setText( "OperateResultExOne<SysStatusInfo> read = fanuc.ReadSysStatusInfo();" );
             }
         });
         panel.add(button3);
@@ -438,6 +464,7 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                textArea_code.setText( "OperateResultExOne<SysAlarm[]> read = fanuc.ReadSystemAlarm();" );
             }
         });
         panel.add(button4);
@@ -461,6 +488,7 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                textArea_code.setText( "OperateResultExOne<SysAllCoors> read = fanuc.ReadSysAllCoors();" );
             }
         });
         panel.add(button5);
@@ -484,6 +512,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<int[]> read = fanuc.ReadProgramList();" );
             }
         });
         panel.add(button6);
@@ -508,6 +538,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExTwo<String, Integer> read = fanuc.ReadSystemProgramCurrent();  // 程序名，程序号" );
             }
         });
         panel.add(button7);
@@ -522,7 +554,7 @@ public class FormFanucCnc0i extends JPanel {
 
                 OperateResultExTwo<Double,Double> read = fanuc.ReadSpindleSpeedAndFeedRate();
                 if (read.IsSuccess){
-                    textArea8.setText(read.Content1.toString() + "\r\n" + read.Content2.toString());
+                    textArea8.setText( "主轴转速: " + read.Content1.toString() + "\r\n进给倍率: " + read.Content2.toString());
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -531,6 +563,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExTwo<Double,Double> read = fanuc.ReadSpindleSpeedAndFeedRate();  // 主轴转速，进给倍率" );
             }
         });
         panel.add(button8);
@@ -543,9 +577,9 @@ public class FormFanucCnc0i extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
 
-                OperateResultExTwo<Double,Double> read = fanuc.ReadSpindleSpeedAndFeedRate();
+                OperateResultExOne<double[]> read = fanuc.ReadFanucAxisLoad();
                 if (read.IsSuccess){
-                    textArea8.setText(read.Content1.toString() + "\r\n" + read.Content2.toString());
+                    textArea8.setText( "伺服负载: \r\n" + SoftBasic.ArrayFormat( read.Content));
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -554,6 +588,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<double[]> read = fanuc.ReadFanucAxisLoad();  // 伺服负载" );
             }
         });
         panel.add(button9);
@@ -582,6 +618,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<CutterInfo[]> read = fanuc.ReadCutterInfos(24)" );
             }
         });
         panel.add(button10);
@@ -606,6 +644,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<String> read = fanuc.ReadCurrentForegroundDir();   // 程序路径" );
             }
         });
         panel.add(button11);
@@ -629,6 +669,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<double[]> read = fanuc.ReadDeviceWorkPiecesSize();" );
             }
         });
         panel.add(button12);
@@ -652,6 +694,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<Integer> read = fanuc.ReadAlarmStatus();" );
             }
         });
         panel.add(button13);
@@ -666,9 +710,8 @@ public class FormFanucCnc0i extends JPanel {
                 super.mouseClicked(e);
 
                 OperateResultExOne<Date> read = fanuc.ReadCurrentDateTime();
-                if (read.IsSuccess){
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss" );
-                    textArea8.setText(sdf.format(read.Content));
+                if (read.IsSuccess) {
+                    textArea8.setText(HslExtension.DateToString(read.Content, "yyyy-MM-dd HH:mm:ss"));
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -677,6 +720,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<Date> read = fanuc.ReadCurrentDateTime();" );
             }
         });
         panel.add(button19);
@@ -692,7 +737,7 @@ public class FormFanucCnc0i extends JPanel {
 
                 OperateResultExOne<Integer> read = fanuc.ReadCurrentProduceCount();
                 if (read.IsSuccess){
-                    textArea8.setText(read.Content.toString());
+                    textArea8.setText( "已加工数: " + read.Content.toString());
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -701,6 +746,7 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                textArea_code.setText("OperateResultExOne<Integer> read = fanuc.ReadCurrentProduceCount();  // 已加工数" );
             }
         });
         panel.add(button20);
@@ -716,7 +762,7 @@ public class FormFanucCnc0i extends JPanel {
 
                 OperateResultExOne<Integer> read = fanuc.ReadExpectProduceCount();
                 if (read.IsSuccess){
-                    textArea8.setText(read.Content.toString());
+                    textArea8.setText( "总加工数: " + read.Content.toString());
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -725,6 +771,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText("OperateResultExOne<Integer> read = fanuc.ReadExpectProduceCount();  // 总加工数" );
             }
         });
         panel.add(button21);
@@ -740,7 +788,7 @@ public class FormFanucCnc0i extends JPanel {
 
                 OperateResultExOne<Short> read = fanuc.ReadLanguage();
                 if (read.IsSuccess){
-                    textArea8.setText(read.Content.toString() + "\r\n此处举几个常用值 0: 英语 1: 日语 2: 德语 3: 法语 4: 中文繁体 6: 韩语 15: 中文简体 16: 俄语 17: 土耳其语");
+                    textArea8.setText( "系统语言: " + read.Content.toString() + "\r\n此处举几个常用值 0: 英语 1: 日语 2: 德语 3: 法语 4: 中文繁体 6: 韩语 15: 中文简体 16: 俄语 17: 土耳其语");
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -749,6 +797,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<Short> read = fanuc.ReadLanguage();  // 0: 英语 1: 日语 2: 德语 3: 法语 4: 中文繁体 6: 韩语 15: 中文简体 16: 俄语 17: 土耳其语" );
             }
         });
         panel.add(button22);
@@ -764,7 +814,7 @@ public class FormFanucCnc0i extends JPanel {
 
                 OperateResultExOne<String> read = fanuc.ReadCurrentProgram();
                 if (read.IsSuccess){
-                    textArea8.setText(read.Content);
+                    textArea8.setText( "当前程序: " + read.Content);
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -773,6 +823,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<String> read = fanuc.ReadCurrentProgram();" );
             }
         });
         panel.add(button24);
@@ -797,6 +849,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResult read = fanuc.StartProcessing();" );
             }
         });
         panel.add(button26);
@@ -821,6 +875,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<FanucSysInfo> read = fanuc.ReadSysInfo();" );
             }
         });
         panel.add(button32);
@@ -834,6 +890,8 @@ public class FormFanucCnc0i extends JPanel {
                 super.mouseClicked(e);
 
                 ReadTimeData(0);
+
+                textArea_code.setText("OperateResultExOne<Long> read = fanuc.ReadTimeData( 0 );  // 开机时间");
             }
         });
         panel.add(button14);
@@ -846,6 +904,8 @@ public class FormFanucCnc0i extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 ReadTimeData(1);
+
+                textArea_code.setText("OperateResultExOne<Long> read = fanuc.ReadTimeData( 1 );  // 运行时间");
             }
         });
         panel.add(button15);
@@ -859,6 +919,8 @@ public class FormFanucCnc0i extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 ReadTimeData(2);
+
+                textArea_code.setText("OperateResultExOne<Long> read = fanuc.ReadTimeData( 2 );  // 切削时间");
             }
         });
         panel.add(button16);
@@ -872,6 +934,8 @@ public class FormFanucCnc0i extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 ReadTimeData(3);
+
+                textArea_code.setText("OperateResultExOne<Long> read = fanuc.ReadTimeData( 3 );  // 循环时间");
             }
         });
         panel.add(button17);
@@ -895,6 +959,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText("OperateResultExOne<Integer> read = fanuc.ReadCutterNumber();  // 当前刀号");
             }
         });
         panel.add(button30);
@@ -913,7 +979,12 @@ public class FormFanucCnc0i extends JPanel {
                     if (read.Content != null){
                         StringBuilder sb = new StringBuilder();
                         for (int i = 0; i < read.Content.length; i ++){
-                            sb.append("Number: " + read.Content[i].Number + " " + read.Content[i].Data);
+                            sb.append("Number: " + read.Content[i].Number);
+                            sb.append("\r\n");
+                            sb.append("Type: " + read.Content[i].Type);
+                            sb.append("\r\n");
+                            sb.append("Data: " + read.Content[i].Data);
+                            sb.append("\r\n");
                             sb.append("\r\n");
                         }
                         textArea8.setText(sb.toString());
@@ -929,6 +1000,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText("OperateResultExOne<FanucOperatorMessage[]> read = fanuc.ReadOperatorMessage();  // 操作信息");
             }
         });
         panel.add(button40);
@@ -962,6 +1035,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText("OperateResultExOne<String[]> read = fanuc.ReadAxisNames();  // 轴名称列表");
             }
         });
         panel.add(button41);
@@ -995,30 +1070,24 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText("OperateResultExOne<String[]> read = fanuc.ReadSpindleNames();  // 主轴名称");
             }
         });
         panel.add(button42);
 
 
-        JLabel label2 = new JLabel("宏变量");
-        label2.setBounds(8,123,56,17);
-        panel.add(label2);
-
-        JTextField texBox3 = new JTextField("4320");
-        texBox3.setBounds(62,120,105,23);
-        panel.add(texBox3);
-
-
-        JButton button18 = new JButton("读宏变量");
-        button18.setFocusPainted(false);
-        button18.setBounds(185,117,96, 29);
-        button18.addMouseListener(new MouseAdapter() {
+        JButton button43 = new JButton("主轴负载");
+        button43.setFocusPainted(false);
+        button43.setBounds(11,112,96, 29);
+        button43.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                OperateResultExOne<Double> read = fanuc.ReadSystemMacroValue(Integer.parseInt(texBox3.getText()));
+
+                OperateResultExOne<Double> read = fanuc.ReadSpindleLoad();
                 if (read.IsSuccess){
-                    textArea8.setText("刀号：" + read.Content.toString());
+                    textArea8.setText("主轴负载: " + read.Content.toString());
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -1027,22 +1096,133 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+                textArea_code.setText("OperateResultExOne<Double> read = fanuc.ReadSpindleLoad();  // 主轴负载");
+            }
+        });
+        panel.add(button43);
+
+
+        JButton button44 = new JButton("程序号");
+        button44.setFocusPainted(false);
+        button44.setBounds(113,112,96, 29);
+        button44.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResultExOne<Integer> read = fanuc.ReadProgramNumber();
+                if (read.IsSuccess){
+                    textArea8.setText("程序号: " + read.Content.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+                textArea_code.setText("OperateResultExOne<Integer> read = fanuc.ReadProgramNumber();  // 程序号");
+            }
+        });
+        panel.add(button44);
+
+
+        JButton button45 = new JButton("进给倍率");
+        button45.setFocusPainted(false);
+        button45.setBounds(215,112,96, 29);
+        button45.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResultExOne<Integer> read = fanuc.ReadFeedRate();
+                if (read.IsSuccess){
+                    textArea8.setText("进给倍率: " + read.Content.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                textArea_code.setText( "OperateResultExOne<Integer> read = fanuc.ReadFeedRate();  // 进给倍率" );
+            }
+        });
+        panel.add(button45);
+
+
+        JButton button46 = new JButton("主轴倍率");
+        button46.setFocusPainted(false);
+        button46.setBounds(317,112,96, 29);
+        button46.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResultExOne<Integer> read = fanuc.ReadSpindleRate();
+                if (read.IsSuccess){
+                    textArea8.setText("主轴倍率: " + read.Content.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                textArea_code.setText( "OperateResultExOne<Integer> read = fanuc.ReadSpindleRate();  // 主轴倍率" );
+            }
+        });
+        panel.add(button46);
+
+
+
+        JLabel label2 = new JLabel("宏变量:");
+        label2.setBounds(640,153,60,17);
+        panel.add(label2);
+
+        JTextField texBox3 = new JTextField("4320");
+        texBox3.setBounds(705,150,120,23);
+        panel.add(texBox3);
+
+        JButton button18 = new JButton("读宏变量");
+        button18.setFocusPainted(false);
+        button18.setBounds(830,147,100, 29);
+        button18.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                OperateResultExOne<Double> read = fanuc.ReadSystemMacroValue(Integer.parseInt(texBox3.getText()));
+                if (read.IsSuccess){
+                    textArea8.setText("宏变量[" + texBox3.getText() + "]：" + read.Content.toString());
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+                textArea_code.setText( " OperateResultExOne<Double> read = fanuc.ReadSystemMacroValue(" + Integer.parseInt(texBox3.getText()) + ");" );
             }
         });
         panel.add(button18);
 
 
         JLabel label100 = new JLabel("路径：");
-        label100.setBounds(308,123,56,17);
+        label100.setBounds(640,183,56,17);
         panel.add(label100);
 
         JTextField texBox100 = new JTextField( "1" );
-        texBox100.setBounds(362,120,50,23);
+        texBox100.setBounds(705,180,120,23);
         panel.add(texBox100);
 
         JButton button100 = new JButton("设置路径");
         button100.setFocusPainted(false);
-        button100.setBounds(435,117,96, 29);
+        button100.setBounds(830,177,100, 29);
         button100.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -1053,6 +1233,8 @@ public class FormFanucCnc0i extends JPanel {
                         "Set Success",
                         "Result",
                         JOptionPane.INFORMATION_MESSAGE);
+
+                textArea_code.setText( "fanuc.setOperatePath(" + Short.parseShort(texBox100.getText()) + ");" );
             }
         });
         panel.add(button100);
@@ -1074,7 +1256,6 @@ public class FormFanucCnc0i extends JPanel {
         texBox5.setBounds(236,153,105,23);
         panel.add(texBox5);
 
-
         JButton button23 = new JButton("读R数据");
         button23.setFocusPainted(false);
         button23.setBounds(358,150,96, 29);
@@ -1093,54 +1274,56 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( " OperateResultExOne<byte[]> read = fanuc.ReadRData(" + Integer.parseInt(texBox4.getText()) + "," + Integer.parseInt(texBox5.getText()) + ");" );
             }
         });
         panel.add(button23);
 
 
-        JLabel label7 = new JLabel("程序号");
-        label7.setBounds(8,186,56,17);
-        panel.add(label7);
+    }
 
-        JTextField texBox6 = new JTextField("15");
-        texBox6.setBounds(62,183,105,23);
-        panel.add(texBox6);
+    public JPanel AddFileOperate( )
+    {
+        JPanel panel = new JPanel();
+        panel.setLayout(null);
 
+        JLabel label303 = new JLabel("Code:");
+        label303.setBounds( 5, 300, 50, 23 );
+        panel.add(label303);
 
-        JButton button25 = new JButton("设置主程序");
-        button25.setFocusPainted(false);
-        button25.setBounds(185,180,110, 29);
-        button25.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                super.mouseClicked(e);
-                OperateResult read = fanuc.SetCurrentProgram(Short.parseShort(texBox6.getText()));
-                if (read.IsSuccess){
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Set success",
-                            "Result",
-                            JOptionPane.INFORMATION_MESSAGE);
-                }
-                else {
-                    JOptionPane.showMessageDialog(
-                            null,
-                            "Read Failed:" + read.ToMessageShowString(),
-                            "Result",
-                            JOptionPane.ERROR_MESSAGE);
-                }
-            }
-        });
-        panel.add(button25);
+        JTextArea textArea_code = new JTextArea();
+        textArea_code.setLineWrap(true);
+        JScrollPane jsp_code = new JScrollPane(textArea_code);
+        jsp_code.setBounds(5,300, 756, 45);
+        panel.add(jsp_code);
 
+        JTextArea textArea_file = new JTextArea();
+        textArea_file.setLineWrap(true);
+        JScrollPane jsp = new JScrollPane(textArea_file);
+        jsp.setBounds(215,90,756, 308);
+        panel.add(jsp);
 
-        JLabel label9 = new JLabel("程序号");
-        label9.setBounds(602,157,56,17);
+        JLabel label14 = new JLabel("PATH:");
+        label14.setBounds(5,5,51,17);
+        panel.add(label14);
+
+        JTextField texBox_path = new JTextField("//CNC_MEM/USER/PATH1/");
+        texBox_path.setBounds(55,2,316,23);
+        panel.add(texBox_path);
+
+        JLabel label9 = new JLabel("程序号：");
+        label9.setBounds(5,31,56,17);
         panel.add(label9);
+
+        JTextField texBox9 = new JTextField("O33");
+        texBox9.setBounds(55,29,105,23);
+        panel.add(texBox9);
+
 
         JButton button29 = new JButton("删除程序");
         button29.setFocusPainted(false);
-        button29.setBounds(774,151,96, 29);
+        button29.setBounds(165,26,100, 29);
         button29.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -1163,6 +1346,8 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResult read = fanuc.DeleteFile( \"" + path + texBox9.getText() + "\" );" );
             }
         });
         panel.add(button29);
@@ -1170,14 +1355,14 @@ public class FormFanucCnc0i extends JPanel {
 
         JButton button28 = new JButton("读取程序");
         button28.setFocusPainted(false);
-        button28.setBounds(876,151,96, 29);
+        button28.setBounds(270,26,100, 29);
         button28.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 OperateResultExOne<String> read = fanuc.ReadProgram(texBox9.getText(), texBox_path.getText());
                 if (read.IsSuccess){
-                    textArea8.setText(read.Content);
+                    textArea_file.setText(read.Content);
                 }
                 else {
                     JOptionPane.showMessageDialog(
@@ -1186,24 +1371,25 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResultExOne<String> read = fanuc.ReadProgram(\"" + texBox9.getText() + "\", \"" + texBox_path.getText() + "\");" );
             }
         });
         panel.add(button28);
 
 
-
         JLabel label8 = new JLabel("程序文件");
-        label8.setBounds(302,186,68,17);
+        label8.setBounds(380,5,68,17);
         panel.add(label8);
 
         JTextField texBox7 = new JTextField("O6.txt");
-        texBox7.setBounds(376,183,494,23);
+        texBox7.setBounds(380,29,494,23);
         panel.add(texBox7);
 
 
         JButton button27 = new JButton("下传程序");
         button27.setFocusPainted(false);
-        button27.setBounds(876,180,96, 29);
+        button27.setBounds(878,26,100, 29);
         button27.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -1212,7 +1398,7 @@ public class FormFanucCnc0i extends JPanel {
                 String content = "";
                 String path = texBox7.getText();
                 if (Utilities.IsStringNullOrEmpty(path) ){
-                    content = textArea8.getText();
+                    content = textArea_file.getText();
                 }
                 else {
                     File file = new File(path);
@@ -1227,12 +1413,16 @@ public class FormFanucCnc0i extends JPanel {
                     try {
                         content = new String(Files.readAllBytes(Paths.get(path)), StandardCharsets.US_ASCII);
                     } catch (IOException ex) {
-                        ex.printStackTrace();
+                        JOptionPane.showMessageDialog(
+                                null,
+                                "file read failed: " + ex.getMessage(),
+                                "Result",
+                                JOptionPane.ERROR_MESSAGE);
+                        return;
                     }
                 }
 
-                OperateResult read = fanuc.WriteProgramContent(
-                        content, 512, texBox_path.getText());
+                OperateResult read = fanuc.WriteProgramContent( content, 512, texBox_path.getText());
                 if (read.IsSuccess){
                     JOptionPane.showMessageDialog(
                             null,
@@ -1247,11 +1437,146 @@ public class FormFanucCnc0i extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                textArea_code.setText( "OperateResult write = fanuc.WriteProgramContent( new String(Files.readAllBytes(\"" + Paths.get(path) + "\"), StandardCharsets.US_ASCII);, 512, \"" + texBox_path.getText() + "\");" );
             }
         });
         panel.add(button27);
+
+
+        JLabel label7 = new JLabel("程序号：");
+        label7.setBounds(380,64,56,17);
+        panel.add(label7);
+
+        JTextField texBox6 = new JTextField("15");
+        texBox6.setBounds(440,62,100,23);
+        panel.add(texBox6);
+
+
+        JButton button25 = new JButton("设置主程序");
+        button25.setFocusPainted(false);
+        button25.setBounds(550,59,120, 29);
+        button25.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                OperateResult read = fanuc.SetCurrentProgram(Short.parseShort(texBox6.getText()));
+                if (read.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Set success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+
+                textArea_code.setText( "OperateResult read = fanuc.SetCurrentProgram(" + Short.parseShort(texBox6.getText()) + ");" );
+            }
+        });
+        panel.add(button25);
+
+
+        FileDirInfo root = new FileDirInfo();
+        root.IsDirectory = true;
+        root.Name = "CNC_MEM";
+        DefaultMutableTreeNode node = new DefaultMutableTreeNode( root );
+        JTree jTree = new JTree(node);
+        jTree.addTreeSelectionListener(new TreeSelectionListener() {
+            @Override
+            public void valueChanged(TreeSelectionEvent e) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) jTree.getLastSelectedPathComponent();
+                if (node != null){
+                    FileDirInfo fileDirInfo = (FileDirInfo)node.getUserObject();
+                    if (!fileDirInfo.IsDirectory)
+                    {
+                        textArea_file.setText( fileDirInfo.toFileString( ) );
+                        texBox9.setText( fileDirInfo.Name);
+                        if (node.getParent() != null)
+                        {
+                            texBox_path.setText(GetPathFromTree(  (DefaultMutableTreeNode)node.getParent() ) ) ;
+                        }
+                    }
+                    else
+                    {
+                        texBox_path.setText(GetPathFromTree( node ));
+
+                        ArrayList<String> list = new ArrayList<String>( );
+
+                        for(int i=0;i <node.getChildCount() ; i ++){
+                            DefaultMutableTreeNode child = (DefaultMutableTreeNode)node.getChildAt(i);
+                            FileDirInfo file = (FileDirInfo)child.getUserObject();
+                            if (!file.IsDirectory)
+                                list.add( file.toFileString( ) );
+                        }
+                        textArea_file.setText("");
+                        for (int i =0; i< list.size(); i++){
+                            textArea_file.append(list.get(i));
+                            textArea_file.append("\r\n");
+                        }
+                    }
+                }
+            }
+        });
+
+        JScrollPane jsp2 = new JScrollPane(jTree);
+        jsp2.setBounds(5,90,204, 306);
+        panel.add(jsp2);
+
+
+        JButton button33 = new JButton("路径信息");
+        button33.setFocusPainted(false);
+        button33.setBounds(5,62,100, 23);
+        button33.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                node.removeAllChildren();
+                BrowerFile( node );
+                jTree.updateUI();
+            }
+        });
+        panel.add(button33);
+
+        JButton button34 = new JButton("清除");
+        button34.setFocusPainted(false);
+        button34.setBounds(115,62,100, 23);
+        button34.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+                node.removeAllChildren();
+                jTree.updateUI();
+            }
+        });
+        panel.add(button34);
+
+
+
+
+        panel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+                jsp.setBounds(215,90,panel.getWidth() - 220, panel.getHeight() - 90 - 5 - 50);
+                jsp.updateUI();
+                jsp2.setBounds(5,90,204, panel.getHeight() - 90 - 5 - 50);
+                jsp2.updateUI();
+                label303.setBounds( 5, panel.getHeight() - 48, 50, 23 );
+                jsp_code.setBounds(55,panel.getHeight() - 48, panel.getWidth() - 60, 45);
+            }
+        });
+
+
+        return panel;
     }
 
+    private JTabbedPane tabbedPane;
     private JTextArea textArea8;
     private void ReadTimeData( int type )
     {
