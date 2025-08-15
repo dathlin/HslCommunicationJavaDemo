@@ -21,7 +21,7 @@ import java.awt.event.MouseEvent;
 import java.util.Date;
 import java.util.UUID;
 
-public class FormMqttSyncClient extends JPanel {
+public class FormMqttSyncClient extends HslJPanel {
 
     public FormMqttSyncClient(JTabbedPane tabbedPane){
         setLayout(null);
@@ -33,7 +33,17 @@ public class FormMqttSyncClient extends JPanel {
 
     private MqttSyncClient mqttSyncClient = null;
     private JPanel panelContent = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
 
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            mqttSyncClient.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -93,11 +103,13 @@ public class FormMqttSyncClient extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(584,2,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(477,2,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);

@@ -7,6 +7,7 @@ import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunication.Robot.FANUC.FanucData;
 import HslCommunication.Robot.FANUC.FanucInterfaceNet;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteHead;
 import HslCommunicationDemo.UserControlReadWriteOp;
 
@@ -17,7 +18,7 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormFanucInterfaceNet extends JPanel {
+public class FormFanucInterfaceNet extends HslJPanel {
     public FormFanucInterfaceNet(JTabbedPane tabbedPane){
         setLayout(null);
 
@@ -34,6 +35,17 @@ public class FormFanucInterfaceNet extends JPanel {
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
     private JPanel panelReadString;
     private JPanel panelReadContent;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            fanucInterfaceNet.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -60,11 +72,13 @@ public class FormFanucInterfaceNet extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(584,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(477,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);

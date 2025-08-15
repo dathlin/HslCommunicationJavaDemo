@@ -4,14 +4,12 @@ import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Siemens.Helper.SiemensS7Helper;
+import HslCommunication.Profinet.Siemens.SiemensFetchWriteNet;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -20,7 +18,7 @@ import java.awt.event.MouseEvent;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class FormSiemensS7200 extends JPanel
+public class FormSiemensS7200 extends HslJPanel
 {
 
     public FormSiemensS7200(JTabbedPane tabbedPane,SiemensPLCS siemensPLCS){
@@ -46,6 +44,17 @@ public class FormSiemensS7200 extends JPanel
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private SiemensS7Control siemensS7Control;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            siemensS7Net.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -117,11 +126,13 @@ public class FormSiemensS7200 extends JPanel
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(734,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(627,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -139,7 +150,6 @@ public class FormSiemensS7200 extends JPanel
                         siemensS7Net.setLocalTSAP((int)Long.parseLong(textField3.getText(), 16));
                         siemensS7Net.setDestTSAP((int)Long.parseLong(textField4.getText(), 16));
                     }
-
                     OperateResult connect = siemensS7Net.ConnectServer();
                     if(connect.IsSuccess){
                         JOptionPane.showMessageDialog(
@@ -160,6 +170,15 @@ public class FormSiemensS7200 extends JPanel
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( SiemensS7Net.class, textField1.getText(), textField2.getText() );
+                    if (siemensPLCS == SiemensPLCS.S200)
+                    {
+                        stringBuilder.append( "plc.setLocalTSAP((int)Long.parseLong(\"" + textField3.getText() + "\", 16));\r\n" );
+                        stringBuilder.append( "plc.setDestTSAP((int)Long.parseLong(\"" + textField4.getText() + "\", 16));\r\n" );
+                    }
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

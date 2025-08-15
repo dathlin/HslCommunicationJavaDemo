@@ -7,12 +7,9 @@ import HslCommunication.LogNet.Core.ILogNet;
 import HslCommunication.LogNet.Core.LogNetBase;
 import HslCommunication.ModBus.ModbusTcpServer;
 import HslCommunication.Profinet.Siemens.SiemensS7Server;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
-import HslCommunicationDemo.UserControlReadWriteServer;
 
 import javax.swing.*;
 import java.awt.event.ActionEvent;
@@ -21,7 +18,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 
-public class FormSiemensS7Server extends JPanel {
+public class FormSiemensS7Server extends HslJPanel {
 
 
     public FormSiemensS7Server(JTabbedPane tabbedPane){
@@ -53,6 +50,17 @@ public class FormSiemensS7Server extends JPanel {
     private SiemensS7Server siemensS7Server = null;
     private String defaultAddress = "M100";
     private UserControlReadWriteServer userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            siemensS7Server.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -74,11 +82,13 @@ public class FormSiemensS7Server extends JPanel {
         JButton button2 = new JButton("Close");
         button2.setFocusPainted(false);
         button2.setBounds(600,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Start");
         button1.setFocusPainted(false);
         button1.setBounds(500,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);

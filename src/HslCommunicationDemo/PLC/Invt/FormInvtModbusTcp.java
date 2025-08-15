@@ -16,9 +16,17 @@ public class FormInvtModbusTcp extends FormModbusTcp {
         addressMapping = new FunctionOperateExTwo<String, Byte, OperateResultExOne<String>>() {
             @Override
             public OperateResultExOne<String> Action(String content1, Byte content2) {
-                return ModbusMappingAddress.Invt_Ts(content1, content2);
+                return HslCommunication.ModBus.ModbusMappingAddress.Invt_Ts(content1, content2);
             }
         };
+
+        addressMappingCode = "new FunctionOperateExTwo<String, Byte, OperateResultExOne<String>>() {\n" +
+"            @Override\n" +
+"            public OperateResultExOne<String> Action(String content1, Byte content2) {\n" +
+"                return HslCommunication.ModBus.ModbusMappingAddress.Invt_Ts(content1, content2);\n" +
+"            }\n" +
+"        };";
+
     }
 
     @Override

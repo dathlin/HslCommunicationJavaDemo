@@ -3,21 +3,19 @@ package HslCommunicationDemo.PLC.Panasonic;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Profinet.Melsec.MelsecMcAsciiUdp;
 import HslCommunication.Profinet.Panasonic.PanasonicMcNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormPanasonicMcNet extends JPanel {
+public class FormPanasonicMcNet extends HslJPanel {
 
     public FormPanasonicMcNet(JTabbedPane tabbedPane){
         setLayout(null);
@@ -36,6 +34,17 @@ public class FormPanasonicMcNet extends JPanel {
     private PanasonicMcNet plc = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            plc.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect =  DemoUtils.CreateConnectPanel(panel);
@@ -46,11 +55,13 @@ public class FormPanasonicMcNet extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(584,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(477,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -82,6 +93,10 @@ public class FormPanasonicMcNet extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( PanasonicMcNet.class, textField1.getText(), textField2.getText() );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

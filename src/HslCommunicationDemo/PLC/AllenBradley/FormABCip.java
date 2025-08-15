@@ -5,16 +5,14 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.AllenBradley.AllenBradleyNet;
 import HslCommunication.Profinet.AllenBradley.MessageRouter;
+import HslCommunication.Profinet.Melsec.MelsecMcAsciiUdp;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunication.Utilities;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.Omron.OmronCipControl;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
@@ -22,7 +20,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Arrays;
 
-public class FormABCip extends JPanel
+public class FormABCip extends HslJPanel
 {
 
     public FormABCip(JTabbedPane tabbedPane){
@@ -46,6 +44,18 @@ public class FormABCip extends JPanel
     private String defaultAddress = "A";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private OmronCipControl cipControl;
+    private JButton button_connect = null;
+    private JButton button_disconnect = null;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;;
+        if (button_disconnect.isEnabled())
+        {
+            allenBradleyNet.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -94,11 +104,13 @@ public class FormABCip extends JPanel
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(744,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(637,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -137,6 +149,13 @@ public class FormABCip extends JPanel
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( AllenBradleyNet.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "plc.setSlot(Byte.parseByte(\"" + textField4.getText() + "\"));\r\n" );
+                    if(!Utilities.IsStringNullOrEmpty(textField_router.getText())) {
+                        stringBuilder.append("plc.setMessageRouter( new MessageRouter(\"" + textField_router.getText() + "\"));\r\n");
+                    }
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

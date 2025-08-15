@@ -42,6 +42,9 @@ public class UserControlReadWriteHead extends JPanel
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
+                if (panel instanceof HslJPanel){
+                    ((HslJPanel)panel).OnClose();
+                }
                 tabbedPane.remove(panel);
             }
         });

@@ -2,12 +2,14 @@ package HslCommunicationDemo.PLC.XinJE;
 
 import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
+import HslCommunication.Profinet.Toyota.ToyoPuc;
 import HslCommunication.Profinet.XINJE.XinJEInternalNet;
 import HslCommunication.Profinet.XINJE.XinJESerialOverTcp;
 import HslCommunication.Profinet.XINJE.XinJESeries;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
@@ -15,7 +17,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormXinJEInternalNet extends JPanel {
+public class FormXinJEInternalNet extends HslJPanel {
 
     public FormXinJEInternalNet(JTabbedPane tabbedPane){
         setLayout(null);
@@ -34,6 +36,17 @@ public class FormXinJEInternalNet extends JPanel {
     private XinJEInternalNet plc = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            plc.ConnectClose();
+        }
+    }
 
 
     public void AddConnectSegment(JPanel panel){
@@ -69,11 +82,13 @@ public class FormXinJEInternalNet extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(640,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(500,11,120, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -106,6 +121,10 @@ public class FormXinJEInternalNet extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( XinJEInternalNet.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "plc.Station = (byte) Integer.parseInt(\"" + textField3.getText() + "\");\r\n" );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

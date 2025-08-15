@@ -3,9 +3,11 @@ package HslCommunicationDemo.PLC.Fuji;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Profinet.Fuji.FujiCommandSettingType;
 import HslCommunication.Profinet.Fuji.FujiSPBOverTcp;
+import HslCommunication.Profinet.Melsec.MelsecA1ENet;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
@@ -13,7 +15,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormFujiCSTNet  extends JPanel {
+public class FormFujiCSTNet  extends HslJPanel {
 
     public FormFujiCSTNet(JTabbedPane tabbedPane){
         setLayout(null);
@@ -32,6 +34,17 @@ public class FormFujiCSTNet  extends JPanel {
     private FujiCommandSettingType plc = null;
     private String defaultAddress = "BD100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            plc.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -47,11 +60,13 @@ public class FormFujiCSTNet  extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(684,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(577,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -84,6 +99,11 @@ public class FormFujiCSTNet  extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( FujiCommandSettingType.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "plc.setDataSwap(" + checkBox.isSelected() + ");\r\n" );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

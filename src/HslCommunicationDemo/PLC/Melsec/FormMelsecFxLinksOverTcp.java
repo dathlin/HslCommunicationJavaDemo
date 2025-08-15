@@ -8,6 +8,7 @@ import HslCommunication.Profinet.Melsec.MelsecFxSerialOverTcp;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
@@ -15,7 +16,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormMelsecFxLinksOverTcp  extends JPanel {
+public class FormMelsecFxLinksOverTcp  extends HslJPanel {
     public FormMelsecFxLinksOverTcp(JTabbedPane tabbedPane){
         setLayout(null);
         add( new UserControlReadWriteHead("MelsecFxlinksOverTcp", tabbedPane, this));
@@ -37,6 +38,17 @@ public class FormMelsecFxLinksOverTcp  extends JPanel {
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private JPanel fxLinksControl;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            melsec.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -98,11 +110,13 @@ public class FormMelsecFxLinksOverTcp  extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(850,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(750,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -139,6 +153,13 @@ public class FormMelsecFxLinksOverTcp  extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MelsecFxLinksOverTcp.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "plc.setStation(Byte.parseByte(\"" + textField3.getText() + "\"));\r\n" );
+                    stringBuilder.append( "plc.setWaittingTime(Byte.parseByte(\"" + textField4.getText() + "\"));\r\n" );
+                    stringBuilder.append( "plc.setSumCheck(" + checkBox1.isSelected() + ");\r\n" );
+                    stringBuilder.append( "plc.setFormat(" + (int)comboBox1.getSelectedItem() + ");\r\n" );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

@@ -7,6 +7,7 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Enthernet.SimplifyNet.NetSimplifyClient;
 import HslCommunication.Profinet.Siemens.SiemensPLCS;
 import HslCommunication.StringResources;
+import HslCommunicationDemo.Demo.FormActive;
 import HslCommunicationDemo.Instrument.FormDLT645OverTcp;
 import HslCommunicationDemo.Instrument.FormRkcTemperatureControllerOverTcp;
 import HslCommunicationDemo.PLC.AllenBradley.FormABCip;
@@ -197,6 +198,31 @@ public class FormMain extends JDialog
             }
         });
         menuBar.add(menuChangelog);
+
+        JMenu menuActive = new JMenu("Active");
+        menuActive.setForeground(new Color(233,233,233));
+        menuActive.addMouseListener(new MouseAdapter(){
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+                FormActive form = new FormActive();
+                // 2. 创建JDialog，指定父窗口
+                JDialog dialog = new JDialog( FormMain.this, "激活测试", true); // 第三个参数为true表示模态
+
+                // 3. 将JPanel添加到对话框
+                dialog.getContentPane().add(form);
+
+                // 4. 设置对话框属性
+                dialog.setSize( 500, 400 );
+                dialog.setLocationRelativeTo(form); // 相对于父窗口居中
+                dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE); // 关闭时释放资源
+
+                // 5. 显示对话框（模态对话框会阻塞此处代码，直到关闭）
+                dialog.setVisible(true);
+
+            }
+        });
+        menuBar.add(menuActive);
 
         JMenu menuPurchase = new JMenu("Purchase");
         menuPurchase.setForeground(new Color(233,233,233));

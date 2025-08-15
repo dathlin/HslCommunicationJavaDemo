@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="HslCommunication">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/HslCommunication.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

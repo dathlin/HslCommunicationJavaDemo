@@ -6,20 +6,19 @@ import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.ModBus.ModbusTcpNet;
 import HslCommunication.ModBus.ModbusUdpNet;
+import HslCommunication.Profinet.Melsec.MelsecA1ENet;
+import HslCommunication.Utilities;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormModbusUdpNet extends JPanel {
+public class FormModbusUdpNet extends HslJPanel {
     public FormModbusUdpNet(JTabbedPane tabbedPane){
         modbusTcpNet = new ModbusUdpNet();
         setLayout(null);
@@ -41,37 +40,43 @@ public class FormModbusUdpNet extends JPanel {
     private String defaultAddress = "100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private ModbusSpecialControl modbusSpecialControl;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            modbusTcpNet.ConnectClose();
+        }
+    }
 
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
 
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
-        panelConnect.add(label1);
 
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
-        textField1.setText("192.168.0.10");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
-        textField2.setText("502");
-        panelConnect.add(textField2);
+        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect, 7);
+        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "502", 7);
 
         JLabel label3 = new JLabel("Station：");
-        label3.setBounds(338, 17,56, 17);
+        label3.setBounds(7, 33,56, 17);
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(392,14,40, 23);
+        textField3.setBounds(60,30,40, 23);
         textField3.setText("1");
         panelConnect.add(textField3);
+
+        JLabel label10 = new JLabel("BroadcastStation:");
+        label10.setBounds(160, 33,130, 17);
+        panelConnect.add(label10);
+
+        JTextField textField_broadcast = new JTextField();
+        textField_broadcast.setBounds(270,30,40, 23);
+        textField_broadcast.setText("");
+        panelConnect.add(textField_broadcast);
 
 
         JCheckBox checkBox1 = new JCheckBox("Start from 0?");
@@ -91,11 +96,13 @@ public class FormModbusUdpNet extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(850,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(752,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -108,9 +115,11 @@ public class FormModbusUdpNet extends JPanel {
                 try {
                     modbusTcpNet.setIpAddress(textField1.getText());
                     modbusTcpNet.setPort(Integer.parseInt(textField2.getText()));
+                    modbusTcpNet.setStation( (byte) Integer.parseInt( textField3.getText() ) );
                     modbusTcpNet.setAddressStartWithZero(checkBox1.isSelected());
                     modbusTcpNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
-
+                    if (!Utilities.IsStringNullOrEmpty(textField_broadcast.getText()))
+                        modbusTcpNet.setBroadcastStation(Integer.parseInt(textField_broadcast.getText()));
                     JOptionPane.showMessageDialog(
                             null,
                             "Connect Success",
@@ -121,6 +130,17 @@ public class FormModbusUdpNet extends JPanel {
                     userControlReadWriteDevice.SetReadWriteNet(modbusTcpNet, defaultAddress, 10);
                     modbusSpecialControl.setEnabled(true);
                     modbusSpecialControl.SetReadWriteModbus(modbusTcpNet, "100");
+
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( ModbusUdpNet.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "modbus.setStation( (byte) Integer.parseInt( \"" + textField3.getText() + "\" ) );\r\n" );
+                    stringBuilder.append( "modbus.setAddressStartWithZero(" + checkBox1.isSelected() + ");\r\n" );
+                    stringBuilder.append( "modbus.setDataFormat(DataFormat." + (DataFormat) comboBox1.getSelectedItem() + ");\r\n" );
+                    //stringBuilder.append( "modbus.setStringReverse(" + checkBox_string_reverse.isSelected() + ");\r\n" );
+                    if (!Utilities.IsStringNullOrEmpty(textField_broadcast.getText())){
+                        stringBuilder.append( "modbus.setBroadcastStation(Integer.parseInt(\"" + textField_broadcast.getText() + "\"));\r\n" );
+                    }
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString(), "modbus" );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

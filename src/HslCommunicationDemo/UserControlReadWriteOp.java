@@ -3,18 +3,17 @@ package HslCommunicationDemo;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.IReadWriteNet;
 import HslCommunication.Core.Transfer.DataFormat;
-import HslCommunication.Core.Types.HslExtension;
-import HslCommunication.Core.Types.OperateResult;
-import HslCommunication.Core.Types.OperateResultExOne;
-import HslCommunication.Core.Types.ValueLimit;
+import HslCommunication.Core.Types.*;
 import HslCommunication.Utilities;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 import java.lang.reflect.*;
+import java.lang.reflect.Array;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,8 +42,12 @@ public class UserControlReadWriteOp extends JPanel {
         });
     }
 
-    public void SetReadWriteNet( IReadWriteNet readWrite, String address, int strLength ) {
+    public void SetReadWriteNet( IReadWriteNet readWrite, String address, int strLength ){
+        SetReadWriteNet(readWrite,address, strLength, this.deviceName);
+    }
+    public void SetReadWriteNet( IReadWriteNet readWrite, String address, int strLength, String deviceName ) {
         this.address = address;
+        this.deviceName = deviceName;
         if (textBox3 != null) textBox3.setText(address);
         if (textBox8 != null) textBox8.setText(address);
         if (textBox1 != null) textBox1.setText(String.valueOf(strLength));
@@ -53,7 +56,7 @@ public class UserControlReadWriteOp extends JPanel {
         try {
             readByteMethod = readWrite.getClass().getMethod("ReadByte", String.class);
         } catch (Exception ex) {
-
+            button_read_byte.setEnabled(false);
         }
         if (readByteMethod == null) button_read_byte.setEnabled(false);
 
@@ -63,6 +66,10 @@ public class UserControlReadWriteOp extends JPanel {
         } catch (Exception ex) {
             button23.setEnabled(false);
         }
+    }
+
+    public void SetDeviceName( String deviceName ) {
+        this.deviceName = deviceName;
     }
 
     public void EnableRKC( )
@@ -89,6 +96,11 @@ public class UserControlReadWriteOp extends JPanel {
         button_write_string.setEnabled(false);
     }
 
+    public void SetActionCode( ActionOperateExOne<String> action ){
+        this.setCodeAction = action;
+    }
+
+    private ActionOperateExOne<String> setCodeAction = null;
     private String address = "";
     private IReadWriteNet readWriteNet;
     private Method readByteMethod = null;
@@ -173,11 +185,13 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Boolean> read = readWriteNet.ReadBool(textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Boolean", "ReadBool", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 } else {
                     OperateResultExOne<boolean[]> read = readWriteNet.ReadBool(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "boolean[]", "ReadBool", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -200,6 +214,7 @@ public class UserControlReadWriteOp extends JPanel {
                     Date now = new Date();
                     OperateResultExOne<Byte> read = (OperateResultExOne<Byte>)readByteMethod.invoke(readWriteNet, textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Byte", "ReadByte", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -230,11 +245,13 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Short> read = readWriteNet.ReadInt16(textField1.getText());
                     SetTimeSpend(now);
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    OutputReadCode( "Short", "ReadInt16", textField1.getText() );
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<short[]> read = readWriteNet.ReadInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "short[]", "ReadInt16", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected()) { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -257,12 +274,14 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Integer> read = readWriteNet.ReadUInt16(textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Integer", "ReadUInt16", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<int[]> read = readWriteNet.ReadUInt16(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "int[]", "ReadUInt16", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -285,12 +304,14 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Integer> read = readWriteNet.ReadInt32(textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Integer", "ReadInt32", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<int[]> read = readWriteNet.ReadInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "int[]", "ReadInt32", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -313,12 +334,14 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Long> read = readWriteNet.ReadUInt32(textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Long", "ReadUInt32", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<long[]> read = readWriteNet.ReadUInt32(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "long[]", "ReadUInt32", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -341,12 +364,14 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Long> read = readWriteNet.ReadInt64(textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Long", "ReadInt64", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<long[]> read = readWriteNet.ReadInt64(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "long[]", "ReadInt64", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -370,12 +395,14 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Float> read = readWriteNet.ReadFloat(textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Float", "ReadFloat", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<float[]> read = readWriteNet.ReadFloat(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "float[]", "ReadFloat", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -398,12 +425,14 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Double> read = readWriteNet.ReadDouble(textField1.getText());
                     SetTimeSpend(now);
+                    OutputReadCode( "Double", "ReadDouble", textField1.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
                     OperateResultExOne<double[]> read = readWriteNet.ReadDouble(textField1.getText(), Short.parseShort(textField_ReadLength.getText()));
                     SetTimeSpend(now);
+                    OutputReadCode( "double[]", "ReadDouble", textField1.getText(), textField_ReadLength.getText() );
                     DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -449,14 +478,16 @@ public class UserControlReadWriteOp extends JPanel {
                 super.mouseClicked(e);
                 Date now = new Date();
                 String encode = (String) comboBox_encode.getSelectedItem();
+                String strCharset = "StandardCharsets.US_ASCII";
                 Charset charset = StandardCharsets.US_ASCII;
-                if (encode.equals("Unicode")) charset = StandardCharsets.UTF_16LE;
-                else if (encode.equals("UnicodeBE")) charset = StandardCharsets.UTF_16BE;
-                else if (encode.equals("UTF8")) charset = StandardCharsets.UTF_8;
-                else if (encode.equals("GB2312")) charset = Charset.forName("GBK");
+                if (encode.equals("Unicode")) {charset = StandardCharsets.UTF_16LE; strCharset = "StandardCharsets.UTF_16LE";}
+                else if (encode.equals("UnicodeBE")) {charset = StandardCharsets.UTF_16BE; strCharset = "StandardCharsets.UTF_16BE"; }
+                else if (encode.equals("UTF8")) {charset = StandardCharsets.UTF_8; strCharset = "StandardCharsets.UTF_8";}
+                else if (encode.equals("GB2312")) {charset = Charset.forName("GBK");strCharset = "Charset.forName(\"GBK\")";}
 
                 OperateResultExOne<String> read = readWriteNet.ReadString(textField1.getText(), Short.parseShort(textField8.getText()), charset);
                 SetTimeSpend(now);
+                OutputReadCode( "String", "ReadString", textField1.getText(), textField8.getText(), strCharset  );
                 DemoUtils.ReadResultRender(read,textField1.getText(), textArea1, jsp );
                 if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
 
@@ -581,68 +612,225 @@ public class UserControlReadWriteOp extends JPanel {
 
     }
 
+    private void OutputReadCode( String type, String method, String address) {
+        OutputReadCode(type, method, address, "");
+    }
+    private void OutputReadCode( String type, String method, String address, String length){
+        OutputReadCode(type, method, address, "", "");
+    }
+    private void OutputReadCode( String type, String method, String address, String length, String charset ) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("// 当前读取操作的代码 The code for the current read operation");
+        stringBuilder.append( "\r\n" );
+        stringBuilder.append("OperateResultExOne<" + type + "> read = " + deviceName + "." + method + "( \"");
+        stringBuilder.append(address);
+        stringBuilder.append("\" ");
+        if (!Utilities.IsStringNullOrEmpty(length))
+            stringBuilder.append(", (short)" + length + " ");
+        if (!Utilities.IsStringNullOrEmpty(charset))
+            stringBuilder.append(", " + charset + " ");
+        stringBuilder.append(");");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("if (read.IsSuccess) {");
+        stringBuilder.append("\r\n");
+        if (!Utilities.IsStringNullOrEmpty(charset) || Utilities.IsStringNullOrEmpty(length))
+            stringBuilder.append("    System.out.println( \"read [" + address + "] success, Value: \" + read.Content );");
+        else
+            stringBuilder.append("    System.out.println( \"read [" + address + "] success, Value: \" + SoftBasic.ArrayFormat( read.Content ) );");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("}");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("else {");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("    System.out.println( \"read [" + address + "] failed: \" + read.Message );");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("}");
+        if (setCodeAction != null) setCodeAction.Action(stringBuilder.toString());
+    }
+    private void OutputWriteCode( String method, String address, String value ) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("// 当前写入操作的代码 The code for the current write operation");
+        stringBuilder.append( "\r\n" );
+        stringBuilder.append("OperateResult write = " + deviceName + "." + method + "( \"");
+        stringBuilder.append(address);
+        stringBuilder.append("\", ");
+        stringBuilder.append(value);
+        stringBuilder.append(");");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("if (write.IsSuccess) {");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("    System.out.println( \"write [" + address + "] success\" );");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("}");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("else {");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("    System.out.println( \"write [" + address + "] failed: \"+ write.Message );");
+        stringBuilder.append("\r\n");
+        stringBuilder.append("}");
+        if (setCodeAction != null) setCodeAction.Action(stringBuilder.toString());
+    }
+
+    private  <T> String GetArrayCode( T array, String type ) {
+        StringBuilder sb = new StringBuilder("new " + type + "[]{");
+        if (array.getClass().isArray()) {
+            for (int i = 0; i < Array.getLength(array); i++) {
+                sb.append(Array.get(array, i).toString());
+                if (type.equals("float")) sb.append("f");
+                sb.append(",");
+            }
+            if (Array.getLength(array) > 0 && sb.charAt(sb.length() - 1) == ',')
+                sb.delete(sb.length() - 1, sb.length());
+        } else {
+            sb.append(array.toString());
+        }
+        sb.append("}");
+        return sb.toString();
+    }
+
     private Timer timer_read;
     private JButton button_read_timer;
     private long read_tick_count = 0;
     private JCheckBox checkBox_read_timer;
 
     private boolean checkStringValueArray( String value ) {
-        Pattern pattern = Pattern.compile("^\\[\\d+-\\d+\\]$");
+        Pattern pattern = Pattern.compile("\\[[-]?[0-9]+:[-]?[0-9]+\\]");
         return pattern.matcher(value).find();
     }
     private long[] getValueArray( String value ) {
-        Pattern pattern = Pattern.compile("-?[0-9]+");
+        return getValueArray(value, false);
+    }
+
+    private long[] getValueArray( String value, boolean repeat ) {
+        Pattern pattern = Pattern.compile("\\[(-?\\d+)[:*](-?\\d+)\\]");
         Matcher matcher = pattern.matcher(value);
 
-        long start = Long.parseLong(matcher.group());
-        long end = Long.parseLong(matcher.group());
-        long[] buffer = new long[(int) (Math.abs(end - start)) + 1];
-        boolean plus = start < end;
-        for (int i = 0; i < buffer.length; i++) {
-            if (plus)
-                buffer[i] = start + i;
+        if (matcher.matches()) {
+            long start = Long.parseLong(matcher.group(1));
+            long end = Long.parseLong(matcher.group(2));
+            if (repeat) {
+                long[] buffer = new long[(int) end];
+                for (int i = 0; i < buffer.length; i++) {
+                    buffer[i] = start;
+                }
+                return buffer;
+            } else {
+                long[] buffer = new long[(int) (Math.abs(end - start)) + 1];
+                boolean plus = start < end;
+                for (int i = 0; i < buffer.length; i++) {
+                    if (plus)
+                        buffer[i] = start + i;
+                    else
+                        buffer[i] = start - i;
+                }
+                return buffer;
+            }
+        }
+        else {
+            return new long[0];
+        }
+    }
+
+    Pattern pattern_1 = Pattern.compile("\\[[-]?[0-9]+:[-]?[0-9]+\\]");
+    Pattern pattern_2 = Pattern.compile("\\[[-]?[0-9]+\\*[-]?[0-9]+\\]");
+
+
+    private short[] getInt16Array( String value, boolean signed ) {
+        if (pattern_1.matcher(value).find()) {
+            long[] buffer = getValueArray(value);
+            short[] shorts = new short[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                shorts[i] = (short) buffer[i];
+            }
+            return shorts;
+        }
+        else if (pattern_2.matcher(value).find()) {
+            long[] buffer = getValueArray(value, true);
+            short[] shorts = new short[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                shorts[i] = (short) buffer[i];
+            }
+            return shorts;
+        }
+        else {
+            if (signed)
+                return HslExtension.StringToShortArray(value);
             else
-                buffer[i] = start - i;
+                return HslExtension.StringToUShortArray(value);
         }
-        return buffer;
     }
-    private short[] getInt16Array( String value ) {
-        long[] buffer = getValueArray(value);
-        short[] shorts = new short[buffer.length];
-        for (int i = 0; i < buffer.length; i++) {
-            shorts[i] = (short) buffer[i];
+    private int[] getInt32Array( String value, boolean signed ) {
+        if (pattern_1.matcher(value).find()) {
+            long[] buffer = getValueArray(value);
+            int[] ints = new int[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                ints[i] = (int) buffer[i];
+            }
+            return ints;
+        } else if (pattern_2.matcher(value).find()) {
+            long[] buffer = getValueArray(value, true);
+            int[] shorts = new int[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                shorts[i] = (int) buffer[i];
+            }
+            return shorts;
+        } else {
+            if (signed)
+                return HslExtension.StringToIntArray(value);
+            else
+                return HslExtension.StringToUIntArray(value);
         }
-        return shorts;
     }
-    private int[] getInt32Array( String value ) {
-        long[] buffer = getValueArray(value);
-        int[] ints = new int[buffer.length];
-        for (int i = 0; i < buffer.length; i++) {
-            ints[i] = (int) buffer[i];
-        }
-        return ints;
-    }
+
     private long[] getInt64Array( String value ) {
-        long[] buffer = getValueArray(value);
-        return buffer;
+        if (pattern_1.matcher(value).find())
+            return getValueArray(value);
+        else if (pattern_2.matcher(value).find())
+            return getValueArray(value, true);
+        else
+            return HslExtension.StringToLongArray(value);
     }
 
     private float[] getFloatArray( String value ) {
-        long[] buffer = getValueArray(value);
-        float[] floats = new float[buffer.length];
-        for (int i = 0; i < buffer.length; i++) {
-            floats[i] = (float) buffer[i];
+        if (pattern_1.matcher(value).find()) {
+            long[] buffer = getValueArray(value);
+            float[] floats = new float[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                floats[i] = (float) buffer[i];
+            }
+            return floats;
         }
-        return floats;
+        else if (pattern_2.matcher(value).find()){
+            long[] buffer = getValueArray(value, true);
+            float[] floats = new float[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                floats[i] = (float) buffer[i];
+            }
+            return floats;
+        }
+        else
+            return HslExtension.StringToFloatArray(value);
     }
 
     private double[] getDoubleArray( String value ) {
-        long[] buffer = getValueArray(value);
-        double[] doubles = new double[buffer.length];
-        for (int i = 0; i < buffer.length; i++) {
-            doubles[i] = (double) buffer[i];
+        if (pattern_1.matcher(value).find()) {
+            long[] buffer = getValueArray(value);
+            double[] doubles = new double[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                doubles[i] = (double) buffer[i];
+            }
+            return doubles;
         }
-        return doubles;
+        else if (pattern_2.matcher(value).find()){
+            long[] buffer = getValueArray(value, true);
+            double[] doubles = new double[buffer.length];
+            for (int i = 0; i < buffer.length; i++) {
+                doubles[i] = (double) buffer[i];
+            }
+            return doubles;
+        }
+        else
+            return HslExtension.StringToDoubleArray(value);
     }
 
 
@@ -680,7 +868,7 @@ public class UserControlReadWriteOp extends JPanel {
         jsp_write.setBounds(83,56,147, 70);
         panelWrite.add(jsp_write);
 
-        JLabel label100 = new JLabel("<html><span style=\"color:red\">Note: String value can be converted<br />if bool: true,false,0,1<br />if array: [1,2,3]</span></html>");
+        JLabel label100 = new JLabel("<html><span style=\"color:red\">Note:The string can convert value<br />if bool: true,false,0,1<br />if array:[1,2,3], [1:100], [1*100]</span></html>");
         label100.setBounds(11, 118,200, 80);
         panelWrite.add(label100);
 
@@ -698,6 +886,7 @@ public class UserControlReadWriteOp extends JPanel {
                     if (input.startsWith("[") && input.endsWith("]")){
                         OperateResult write = readWriteNet.Write(textField1.getText(), HslExtension.StringToBoolArray(input));
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(),GetArrayCode(HslExtension.StringToBoolArray(input), "boolean") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else {
@@ -707,6 +896,7 @@ public class UserControlReadWriteOp extends JPanel {
                         else value = Boolean.parseBoolean(input);
                         OperateResult write = readWriteNet.Write(textField1.getText(), value);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), String.valueOf(value) );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -737,11 +927,13 @@ public class UserControlReadWriteOp extends JPanel {
                     if (input.startsWith("[") && input.endsWith("]")){
                         OperateResult write = readWriteNet.Write( textField1.getText(), HslExtension.StringToByteArray(input));
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "HslExtension.StringToByteArray(\"" + input + "\")" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else {
                         OperateResult write = (OperateResult)writeByteMethod.invoke(readWriteNet, textField1.getText(), Byte.parseByte(textField2.getText()));
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "Byte.parseByte(\"" + textField2.getText() +"\" )" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -770,20 +962,16 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        short[] values = null;
-                        if (checkStringValueArray(input)){
-                            values = getInt16Array(input);
-                        }
-                        else {
-                            values = HslExtension.StringToShortArray(input);
-                        }
+                        short[] values = getInt16Array(input, true);
                         OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), GetArrayCode(values, "short") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else {
                         OperateResult write = readWriteNet.Write(textField1.getText(), Short.parseShort(input));
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "Short.parseShort(\"" + input + "\")" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -811,15 +999,10 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        short[] values = null;
-                        if (checkStringValueArray(input)){
-                            values = getInt16Array(input);
-                        }
-                        else {
-                            values = HslExtension.StringToUShortArray(input);
-                        }
+                        short[] values = getInt16Array(input, false);
                         OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), GetArrayCode(values, "short") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else {
@@ -829,6 +1012,7 @@ public class UserControlReadWriteOp extends JPanel {
                         }
                         OperateResult write = readWriteNet.Write(textField1.getText(), (short) value);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "(short)Integer.parseInt(\"" + input + "\")" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -856,20 +1040,16 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        int[] values = null;
-                        if (checkStringValueArray(input)){
-                            values = getInt32Array(input);
-                        }
-                        else {
-                            values = HslExtension.StringToIntArray(input);
-                        }
+                        int[] values = getInt32Array(input, true);
                         OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), GetArrayCode(values, "int") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else{
                         OperateResult write = readWriteNet.Write(textField1.getText(), Integer.parseInt(input));
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "Integer.parseInt(\"" + input + "\")" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -897,15 +1077,10 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        int[] values = null;
-                        if (checkStringValueArray(input)){
-                            values = getInt32Array(input);
-                        }
-                        else {
-                            values = HslExtension.StringToUIntArray(input);
-                        }
+                        int[] values = getInt32Array(input, false);
                         OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), GetArrayCode(values, "int") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else {
@@ -915,6 +1090,7 @@ public class UserControlReadWriteOp extends JPanel {
                         }
                         OperateResult write = readWriteNet.Write(textField1.getText(), (int)value);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "(int)Long.parseLong(\"" + input + "\")" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -942,21 +1118,17 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        long[] values = null;
-                        if (checkStringValueArray(input)){
-                            values = getInt64Array(input);
-                        }
-                        else {
-                            values = HslExtension.StringToLongArray(input);
-                        }
+                        long[] values = values = getInt64Array(input);
                         OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), GetArrayCode(values, "long") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else {
                         OperateResult write = readWriteNet.Write(textField1.getText(), Long.parseLong(input));
                         SetTimeSpend(now);
                         DemoUtils.WriteResultRender(write, textField1.getText());
+                        OutputWriteCode( "Write", textField1.getText(), "Long.parseLong(\"" + input + "\")" );
                     }
                 }
                 catch (Exception ex){
@@ -989,20 +1161,16 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        float[] values = null;
-                        if (checkStringValueArray(input)){
-                            values = getFloatArray(input);
-                        }
-                        else {
-                            values = HslExtension.StringToFloatArray(input);
-                        }
+                        float[] values = getFloatArray(input);
                         OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), GetArrayCode(values, "float") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else{
                         OperateResult write = readWriteNet.Write(textField1.getText(), Float.parseFloat(input));
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "Float.parseFloat(\"" + input + "\")" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -1032,20 +1200,16 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String input = textField2.getText();
                     if (input.startsWith("[") && input.endsWith("]")) {
-                        double[] values = null;
-                        if (checkStringValueArray(input)){
-                            values = getDoubleArray(input);
-                        }
-                        else {
-                            values = HslExtension.StringToDoubleArray(input);
-                        }
+                        double[] values = getDoubleArray(input);
                         OperateResult write = readWriteNet.Write(textField1.getText(), values);
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), GetArrayCode(values, "double") );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                     else{
                         OperateResult write = readWriteNet.Write(textField1.getText(), Double.parseDouble(input));
                         SetTimeSpend(now);
+                        OutputWriteCode( "Write", textField1.getText(), "Double.parseDouble(\"" + input + "\")" );
                         DemoUtils.WriteResultRender(write, textField1.getText());
                     }
                 }
@@ -1086,14 +1250,17 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     String encode = (String) comboBox_encode.getSelectedItem();
 
+                    String strCharset = "StandardCharsets.US_ASCII";
                     Charset charset = StandardCharsets.US_ASCII;
-                    if (encode.equals("Unicode")) charset = StandardCharsets.UTF_16LE;
-                    else if (encode.equals("UnicodeBE")) charset = StandardCharsets.UTF_16BE;
-                    else if (encode.equals("UTF8")) charset = StandardCharsets.UTF_8;
-                    else if (encode.equals("GB2312"))  charset = Charset.forName("GBK");
+                    if (encode.equals("Unicode")) {charset = StandardCharsets.UTF_16LE;strCharset = "StandardCharsets.UTF_16LE";}
+                    else if (encode.equals("UnicodeBE")) {charset = StandardCharsets.UTF_16BE;strCharset = "StandardCharsets.UTF_16BE";}
+                    else if (encode.equals("UTF8")) {charset = StandardCharsets.UTF_8;strCharset="StandardCharsets.UTF_8";}
+                    else if (encode.equals("GB2312"))  {charset = Charset.forName("GBK");strCharset = "Charset.forName(\"GBK\")";}
 
                     OperateResult write = readWriteNet.Write(textField1.getText(), textField2.getText(), charset);
                     SetTimeSpend(now);
+
+                    OutputWriteCode( "Write", textField1.getText(), "\"" + textField2.getText() + "\", " + strCharset );
                     DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
@@ -1120,6 +1287,7 @@ public class UserControlReadWriteOp extends JPanel {
                 try {
                     OperateResult write = readWriteNet.Write(textField1.getText(), SoftBasic.HexStringToBytes(textField2.getText()));
                     SetTimeSpend(now);
+                    OutputWriteCode( "Write", textField1.getText(), "SoftBasic.HexStringToBytes(\"" + textField2.getText() + "\")" );
                     DemoUtils.WriteResultRender(write, textField1.getText());
                 }
                 catch (Exception ex){
@@ -1160,4 +1328,5 @@ public class UserControlReadWriteOp extends JPanel {
     private JLabel label_TimeCount;
     private final String TimeCost = "Time-Cost: ";
     private ValueLimit valueLimit = new ValueLimit();
+    private String deviceName = "plc";
 }

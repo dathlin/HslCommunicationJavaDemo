@@ -3,21 +3,19 @@ package HslCommunicationDemo.PLC.Melsec;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Profinet.Melsec.MelsecA1EAsciiNet;
 import HslCommunication.Profinet.Melsec.MelsecMcAsciiNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormMelsecAscii extends JPanel {
+public class FormMelsecAscii extends HslJPanel {
 
     public FormMelsecAscii(JTabbedPane tabbedPane){
         setLayout(null);
@@ -40,6 +38,19 @@ public class FormMelsecAscii extends JPanel {
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private MelsecMcControl melsecMcControl;
+    private JButton button_connect = null;
+    private JButton button_disconnect = null;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled())
+        {
+            melsecMcNet.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect =  DemoUtils.CreateConnectPanel(panel);
@@ -50,11 +61,13 @@ public class FormMelsecAscii extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(584,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(477,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -88,6 +101,10 @@ public class FormMelsecAscii extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MelsecMcAsciiNet.class, textField1.getText(), textField2.getText() );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

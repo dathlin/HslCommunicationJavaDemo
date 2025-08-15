@@ -5,6 +5,7 @@ import HslCommunication.Core.Net.IReadWriteNet;
 import HslCommunication.Core.Types.Array;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Profinet.Melsec.MelsecA1ENet;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 
 import javax.swing.*;
@@ -239,6 +240,31 @@ public class DemoUtils {
         return textField2;
     }
 
+
+    public static JTextArea CreateExampleCode( JPanel panel, int height ) {
+        JLabel label1 = new JLabel("Code:");
+        label1.setBounds(10, 30, 30, 17);
+        panel.add(label1);
+
+        JTextArea textAreaCode = new JTextArea();
+        textAreaCode.setLineWrap(true);
+        JScrollPane jsp = new JScrollPane(textAreaCode);
+        jsp.setBounds(45, 53, 200, 30);
+        panel.add(jsp);
+
+
+        panel.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                super.componentResized(e);
+
+                label1.setBounds(10, panel.getHeight() - height + 6, 40, 17);
+                jsp.setBounds(55, panel.getHeight() - height + 2, panel.getWidth() - 60, height - 6);
+            }
+        });
+        return textAreaCode;
+    }
+
     public static String IpAddressInputWrong = "IpAddress input wrong";
     public static String PortInputWrong = "Port input wrong";
     public static String SlotInputWrong = "Slot input wrong";
@@ -249,4 +275,38 @@ public class DemoUtils {
 
     public static SimpleDateFormat FormatterDateTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     public static SimpleDateFormat FormatterDate = new SimpleDateFormat("yyyy-MM-dd");
+
+    public static String GetDateTimeCode( String date ) {
+        return "new SimpleDateFormat(\"yyyy-MM-dd HH:mm:ss\").parse(\"" + date + "\")";
+    }
+
+    public static String GetDateCode( String date ) {
+        return "new SimpleDateFormat(\"yyyy-MM-dd\").parse(\"" + date + "\")";
+    }
+
+    public static StringBuilder CreateDeviceCode( String type, String deviceName, String ip, String port ) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append(type + " " + deviceName + " = new " + type + "();");
+        stringBuilder.append("\r\n");
+        stringBuilder.append(deviceName + ".setIpAddress(\"" + ip + "\");");
+        stringBuilder.append("\r\n");
+        stringBuilder.append(deviceName + ".setPort(Integer.parseInt(\"" + port + "\"));");
+        stringBuilder.append("\r\n");
+        if (type.contains("Udp")){
+
+        }
+        else {
+            stringBuilder.append(deviceName + ".SetPersistentConnection();    // 设置长连接");
+        }
+        stringBuilder.append("\r\n");
+        return stringBuilder;
+    }
+
+    public static StringBuilder CreatePlcDeviceCode( String type, String ip, String port ){
+        return CreateDeviceCode(type, "plc", ip, port);
+    }
+
+    public static StringBuilder CreatePlcDeviceCode( Class type, String ip, String port ){
+        return CreateDeviceCode(type.getName(), "plc", ip, port);
+    }
 }

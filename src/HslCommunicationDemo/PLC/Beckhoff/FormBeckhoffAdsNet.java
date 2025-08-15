@@ -1,12 +1,14 @@
 package HslCommunicationDemo.PLC.Beckhoff;
 
 import HslCommunication.Core.Types.OperateResult;
+import HslCommunication.Profinet.AllenBradley.AllenBradleyPcccNet;
 import HslCommunication.Profinet.Beckhoff.BeckhoffAdsNet;
 import HslCommunication.Profinet.Melsec.MelsecMcNet;
 import HslCommunication.Utilities;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.PLC.Melsec.MelsecMcControl;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -15,7 +17,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormBeckhoffAdsNet extends JPanel
+public class FormBeckhoffAdsNet extends HslJPanel
 {
 
     public FormBeckhoffAdsNet(JTabbedPane tabbedPane ){
@@ -50,6 +52,19 @@ public class FormBeckhoffAdsNet extends JPanel
     private BeckhoffAdsNet beckhoffAdsNet;
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            beckhoffAdsNet.ConnectClose();
+        }
+    }
+
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel, 79);
@@ -121,11 +136,13 @@ public class FormBeckhoffAdsNet extends JPanel
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(661,23,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(561,23,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -177,6 +194,21 @@ public class FormBeckhoffAdsNet extends JPanel
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( BeckhoffAdsNet.class, textField1.getText(), textField2.getText() );
+                    if (checkBox_auto.isSelected()){
+                        stringBuilder.append( "plc.setUseAutoAmsNetID(true);\r\n" );
+                        if (!Utilities.IsStringNullOrEmpty(textField_ams_port.getText())){
+                            stringBuilder.append( "plc.setAmsPort(Integer.parseInt(\"" + textField_ams_port.getText() + "\"));\r\n");
+                        }
+                    }
+                    else {
+                        stringBuilder.append( "plc.setUseAutoAmsNetID(false);\r\n");
+                        stringBuilder.append( "plc.SetTargetAMSNetId( \"" + textField14.getText() + "\" );\r\n" );
+                        stringBuilder.append( "plc.SetSenderAMSNetId( \"" + textField15.getText() + "\" );\r\n" );
+                    }
+                    stringBuilder.append( "plc.setUseTagCache(" + checkBox_tag.isSelected() + ");\r\n" );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

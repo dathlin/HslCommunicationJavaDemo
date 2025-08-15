@@ -5,6 +5,7 @@ import HslCommunication.CNC.Fanuc.*;
 import HslCommunication.Core.Types.*;
 import HslCommunication.Utilities;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
 import javax.swing.*;
@@ -26,7 +27,7 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-public class FormFanucCnc0i extends JPanel {
+public class FormFanucCnc0i extends HslJPanel {
 
     public FormFanucCnc0i(JTabbedPane tabbedPane){
         setLayout(null);
@@ -39,7 +40,17 @@ public class FormFanucCnc0i extends JPanel {
 
     private FanucSeries0i fanuc = null;
     private JPanel panelContent = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
 
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            fanuc.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -74,11 +85,13 @@ public class FormFanucCnc0i extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(684,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(577,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);

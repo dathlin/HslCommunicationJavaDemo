@@ -14,6 +14,7 @@ import java.util.Date;
 public class SiemensS7Control extends JPanel {
     public SiemensS7Control(){
         setLayout(null);
+        textAreaCode = DemoUtils.CreateExampleCode( this, 50 );
 
         JLabel label1 = new JLabel("Address：");
         label1.setBounds(10, 10,100, 17);
@@ -43,6 +44,7 @@ public class SiemensS7Control extends JPanel {
                 if (button1.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<Date> read = siemensS7Net.ReadDateTime(textField1.getText());
+                textAreaCode.setText( "OperateResultExOne<Date> read = plc.ReadDateTime(\"" + textField1.getText() + "\");" );
                 if(read.IsSuccess){
                     textField2.setText(DemoUtils.FormatterDateTime.format(read.Content));
                 }
@@ -80,6 +82,7 @@ public class SiemensS7Control extends JPanel {
                 }
 
                 OperateResult read = siemensS7Net.Write(textField1.getText(), date);
+                textAreaCode.setText( "OperateResult write = plc.Write(\"" + textField1.getText() + "\", " + DemoUtils.GetDateTimeCode(textField2.getText()) + ");" );
                 if(read.IsSuccess){
                     JOptionPane.showMessageDialog(
                             null,
@@ -98,15 +101,69 @@ public class SiemensS7Control extends JPanel {
         });
         add(button2);
 
+
+        JButton button9 = new JButton("r-string");
+        button9.setFocusPainted(false);
+        button9.setBounds(400,42,120, 28);
+        button9.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button9.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResultExOne<String> read = siemensS7Net.ReadString(textField1.getText());
+                textAreaCode.setText( "OperateResultExOne<String> read = plc.ReadString(\"" + textField1.getText() + "\");" );
+                if(read.IsSuccess){
+                    textField2.setText(read.Content);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Read Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        add(button9);
+
+        JButton button10 = new JButton("w-string");
+        button10.setFocusPainted(false);
+        button10.setBounds(530,42,120, 28);
+        button10.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button10.isEnabled() == false) return;
+                super.mouseClicked(e);
+                OperateResult write = siemensS7Net.Write(textField1.getText(), textField2.getText());
+                textAreaCode.setText( "OperateResult write = plc.Write(\"" + textField1.getText() + "\", \"" + textField2.getText() + "\");" );
+                if(write.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Failed:" + write.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        add(button10);
+
         JButton button3 = new JButton("r-wstring");
         button3.setFocusPainted(false);
-        button3.setBounds(400,42,120, 28);
+        button3.setBounds(400,76,120, 28);
         button3.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (button3.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<String> read = siemensS7Net.ReadWString(textField1.getText());
+                textAreaCode.setText( "OperateResultExOne<String> read = plc.ReadWString(\"" + textField1.getText() + "\");" );
                 if(read.IsSuccess){
                     textField2.setText(read.Content);
                 }
@@ -123,13 +180,14 @@ public class SiemensS7Control extends JPanel {
 
         JButton button4 = new JButton("w-wstring");
         button4.setFocusPainted(false);
-        button4.setBounds(530,42,120, 28);
+        button4.setBounds(530,76,120, 28);
         button4.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (button4.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResult write = siemensS7Net.WriteWString(textField1.getText(), textField2.getText());
+                textAreaCode.setText( "OperateResult write = plc.WriteWString(\"" + textField1.getText() + "\", \"" + textField2.getText() + "\");" );
                 if(write.IsSuccess){
                     JOptionPane.showMessageDialog(
                             null,
@@ -152,13 +210,14 @@ public class SiemensS7Control extends JPanel {
 
         JButton button5 = new JButton("R-Date");
         button5.setFocusPainted(false);
-        button5.setBounds(400,76,120, 28);
+        button5.setBounds(400,110,120, 28);
         button5.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (button5.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<Date> read = siemensS7Net.ReadDate(textField1.getText());
+                textAreaCode.setText( "OperateResultExOne<Date> read = plc.ReadDate(\"" + textField1.getText() + "\");" );
                 if(read.IsSuccess){
                     textField2.setText(DemoUtils.FormatterDate.format(read.Content));
                 }
@@ -175,7 +234,7 @@ public class SiemensS7Control extends JPanel {
 
         JButton button6 = new JButton("W-Date");
         button6.setFocusPainted(false);
-        button6.setBounds(530,76,120, 28);
+        button6.setBounds(530,110,120, 28);
         button6.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -196,6 +255,7 @@ public class SiemensS7Control extends JPanel {
                 }
 
                 OperateResult read = siemensS7Net.WriteDate(textField1.getText(), date);
+                textAreaCode.setText( "OperateResult write = plc.WriteDate(\"" + textField1.getText() + "\", " + DemoUtils.GetDateCode(textField2.getText()) + ");" );
                 if(read.IsSuccess){
                     JOptionPane.showMessageDialog(
                             null,
@@ -217,13 +277,14 @@ public class SiemensS7Control extends JPanel {
 
         JButton button7 = new JButton("R-DTL Time");
         button7.setFocusPainted(false);
-        button7.setBounds(400,110,120, 28);
+        button7.setBounds(400,144,120, 28);
         button7.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (button7.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<Date> read = siemensS7Net.ReadDTLDataTime(textField1.getText());
+                textAreaCode.setText( "OperateResultExOne<Date> read = plc.ReadDTLDataTime(\"" + textField1.getText() + "\");" );
                 if(read.IsSuccess){
                     textField2.setText(DemoUtils.FormatterDateTime.format(read.Content));
                 }
@@ -240,7 +301,7 @@ public class SiemensS7Control extends JPanel {
 
         JButton button8 = new JButton("W-DTL Time");
         button8.setFocusPainted(false);
-        button8.setBounds(530,110,120, 28);
+        button8.setBounds(530,144,120, 28);
         button8.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -261,6 +322,7 @@ public class SiemensS7Control extends JPanel {
                 }
 
                 OperateResult read = siemensS7Net.WriteDTLTime(textField1.getText(), date);
+                textAreaCode.setText( "OperateResult read = plc.WriteDTLTime(\"" + textField1.getText() + "\", " + DemoUtils.GetDateTimeCode(textField2.getText()) + ");" );
                 if(read.IsSuccess){
                     JOptionPane.showMessageDialog(
                             null,
@@ -312,4 +374,5 @@ public class SiemensS7Control extends JPanel {
     }
 
     private SiemensS7Net siemensS7Net;
+    private JTextArea textAreaCode;
 }

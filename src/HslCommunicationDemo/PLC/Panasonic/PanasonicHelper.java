@@ -32,7 +32,7 @@ public class PanasonicHelper {
                         new DeviceAddressExample( "T0",    "定时器",         true, false, "" ),
                         new DeviceAddressExample( "C0",    "计数器",         true, false, "" ),
                         new DeviceAddressExample( "L2.1",  "链接继电器",     true, false, "L21 等同于 L2.1" ),
-                        new DeviceAddressExample( "D0",    "数据寄存器 DT",  false, true, "" ),
+                        new DeviceAddressExample( "D0 / DT0",    "数据寄存器 DT",  false, true, "D100 等同于 DT100" ),
                         new DeviceAddressExample( "LD0",   "链接寄存器 LD",  false, true, "" ),
                         new DeviceAddressExample( "F0",    "文件寄存器 FL",  false, true, "" ),
                         new DeviceAddressExample( "S0",    "目标值 SV",      false, true, "" ),

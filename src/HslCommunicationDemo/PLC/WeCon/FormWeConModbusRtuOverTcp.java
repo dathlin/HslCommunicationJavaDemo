@@ -16,9 +16,15 @@ public class FormWeConModbusRtuOverTcp extends FormModbusRtuOverTcp {
         addressMapping = new FunctionOperateExTwo<String, Byte, OperateResultExOne<String>>() {
             @Override
             public OperateResultExOne<String> Action(String content1, Byte content2) {
-                return ModbusMappingAddress.WeCon_Lx5v(content1, content2);
+                return HslCommunication.ModBus.ModbusMappingAddress.WeCon_Lx5v(content1, content2);
             }
         };
+
+        addressMappingCode = "new FunctionOperateExTwo<String, Byte, OperateResultExOne<String>>() {\n" +
+                "            @Override\n" +
+                "            public OperateResultExOne<String> Action(String content1, Byte content2) {\n" +
+                "                return HslCommunication.ModBus.ModbusMappingAddress.WeCon_Lx5v(content1, content2);\n" +
+                "            };";
     }
 
     @Override

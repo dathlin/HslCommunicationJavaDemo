@@ -3,21 +3,19 @@ package HslCommunicationDemo.PLC.Keyence;
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Profinet.Keyence.KeyenceMcNet;
 import HslCommunication.Profinet.Keyence.KeyenceNanoSerialOverTcp;
 import HslCommunication.Profinet.Keyence.KeyencePLCS;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormKeyenceNanoOverTcp extends JPanel {
+public class FormKeyenceNanoOverTcp extends HslJPanel {
 
     public FormKeyenceNanoOverTcp(JTabbedPane tabbedPane){
         setLayout(null);
@@ -40,6 +38,17 @@ public class FormKeyenceNanoOverTcp extends JPanel {
     private KeyenceNanoControl nanoControl = null;
     private String defaultAddress = "DM100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            plc.ConnectClose();
+        }
+    }
 
 
     public void AddConnectSegment(JPanel panel){
@@ -80,11 +89,13 @@ public class FormKeyenceNanoOverTcp extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(684,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(577,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -119,6 +130,12 @@ public class FormKeyenceNanoOverTcp extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( KeyenceNanoSerialOverTcp.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "plc.Station = (byte) Integer.parseInt(\"" + textField3.getText() + "\");\r\n" );
+                    stringBuilder.append( "plc.UseStation = " + checkBox1.isSelected() + ";\r\n");
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

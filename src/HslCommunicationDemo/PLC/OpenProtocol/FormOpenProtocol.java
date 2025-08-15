@@ -7,6 +7,7 @@ import HslCommunication.Profinet.Omron.OmronPlcType;
 import HslCommunication.Profinet.OpenProtocol.OpenProtocolNet;
 import HslCommunication.Utilities;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
 import javax.swing.*;
@@ -21,7 +22,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class FormOpenProtocol extends JPanel {
+public class FormOpenProtocol extends HslJPanel {
     public FormOpenProtocol(JTabbedPane tabbedPane){
         setLayout(null);
         add( new UserControlReadWriteHead("Open Protocol", tabbedPane, this));
@@ -67,6 +68,19 @@ public class FormOpenProtocol extends JPanel {
     private JCheckBox checkBox_stop;
     private JCheckBox checkBox_format;
     private JLabel label_sub;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            openProtocolNet.ConnectClose();
+        }
+    }
+
+
     private void AddDeviceList(JPanel panel){
 
         JPanel panelRead = new JPanel();
@@ -377,11 +391,13 @@ public class FormOpenProtocol extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(860,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(762,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);

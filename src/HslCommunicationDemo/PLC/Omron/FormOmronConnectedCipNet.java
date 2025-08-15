@@ -7,20 +7,17 @@ import HslCommunication.Core.Types.OperateResultExTwo;
 import HslCommunication.Profinet.Omron.OmronCipNet;
 import HslCommunication.Profinet.Omron.OmronConnectedCipNet;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.AllenBradley.DemoAllenBradleyHelper;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormOmronConnectedCipNet  extends JPanel {
+public class FormOmronConnectedCipNet  extends HslJPanel {
 
     public FormOmronConnectedCipNet(JTabbedPane tabbedPane){
         setLayout(null);
@@ -43,6 +40,17 @@ public class FormOmronConnectedCipNet  extends JPanel {
     private String defaultAddress = "A";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private OmronCipControl omronCipControl;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            omronCipNet.ConnectClose();
+        }
+    }
 
 
     public void AddConnectSegment(JPanel panel){
@@ -54,7 +62,7 @@ public class FormOmronConnectedCipNet  extends JPanel {
 
         JTextField textField1 = new JTextField();
         textField1.setBounds(62,9,106, 23);
-        textField1.setText("192.168.0.10");
+        textField1.setText("127.0.0.1");
         panelConnect.add(textField1);
 
         JLabel label2 = new JLabel("Port：");
@@ -69,11 +77,13 @@ public class FormOmronConnectedCipNet  extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(584,6,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(477,6,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -107,6 +117,9 @@ public class FormOmronConnectedCipNet  extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( OmronConnectedCipNet.class, textField1.getText(), textField2.getText() );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

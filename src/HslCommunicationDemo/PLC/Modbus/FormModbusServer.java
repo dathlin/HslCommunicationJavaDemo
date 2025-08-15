@@ -22,7 +22,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Date;
 
-public class FormModbusServer extends JPanel {
+public class FormModbusServer extends HslJPanel {
 
 
     public FormModbusServer(JTabbedPane tabbedPane){
@@ -55,6 +55,17 @@ public class FormModbusServer extends JPanel {
     private String defaultAddress = "100";
     private ModbusTcpServer modbusTcpServer = null;
     private UserControlReadWriteServer userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            modbusTcpServer.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -100,11 +111,13 @@ public class FormModbusServer extends JPanel {
         JButton button2 = new JButton("Close");
         button2.setFocusPainted(false);
         button2.setBounds(850,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Start");
         button1.setFocusPainted(false);
         button1.setBounds(752,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);

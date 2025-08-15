@@ -3,9 +3,11 @@ package HslCommunicationDemo;
 import HslCommunication.Core.Net.IReadWriteNet;
 import HslCommunication.Core.Net.NetworkBase.NetworkDoubleBase;
 import HslCommunication.Core.Net.NetworkBase.NetworkUdpBase;
+import HslCommunication.Core.Types.ActionOperateExOne;
 import HslCommunication.LogNet.Core.HslMessageItem;
 import HslCommunication.LogNet.Core.LogNetBase;
 import HslCommunicationDemo.Demo.BatchReadControl;
+import HslCommunicationDemo.Demo.CodeExampleControl;
 import HslCommunicationDemo.Demo.MessageReadControl;
 import HslCommunicationDemo.Demo.ServerLogControl;
 import sun.rmi.runtime.Log;
@@ -18,11 +20,11 @@ import java.awt.event.ComponentEvent;
 public class UserControlReadWriteDevice extends JPanel {
 
     public UserControlReadWriteDevice(JPanel parent) {
-        userControlReadWriteOp = new UserControlReadWriteOp( this );
+        userControlReadWriteOp = new UserControlReadWriteOp(this);
         add(userControlReadWriteOp);
 
 
-        tabbedPane = new JTabbedPane( );
+        tabbedPane = new JTabbedPane();
         tabbedPane.setBounds(3, 270, 1000, 680);
         addComponentListener(new ComponentAdapter() {
             @Override
@@ -50,9 +52,28 @@ public class UserControlReadWriteDevice extends JPanel {
         tabbedPane.add("MessageRead", messageReadControl);
 
         logControl = new ServerLogControl();
-        tabbedPane.add( "MessageLog", logControl );
+        tabbedPane.add("MessageLog", logControl);
         logControl.SetLogRender(false);
         logControl.SetOnlineDisEnable();
+
+
+        codeExampleControl = new CodeExampleControl();
+        tabbedPane.add(CodeExampleControl.GetTitle(), codeExampleControl);
+        userControlReadWriteOp.SetActionCode( new ActionOperateExOne<String>(){
+            @Override
+            public void Action(String content) {
+                codeExampleControl.SetReadWriteCode(content);
+            }
+        } );
+    }
+
+    public void SetDeviceCode( String code ){
+        codeExampleControl.SetDeviceCode(code);
+    }
+
+    public void SetDeviceCode( String code, String deviceName ){
+        codeExampleControl.SetDeviceCode(code);
+        userControlReadWriteOp.SetDeviceName(deviceName);
     }
 
     /**
@@ -122,6 +143,10 @@ public class UserControlReadWriteDevice extends JPanel {
         setEnabled(true);
     }
 
+    public void SetReadWriteNet(IReadWriteNet readWrite, String address, int strLength, String deviceName ){
+        SetReadWriteNet( readWrite, address, strLength );
+        userControlReadWriteOp.SetDeviceName(deviceName);
+    }
     /**
      * 新增一个自定义的控件信息
      * @param control 自定义的控件实现
@@ -143,5 +168,6 @@ public class UserControlReadWriteDevice extends JPanel {
     private UserControlReadWriteOp userControlReadWriteOp;
     private JTabbedPane tabbedPane;
     private ServerLogControl logControl;
+    private CodeExampleControl codeExampleControl;
 
 }

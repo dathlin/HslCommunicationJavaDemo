@@ -43,11 +43,11 @@ public class KeyenceHelper {
                         new DeviceAddressExample( "CTH0",  "高速计数器",            true, true, "范围: CTH0 ~ CTH1" ),
                         new DeviceAddressExample( "VB0",   "字线圈",                true, true, "16进制，范围: VB0000 ~ VB3FFF" ),
 
-                        new DeviceAddressExample( "CM0",    "控制寄存器",           false, true, "范围: CM0000~CM5999" ),
-                        new DeviceAddressExample( "DM0",    "数据寄存器",           false, true, "范围: DM00000~DM65534" ),
-                        new DeviceAddressExample( "EM0",    "扩展数据寄存器",       false, true, "范围: EM00000~EM65534" ),
-                        new DeviceAddressExample( "FM0",    "文件寄存器",           false, true, "FM00000~FM32767" ),
-                        new DeviceAddressExample( "ZF0",    "文件寄存器",           false, true, "ZF000000~ZF131071" ),
+                        new DeviceAddressExample( "CM0",    "控制寄存器",           false, true, "范围: CM0000~CM5999， 读写位使用 CM100.0" ),
+                        new DeviceAddressExample( "DM0",    "数据寄存器",           false, true, "范围: DM00000~DM65534, 读写位使用 DM100.0" ),
+                        new DeviceAddressExample( "EM0",    "扩展数据寄存器",       false, true, "范围: EM00000~EM65534, 读写位使用 EM100.0" ),
+                        new DeviceAddressExample( "FM0",    "文件寄存器",           false, true, "FM00000~FM32767, 读写位使用 FM100.0" ),
+                        new DeviceAddressExample( "ZF0",    "文件寄存器",           false, true, "ZF000000~ZF131071, 读写位使用 ZF100.0" ),
                         new DeviceAddressExample( "W0",     "链路寄存器",           false, true, "16进制地址，范围: W0000~W3FFF" ),
                         new DeviceAddressExample( "TM0",    "临时数据寄存器",       false, true, "范围: TM000~TM511" ),
                         new DeviceAddressExample( "Z0",     "变址寄存器",           false, true, "范围: Z1~Z12" ),
@@ -57,7 +57,7 @@ public class KeyenceHelper {
                         new DeviceAddressExample( "CS0",    "计数器设定值",         false, true, "范围: CS0000~CS3999" ),
                         new DeviceAddressExample( "CTC0",   "高速计数器设定值",     false, true, "范围: CTC0~CTC3" ),
                         new DeviceAddressExample( "T0",     "数字微调器",           false, true, "范围: AT0~AT7" ),
-                        new DeviceAddressExample( "VM",     "字存储器",            false, true, "范围: VM0~VM59999" ),
+                        new DeviceAddressExample( "VM",     "字存储器",            false, true, "范围: VM0~VM59999, 读写位使用 VM100.0" ),
                         new DeviceAddressExample( "unit=0;100",     "扩展存储器模块",            false, true, "读取扩展模块的数据，仅限企业用户" ),
                 };
     }

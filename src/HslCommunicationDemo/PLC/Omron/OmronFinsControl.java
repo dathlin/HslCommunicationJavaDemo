@@ -20,6 +20,8 @@ public class OmronFinsControl extends JPanel {
     public OmronFinsControl() {
         setLayout(null);
 
+        textAreaCode = DemoUtils.CreateExampleCode( this, 50 );
+
         JLabel label2 = new JLabel("<html><span style=\"color:red\">Run Stop 请谨慎操作，确认安全为前提</span></html>");
         label2.setBounds(10, 45, 300, 17);
         add(label2);
@@ -40,6 +42,7 @@ public class OmronFinsControl extends JPanel {
                 if (button1.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResult read = omron.Run();
+                textAreaCode.setText( "OperateResult read = omron.Run();" );
                 if (read.IsSuccess) {
                     JOptionPane.showMessageDialog(
                             null,
@@ -66,6 +69,7 @@ public class OmronFinsControl extends JPanel {
                 if (button2.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResult stop = omron.Stop();
+                textAreaCode.setText( "OperateResult stop = omron.Stop();" );
                 if (stop.IsSuccess) {
                     JOptionPane.showMessageDialog(
                             null,
@@ -92,6 +96,7 @@ public class OmronFinsControl extends JPanel {
                 if (button3.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<OmronCpuUnitData> read = omron.ReadCpuUnitData();
+                textAreaCode.setText( "OperateResultExOne<OmronCpuUnitData> read = omron.ReadCpuUnitData();" );
                 if (read.IsSuccess) {
                     textArea_data.setText(read.Content.toString());
                 } else {
@@ -114,6 +119,7 @@ public class OmronFinsControl extends JPanel {
                 if (button4.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<OmronCpuUnitStatus> read = omron.ReadCpuUnitStatus();
+                textAreaCode.setText( "OperateResultExOne<OmronCpuUnitStatus> read = plc.ReadCpuUnitStatus();" );
                 if (read.IsSuccess) {
                     textArea_data.setText(read.Content.toString());
                 } else {
@@ -136,6 +142,7 @@ public class OmronFinsControl extends JPanel {
                 if (button5.isEnabled() == false) return;
                 super.mouseClicked(e);
                 OperateResultExOne<Date> read = omron.ReadCpuTime();
+                textAreaCode.setText( "OperateResultExOne<Date> read = plc.ReadCpuTime();" );
                 if (read.IsSuccess) {
                     textArea_data.setText(DemoUtils.FormatterDateTime.format(read.Content));
                 } else {
@@ -154,7 +161,7 @@ public class OmronFinsControl extends JPanel {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
-                jsp.setBounds(10, 70, getWidth() - 20, getHeight() - 80);
+                jsp.setBounds(10, 70, getWidth() - 15, getHeight() - 75 - 50);
 
             }
         });
@@ -192,4 +199,5 @@ public class OmronFinsControl extends JPanel {
     }
 
     private IOmronFins omron;
+    private JTextArea textAreaCode;
 }

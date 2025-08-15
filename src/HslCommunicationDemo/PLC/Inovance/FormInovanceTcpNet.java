@@ -7,19 +7,17 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Inovance.InovanceSerialOverTcp;
 import HslCommunication.Profinet.Inovance.InovanceSeries;
 import HslCommunication.Profinet.Inovance.InovanceTcpNet;
+import HslCommunication.Profinet.Melsec.MelsecA1ENet;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormInovanceTcpNet extends JPanel {
+public class FormInovanceTcpNet extends HslJPanel {
 
     public FormInovanceTcpNet(JTabbedPane tabbedPane){
         setLayout(null);
@@ -38,7 +36,17 @@ public class FormInovanceTcpNet extends JPanel {
     private InovanceTcpNet plc = null;
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
 
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            plc.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -93,6 +101,7 @@ public class FormInovanceTcpNet extends JPanel {
         comboBox2.addItem(InovanceSeries.AM);
         comboBox2.addItem(InovanceSeries.H3U);
         comboBox2.addItem(InovanceSeries.H5U);
+        comboBox2.addItem(InovanceSeries.Easy);
         comboBox2.setSelectedItem(InovanceSeries.AM);
         panelConnect.add(comboBox2);
 
@@ -100,11 +109,13 @@ public class FormInovanceTcpNet extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(850,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(752,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -117,6 +128,7 @@ public class FormInovanceTcpNet extends JPanel {
                 try {
                     plc.setIpAddress(textField1.getText());
                     plc.setPort(Integer.parseInt(textField2.getText()));
+                    plc.setStation(Byte.parseByte(textField3.getText()));
                     plc.setAddressStartWithZero(checkBox1.isSelected());
                     plc.setDataFormat((DataFormat) comboBox1.getSelectedItem());
                     plc.setSeries((InovanceSeries)comboBox2.getSelectedItem());
@@ -139,6 +151,13 @@ public class FormInovanceTcpNet extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( InovanceTcpNet.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "plc.setStation(Byte.parseByte(\"" + textField3.getText() + "\"));\r\n" );
+                    stringBuilder.append( "plc.setAddressStartWithZero(" + checkBox1.isSelected() + ");\r\n" );
+                    stringBuilder.append( "plc.setDataFormat( DataFormat." + (DataFormat) comboBox1.getSelectedItem() + ");\r\n" );
+                    stringBuilder.append( "plc.setSeries(InovanceSeries." + (InovanceSeries)comboBox2.getSelectedItem() + ");\r\n" );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

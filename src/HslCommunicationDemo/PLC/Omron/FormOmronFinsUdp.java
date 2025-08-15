@@ -4,22 +4,20 @@ import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Profinet.Melsec.MelsecMcUdp;
 import HslCommunication.Profinet.Omron.OmronFinsNet;
 import HslCommunication.Profinet.Omron.OmronFinsUdp;
 import HslCommunication.Profinet.Omron.OmronPlcType;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormOmronFinsUdp extends JPanel {
+public class FormOmronFinsUdp extends HslJPanel {
     public FormOmronFinsUdp(JTabbedPane tabbedPane){
         setLayout(null);
         add( new UserControlReadWriteHead("Fins Udp", tabbedPane, this));
@@ -29,6 +27,9 @@ public class FormOmronFinsUdp extends JPanel {
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
 
+        finsControl = new OmronFinsControl();
+        userControlReadWriteDevice.AddSpecialFunctionTab( finsControl, false,"Fins Function");
+
         addressExampleControl = new AddressExampleControl(DemoOmronHelper.GetOmronAddressExamples());
         userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
     }
@@ -37,6 +38,18 @@ public class FormOmronFinsUdp extends JPanel {
     private OmronFinsUdp omronFinsNet = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private OmronFinsControl finsControl = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            omronFinsNet.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -89,11 +102,13 @@ public class FormOmronFinsUdp extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(850,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(752,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -112,6 +127,14 @@ public class FormOmronFinsUdp extends JPanel {
                     button2.setEnabled(true);
                     button1.setEnabled(false);
                     userControlReadWriteDevice.SetReadWriteNet(omronFinsNet, defaultAddress, 10);
+                    finsControl.SetOmronFins( omronFinsNet );
+
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( OmronFinsUdp.class, textField1.getText(), textField2.getText() );
+                    stringBuilder.append( "plc.SA1 = (byte) Integer.parseInt(\"" + textField4.getText() + "\");\r\n" );
+                    stringBuilder.append( "plc.getByteTransform().setDataFormat(DataFormat." + (DataFormat) comboBox1.getSelectedItem() + ");\r\n" );
+                    stringBuilder.append( "plc.setPlcType(OmronPlcType." + (OmronPlcType)comboBox2.getSelectedItem() + ");\r\n" );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

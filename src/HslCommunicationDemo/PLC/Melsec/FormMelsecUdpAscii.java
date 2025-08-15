@@ -5,19 +5,16 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Melsec.MelsecMcAsciiUdp;
 import HslCommunication.Profinet.Melsec.MelsecMcUdp;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
+import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
-import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.UserControlReadWriteDevice;
-import HslCommunicationDemo.UserControlReadWriteHead;
-import HslCommunicationDemo.UserControlReadWriteOp;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormMelsecUdpAscii extends JPanel {
+public class FormMelsecUdpAscii extends HslJPanel {
     public FormMelsecUdpAscii(JTabbedPane tabbedPane){
         setLayout(null);
 
@@ -39,6 +36,17 @@ public class FormMelsecUdpAscii extends JPanel {
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private MelsecMcControl melsecMcControl;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            melsecMcNet.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect =  DemoUtils.CreateConnectPanel(panel);
@@ -49,11 +57,13 @@ public class FormMelsecUdpAscii extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(584,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(477,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -80,6 +90,10 @@ public class FormMelsecUdpAscii extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+
+                StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MelsecMcAsciiUdp.class, textField1.getText(), textField2.getText() );
+                userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
             }
         });
         button2.addMouseListener(new MouseAdapter() {

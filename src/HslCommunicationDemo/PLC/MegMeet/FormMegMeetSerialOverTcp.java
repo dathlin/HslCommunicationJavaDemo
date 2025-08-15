@@ -3,10 +3,13 @@ package HslCommunicationDemo.PLC.MegMeet;
 import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.ModBus.ModbusRtuOverTcp;
+import HslCommunication.Profinet.Inovance.InovanceSeries;
 import HslCommunication.Profinet.MegMeet.MegMeetSerialOverTcp;
+import HslCommunication.Profinet.Melsec.MelsecA1ENet;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -15,7 +18,7 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormMegMeetSerialOverTcp extends JPanel {
+public class FormMegMeetSerialOverTcp extends HslJPanel {
     public FormMegMeetSerialOverTcp(JTabbedPane tabbedPane){
         modbusTcpNet = new MegMeetSerialOverTcp();
         setLayout(null);
@@ -34,6 +37,17 @@ public class FormMegMeetSerialOverTcp extends JPanel {
     private MegMeetSerialOverTcp modbusTcpNet = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            modbusTcpNet.ConnectClose();
+        }
+    }
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
@@ -88,11 +102,13 @@ public class FormMegMeetSerialOverTcp extends JPanel {
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
         button2.setBounds(850,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
         button1.setBounds(752,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -105,6 +121,7 @@ public class FormMegMeetSerialOverTcp extends JPanel {
                 try {
                     modbusTcpNet.setIpAddress(textField1.getText());
                     modbusTcpNet.setPort(Integer.parseInt(textField2.getText()));
+                    modbusTcpNet.setStation(Byte.parseByte(textField3.getText()));
                     modbusTcpNet.setAddressStartWithZero(checkBox1.isSelected());
                     modbusTcpNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
                     modbusTcpNet.setStringReverse(checkBox2.isSelected());
@@ -127,6 +144,13 @@ public class FormMegMeetSerialOverTcp extends JPanel {
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MegMeetSerialOverTcp.class, textField1.getText(), textField2.getText() );;
+                    stringBuilder.append( "plc.setStation(Byte.parseByte(\"" + textField3.getText() + "\"));\r\n" );
+                    stringBuilder.append( "plc.setAddressStartWithZero(" + checkBox1.isSelected() + ");\r\n" );
+                    stringBuilder.append( "plc.setDataFormat( DataFormat." + (DataFormat) comboBox1.getSelectedItem() + ");\r\n" );
+                    stringBuilder.append( "plc.setStringReverse(" + checkBox2.isSelected() + ");\r\n" );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(

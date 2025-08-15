@@ -13,6 +13,8 @@ public class MelsecMcControl extends JPanel {
     public MelsecMcControl(){
         setLayout(null);
 
+        textArea_code = DemoUtils.CreateExampleCode(this, 50);
+
         JButton button1 = new JButton("RemoteReset");
         button1.setFocusPainted(false);
         button1.setBounds(10 ,10, 120, 28);
@@ -24,6 +26,7 @@ public class MelsecMcControl extends JPanel {
                 if (plc == null) {
                     return;
                 }
+                textArea_code.setText( "OperateResult result = plc.RemoteReset();" );
                 DemoUtils.OpResultRender(plc.RemoteReset(), "RemoteReset");
             }
         });
@@ -40,6 +43,7 @@ public class MelsecMcControl extends JPanel {
                 if (plc == null) {
                     return;
                 }
+                textArea_code.setText( "OperateResult result = plc.ErrorStateReset();" );
                 DemoUtils.OpResultRender(plc.ErrorStateReset(), "ErrorStateReset");
             }
         });
@@ -57,6 +61,7 @@ public class MelsecMcControl extends JPanel {
                 if (plc == null) {
                     return;
                 }
+                textArea_code.setText( "OperateResult result = plc.RemoteRun();" );
                 DemoUtils.OpResultRender(plc.RemoteRun(), "RemoteRun");
             }
         });
@@ -73,6 +78,7 @@ public class MelsecMcControl extends JPanel {
                 if (plc == null) {
                     return;
                 }
+                textArea_code.setText( "OperateResult result = plc.RemoteStop();" );
                 DemoUtils.OpResultRender(plc.RemoteStop(), "RemoteStop");
             }
         });
@@ -90,6 +96,7 @@ public class MelsecMcControl extends JPanel {
                 if (plc == null) {
                     return;
                 }
+                textArea_code.setText( "OperateResultExOne<String> result = plc.ReadPlcType();" );
                 OperateResultExOne<String> result = plc.ReadPlcType();
                 if (result.IsSuccess) {
                     JOptionPane.showMessageDialog(
@@ -140,4 +147,5 @@ public class MelsecMcControl extends JPanel {
     }
 
     private IReadWriteMc plc;
+    private JTextArea textArea_code;
 }
