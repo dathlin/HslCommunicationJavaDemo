@@ -7,6 +7,7 @@ import HslCommunication.Instrument.DLT.Helper.IDlt645;
 import HslCommunication.Profinet.Melsec.Helper.IReadWriteMc;
 import HslCommunication.Utilities;
 import HslCommunicationDemo.DemoUtils;
+import HslCommunicationDemo.FormMain;
 
 import javax.swing.*;
 import java.awt.*;
@@ -251,18 +252,103 @@ public class Dlt645Control extends JPanel {
         });
         add(button8);
 
+        // 波特率面板
+        JPanel baudPanel = new JPanel();
+        baudPanel.setLayout(new FlowLayout(FlowLayout.LEFT, 10, 5));
+
+        lblBaudRate = new JLabel("波特率：");
+        bgBaudRate = new ButtonGroup();
+        rb600 = new JRadioButton("600");
+        rb1200 = new JRadioButton("1200");
+        rb2400 = new JRadioButton("2400");
+        rb4800 = new JRadioButton("4800");
+        rb9600 = new JRadioButton("9600");
+        rb19200 = new JRadioButton("19200");
+
+        // 默认选中9600
+        rb9600.setSelected(true);
+
+        // 添加到按钮组（互斥）
+        bgBaudRate.add(rb600);
+        bgBaudRate.add(rb1200);
+        bgBaudRate.add(rb2400);
+        bgBaudRate.add(rb4800);
+        bgBaudRate.add(rb9600);
+        bgBaudRate.add(rb19200);
+
+        btnModifyBaudRate = new JButton("修改波特率");
+        btnModifyBaudRate.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!btnModifyBaudRate.isEnabled()) return;
+                super.mouseClicked(e);
+                if (dlt == null) {
+                    return;
+                }
+
+                String baut = "9600";
+                if (rb600.isSelected()) baut = "600";
+                if (rb1200.isSelected()) baut = "1200";
+                if (rb2400.isSelected()) baut = "2400";
+                if (rb4800.isSelected()) baut = "4800";
+                if (rb9600.isSelected()) baut = "9600";
+                if (rb19200.isSelected()) baut = "19200";
+
+                OperateResult read = dlt.ChangeBaudRate( baut );
+                if (read.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Failed，Reason:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.WARNING_MESSAGE);
+                }
+                textAreaCode.setText("OperateResult read = dlt.ChangeBaudRate( \"" + baut + "\" );");
+            }
+        });
+
+        baudPanel.add(lblBaudRate);
+        baudPanel.add(rb600);
+        baudPanel.add(rb1200);
+        baudPanel.add(rb2400);
+        baudPanel.add(rb4800);
+        baudPanel.add(rb9600);
+        baudPanel.add(rb19200);
+        baudPanel.add(btnModifyBaudRate);
+
+        baudPanel.setBounds(10, 12, 500, 17);
+        add(baudPanel);
+
+        if (FormMain.Language == 2){
+            lblBaudRate.setText("BaudRate:");
+            btnModifyBaudRate.setText("Change BaudRate");
+        }
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
 
-                jsp.setBounds( 10, 88, getWidth() - 20, getHeight() - 55 - 90);
+                jsp.setBounds( 10, 88, getWidth() - 20, getHeight() - 55 - 90 - 30);
                 labelCode.setBounds(10, getHeight() - 47, 80, 17);
                 jspCode.setBounds( 70, getHeight() - 50, getWidth() - 80, 45 );
+
+                baudPanel.setBounds(0, getHeight() - 87, getWidth() - 20, 32);
             }
         });
-    }
 
+
+    }
+    // 波特率选择组
+    private JLabel lblBaudRate;
+    private JRadioButton rb600, rb1200, rb2400, rb4800, rb9600, rb19200;
+    private ButtonGroup bgBaudRate;
+    private JButton btnModifyBaudRate;
 
 
     /**

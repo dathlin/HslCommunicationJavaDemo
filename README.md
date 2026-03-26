@@ -41,7 +41,7 @@ Snippets
 <dependency>
     <groupId>io.github.dathlin</groupId>
     <artifactId>HslCommunication</artifactId>
-    <version>3.9.0</version>
+    <version>3.9.2</version>
 </dependency>
 ```
 
@@ -57,7 +57,7 @@ Snippets
 5. 注册官网的git账户
 6. 联系方式：Email:hsl200909@163.com   QQ:200962190   Wechat:13516702732
 
-官网：http://www.hslcommunication.cn  如果不能访问，请访问：http://118.24.36.220
+官网：http://www.hslcommunication.cn, http://www.hsltechnology.cn:7900/  如果不能访问，请访问：http://118.24.36.220
 
 
 The copyright of this program belongs to Hu Shaolin. The source code is limited to academic research. Commercial licenses are required. 
@@ -75,7 +75,7 @@ Steps on authorization:
 5. Register git account on official website
 6. Contact: Email: hsl200909@163.com QQ: 200962190 Weichat: 13516702732
 	
-Website：http://www.hslcommunication.cn  If you cannot access, please visit: http://118.24.36.220
+Website：http://www.hslcommunication.cn , http://www.hsltechnology.cn:7900/ If you cannot access, please visit: http://118.24.36.220
 
 ## Demo
 ![Picture](https://raw.githubusercontent.com/dathlin/HslCommunication/master/imgs/java_demo.png)

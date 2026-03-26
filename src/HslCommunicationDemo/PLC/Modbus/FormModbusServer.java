@@ -2,24 +2,28 @@ package HslCommunicationDemo.PLC.Modbus;
 
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Transfer.DataFormat;
+import HslCommunication.Core.Types.FunctionOperateExTwo;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.LogNet.Core.HslMessageDegree;
 import HslCommunication.LogNet.Core.HslMessageItem;
 import HslCommunication.LogNet.Core.ILogNet;
 import HslCommunication.LogNet.Core.LogNetBase;
+import HslCommunication.ModBus.ModbusMappingAddress;
 import HslCommunication.ModBus.ModbusTcpNet;
 import HslCommunication.ModBus.ModbusTcpServer;
+import HslCommunication.Profinet.Delta.Helper.DeltaDvpHelper;
+import HslCommunication.Profinet.Inovance.InovanceHelper;
+import HslCommunication.Profinet.MegMeet.MegMeetHelper;
+import HslCommunication.Profinet.XINJE.XinJEHelper;
+import HslCommunication.Profinet.XINJE.XinJESeries;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.util.Date;
 
 public class FormModbusServer extends HslJPanel {
@@ -71,42 +75,162 @@ public class FormModbusServer extends HslJPanel {
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
 
         JLabel label1 = new JLabel("Port：");
-        label1.setBounds(8, 17,56, 17);
+        label1.setBounds(8, 7,56, 17);
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,86, 23);
+        textField1.setBounds(62,4,86, 23);
         textField1.setText("502");
         panelConnect.add(textField1);
 
         JCheckBox checkBox1 = new JCheckBox("Use Modbus Rtu?");
-        checkBox1.setBounds(160,16,140, 21);
+        checkBox1.setBounds(160,6,140, 21);
         checkBox1.setSelected(false);
         panelConnect.add(checkBox1);
 
 
         JLabel label3 = new JLabel("Station：");
-        label3.setBounds(298, 17,56, 17);
+        label3.setBounds(298, 7,56, 17);
         panelConnect.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(352,14,40, 23);
+        textField3.setBounds(352,4,40, 23);
         textField3.setText("1");
         panelConnect.add(textField3);
 
         JCheckBox checkBox2 = new JCheckBox("Enable Write?");
-        checkBox2.setBounds(420,16,120, 21);
+        checkBox2.setBounds(420,6,120, 21);
         checkBox2.setSelected(true);
         panelConnect.add(checkBox2);
 
         JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(558,13,111, 25);
+        comboBox1.setBounds(558,3,111, 25);
         comboBox1.addItem(DataFormat.ABCD);
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
         comboBox1.setSelectedItem(DataFormat.CDAB);
         panelConnect.add(comboBox1);
+
+        JLabel label_address = new JLabel("Address Mapping:");
+        label_address.setBounds(8, 32,120, 17);
+        panelConnect.add(label_address);
+
+        JComboBox<String> comboBox_address_mapping = new JComboBox<>();
+        comboBox_address_mapping.setBounds(130,30,201, 25);
+        comboBox_address_mapping.addItem("No Address Mapping"); // 0
+        comboBox_address_mapping.addItem("InovanceAM");         // 1
+        comboBox_address_mapping.addItem("InovanceH3U");        // 2
+        comboBox_address_mapping.addItem("InovanceH5U");        // 3
+        comboBox_address_mapping.addItem("InovanceEasy");       // 4
+        comboBox_address_mapping.addItem("DeltaAS[台达]");       // 5
+        comboBox_address_mapping.addItem("DeltaDvp[台达]");      // 6
+        comboBox_address_mapping.addItem("MegMeet[麦格米特]");    // 7
+        comboBox_address_mapping.addItem("XinJE_XC"); // 0
+        comboBox_address_mapping.addItem("XinJE_XD_XL"); // 0
+        comboBox_address_mapping.addItem("WeCon[维控]"); // 0
+        comboBox_address_mapping.addItem("Invt_Ts[英威腾]"); // 0
+        comboBox_address_mapping.setSelectedItem("No Address Mapping");
+        panelConnect.add(comboBox_address_mapping);
+        comboBox_address_mapping.addItemListener(new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                if (e.getStateChange() == ItemEvent.SELECTED) {
+                    // System.out.println("选中: " + e.getItem());
+                    if (modbusTcpServer != null)
+                    {
+                        switch (comboBox_address_mapping.getSelectedIndex())
+                        {
+                            case 0:  modbusTcpServer.RegisteredAddressMapping( null ); break;
+                            case 1:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return InovanceHelper.PraseInovanceAMAddress( address, function );
+                                }
+                            }  ); break;
+                            case 2:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return InovanceHelper.PraseInovanceH3UAddress( address, function );
+                                }
+                            } ); break;
+                            case 3:  modbusTcpServer.RegisteredAddressMapping(new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return InovanceHelper.PraseInovanceH5UAddress( address, function );
+                                }
+                            } ); break;
+                            case 4:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return InovanceHelper.PraseInovanceH5UAddress( address, function );
+                                }
+                            } ); break;
+                            case 5:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return ModbusMappingAddress.Delta_AS( address, function );
+                                }
+                            }  ); break;
+                            case 6:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return DeltaDvpHelper.ParseDeltaDvpAddress( address, function );
+                                }
+                            } ); break;
+                            case 7:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return MegMeetHelper.PraseMegMeetAddress( address, function );
+                                }
+                            } ); break;
+                            case 8:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return XinJEHelper.PraseXinJEAddress( XinJESeries.XC, address, function );
+                                }
+                            }  ); break;
+                            case 9:  modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return XinJEHelper.PraseXinJEAddress( XinJESeries.XD, address, function );
+                                }
+                            } ); break;
+                            case 10: modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return ModbusMappingAddress.WeCon_Lx5v(address, function);
+                                }
+                            } ); break;
+                            case 11: modbusTcpServer.RegisteredAddressMapping( new FunctionOperateExTwo<String, Byte,OperateResultExOne<String>>(){
+                                @Override
+                                public OperateResultExOne<String> Action(String address, Byte function) {
+                                    return ModbusMappingAddress.Invt_Ts(address, function);
+                                }
+                            }); break;
+                            default: break;
+                        }
+                    }
+
+                    switch (comboBox_address_mapping.getSelectedIndex())
+                    {
+                        case 0:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Modbus.DemoModbusHelper.GetModbusAddressExamples( ) ); break;
+                        case 1:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Inovance.InovanceHelper.GetInovanceAddress( ) ); break;
+                        case 2:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Inovance.InovanceHelper.GetInovanceAddress( ) ); break;
+                        case 3:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Inovance.InovanceHelper.GetInovanceAddress( ) ); break;
+                        case 4:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Inovance.InovanceHelper.GetInovanceAddress( ) ); break;
+                        case 5:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Delta.DeltaHelper.GetDeviceAddressExamples( ) ); break;
+                        case 6:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Delta.DeltaHelper.GetDeviceAddressExamples( ) ); break;
+                        case 7:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.MegMeet.MegMeetHelper.GetMegMeetAddress( ) ); break;
+                        case 8:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.XinJE.XinJEHelper.GetXinJEAddress( ) ); break;
+                        case 9:  addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.XinJE.XinJEHelper.GetXinJEAddress( ) ); break;
+                        case 10: addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.WeCon.WeConHelper.GetWeConLx5vAddress( ) ); break;
+                        case 11: addressExampleControl.SetAddressExample( HslCommunicationDemo.PLC.Invt.InvtHelper.GetInvtAddress( ) ); break;
+                        default: break;
+                    }
+                }
+            }
+        });
 
         JButton button2 = new JButton("Close");
         button2.setFocusPainted(false);

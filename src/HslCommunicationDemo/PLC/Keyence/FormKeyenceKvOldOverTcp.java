@@ -1,17 +1,12 @@
-package HslCommunicationDemo.Instrument;
+package HslCommunicationDemo.PLC.Keyence;
 
-import HslCommunication.Core.Transfer.DataFormat;
 import HslCommunication.Core.Types.OperateResult;
-import HslCommunication.Instrument.DLT.DLT645OverTcp;
-import HslCommunication.ModBus.ModbusTcpNet;
-import HslCommunication.Profinet.Omron.OmronFinsNet;
-import HslCommunication.Profinet.Omron.OmronPlcType;
-import HslCommunication.Utilities;
+import HslCommunication.Profinet.Keyence.KeyenceKvOldOverTcp;
+import HslCommunication.Profinet.Keyence.KeyenceNanoSerialOverTcp;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.DemoUtils;
-import HslCommunicationDemo.PLC.Omron.DemoOmronHelper;
-import HslCommunicationDemo.PLC.Omron.OmronFinsControl;
+import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
@@ -19,85 +14,88 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormDLT645OverTcp extends JPanel {
-    public FormDLT645OverTcp(JTabbedPane tabbedPane){
+public class FormKeyenceKvOldOverTcp  extends HslJPanel {
+
+    public FormKeyenceKvOldOverTcp(JTabbedPane tabbedPane){
         setLayout(null);
-        add( new UserControlReadWriteHead("DLT 645 OverTcp", tabbedPane, this));
+        add( new UserControlReadWriteHead("KvOld Over Tcp", tabbedPane, this));
         AddConnectSegment(this);
-        dlt = new DLT645OverTcp();
+        plc = new KeyenceKvOldOverTcp();
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
 
-        dlt645Control = new Dlt645Control();
-        userControlReadWriteDevice.AddSpecialFunctionTab( dlt645Control, false,"DLT Function");
-
-        addressExampleControl = new AddressExampleControl(DemoDltHelper.GetDlt645Address());
+        addressExampleControl = new AddressExampleControl(KeyenceHelper.GetKeyenceKvOld());
         userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
+
     }
 
     private AddressExampleControl addressExampleControl;
-    private DLT645OverTcp dlt = null;
-    private String defaultAddress = "02-01-01-00";
+    private KeyenceKvOldOverTcp plc = null;
+    private String defaultAddress = "DM100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
-    private Dlt645Control dlt645Control = null;
+    private JButton button_connect;
+    private JButton button_disconnect;
+
+    @Override
+    public void OnClose() {
+        super.OnClose();
+        if (button_connect == null || button_disconnect == null) return;
+        if (button_disconnect.isEnabled()){
+            plc.ConnectClose();
+        }
+    }
+
 
     public void AddConnectSegment(JPanel panel){
         JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
 
         JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 5,56, 17);
+        label1.setBounds(8, 12,56, 17);
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(62,2,150, 23);
+        textField1.setBounds(62,9,106, 23);
         textField1.setText("127.0.0.1");
         panelConnect.add(textField1);
 
         JLabel label2 = new JLabel("Port：");
-        label2.setBounds(220, 5,60, 17);
+        label2.setBounds(184, 12,56, 17);
         panelConnect.add(label2);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(280,2,61, 23);
-        textField2.setText("2000");
+        textField2.setBounds(238,9,61, 23);
+        textField2.setText("8501");
         panelConnect.add(textField2);
 
-        JLabel label3 = new JLabel("Password:");
-        label3.setBounds(8, 34,80, 17);
+        JLabel label3 = new JLabel("适用于 Kv-10xx, 16xx, 24xx, 40xx, kv-80, kv-300，期中 xx 表示 AR/AT/DR/DT");
+        label3.setBounds(8, 35,500, 17);
         panelConnect.add(label3);
-
-        JTextField textField3 = new JTextField();
-        textField3.setBounds(90,31,150, 23);
-        textField3.setText("");
-        panelConnect.add(textField3);
-
-        JLabel label4 = new JLabel("Op Code:");
-        label4.setBounds(250, 34,60, 17);
-        panelConnect.add(label4);
-
-        JTextField textField4 = new JTextField();
-        textField4.setBounds(320,31,150, 23);
-        textField4.setText("");
-        panelConnect.add(textField4);
-
-            JLabel label5 = new JLabel("Station:");
-        label5.setBounds(480, 34,150, 17);
-        panelConnect.add(label5);
-
-        JTextField textField5 = new JTextField();
-        textField5.setBounds(530,31,120, 23);
-        textField5.setText("1");
-        panelConnect.add(textField5);
+//
+//        JLabel label3 = new JLabel("Station：");
+//        label3.setBounds(338, 17,56, 17);
+//        panelConnect.add(label3);
+//
+//        JTextField textField3 = new JTextField();
+//        textField3.setBounds(392,14,40, 23);
+//        textField3.setText("0");
+//        panelConnect.add(textField3);
+//
+//        JCheckBox checkBox1 = new JCheckBox("Use Station?");
+//        checkBox1.setBounds(447,16,106, 21);
+//        checkBox1.setSelected(false);
+//        panelConnect.add(checkBox1);
 
         JButton button2 = new JButton("Disconnect");
         button2.setFocusPainted(false);
-        button2.setBounds(850,11,121, 28);
+        button2.setBounds(684,11,121, 28);
+        button_disconnect = button2;
         panelConnect.add(button2);
 
         JButton button1 = new JButton("Connect");
         button1.setFocusPainted(false);
-        button1.setBounds(752,11,91, 28);
+        button1.setBounds(577,11,91, 28);
+        button_connect = button1;
         panelConnect.add(button1);
 
         button2.setEnabled(false);
@@ -108,13 +106,12 @@ public class FormDLT645OverTcp extends JPanel {
                 if (button1.isEnabled() == false)return;
                 super.mouseClicked(e);
                 try {
-                    dlt.setIpAddress(textField1.getText());
-                    dlt.setPort(Integer.parseInt(textField2.getText()));
-                    dlt.setPassword(textField3.getText());
-                    dlt.setOpCode(textField4.getText());
-                    dlt.setStation(textField5.getText());
+                    plc.setIpAddress(textField1.getText());
+                    plc.setPort(Integer.parseInt(textField2.getText()));
+                    //plc.Station = (byte) Integer.parseInt(textField3.getText());
+                    //plc.UseStation = checkBox1.isSelected();
 
-                    OperateResult connect = dlt.ConnectServer();
+                    OperateResult connect = plc.ConnectServer();
                     if(connect.IsSuccess){
                         JOptionPane.showMessageDialog(
                                 null,
@@ -123,8 +120,7 @@ public class FormDLT645OverTcp extends JPanel {
                                 JOptionPane.PLAIN_MESSAGE);
                         button2.setEnabled(true);
                         button1.setEnabled(false);
-                        userControlReadWriteDevice.SetReadWriteNet(dlt, defaultAddress, 10);
-                        dlt645Control.SetReadWritePlc(dlt);
+                        userControlReadWriteDevice.SetReadWriteNet(plc, defaultAddress, 10);
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -134,11 +130,9 @@ public class FormDLT645OverTcp extends JPanel {
                                 JOptionPane.WARNING_MESSAGE);
                     }
 
-                    StringBuilder stringBuilder = DemoUtils.CreateDeviceCode( DLT645OverTcp.class.getName(), "dlt", textField1.getText(), textField2.getText() );
-                    stringBuilder.append( "dlt.setPassword( \"" + textField3.getText() + "\" );\r\n" );
-                    stringBuilder.append( "dlt.setOpCode( \"" + textField4.getText() + "\" );\r\n" );
-                    stringBuilder.append( "dlt.setStation( \"" + textField5.getText() + "\" );\r\n" );
-                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString(), "dlt" );
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( KeyenceNanoSerialOverTcp.class, textField1.getText(), textField2.getText() );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -154,8 +148,8 @@ public class FormDLT645OverTcp extends JPanel {
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (!button2.isEnabled()) return;
-                if(dlt!=null){
-                    dlt.ConnectClose();
+                if(plc !=null){
+                    plc.ConnectClose();
                     button1.setEnabled(true);
                     button2.setEnabled(false);
                     userControlReadWriteDevice.setEnabled(false);

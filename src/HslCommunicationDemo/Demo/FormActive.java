@@ -21,15 +21,23 @@ public class FormActive extends HslJPanel {
 
         setSize(480, 380);
 
-        JLabel label1 = new JLabel( "ActiveCode:" );
-        label1.setBounds( 20, 10, 100, 20 );
-        add(label1);
+        JLabel label2 = new JLabel( "MachineCode:" );
+        label2.setBounds( 20, 7, 100, 20 );
+        add(label2);
 
+        JTextField textField2 = new JTextField();
+        textField2.setBounds( 120, 10, getWidth() - 130, 20 );
+        textField2.setText( HslCommunication.BasicFramework.SoftAuthorize.GetInfo() );
+        add(textField2);
+
+        JLabel label1 = new JLabel( "ActiveCode:" );
+        label1.setBounds( 20, 30, 100, 20 );
+        add(label1);
 
         JTextArea textArea1 = new JTextArea();
         textArea1.setLineWrap(true);
         JScrollPane scrollPane1 = new JScrollPane(textArea1);
-        scrollPane1.setBounds(20,30,getWidth() - 30, 160);
+        scrollPane1.setBounds(20,50,getWidth() - 30, 140);
         add(scrollPane1);
 
         JTextArea textArea_code = new JTextArea();

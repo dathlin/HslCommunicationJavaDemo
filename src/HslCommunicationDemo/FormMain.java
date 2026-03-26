@@ -30,6 +30,7 @@ import HslCommunicationDemo.PLC.Invt.FormInvtModbusRtuOverTcp;
 import HslCommunicationDemo.PLC.Invt.FormInvtModbusTcp;
 import HslCommunicationDemo.PLC.Keyence.FormKeyenceAscii;
 import HslCommunicationDemo.PLC.Keyence.FormKeyenceBinary;
+import HslCommunicationDemo.PLC.Keyence.FormKeyenceKvOldOverTcp;
 import HslCommunicationDemo.PLC.Keyence.FormKeyenceNanoOverTcp;
 import HslCommunicationDemo.PLC.MegMeet.FormMegMeetSerialOverTcp;
 import HslCommunicationDemo.PLC.MegMeet.FormMegMeetTcpNet;
@@ -566,6 +567,12 @@ public class FormMain extends JDialog
             @Override
             public JPanel Action() {
                 return new FormKeyenceNanoOverTcp( tabbedPane );
+            }
+        } );
+        AddTreeNode( node, "KvOld Over TCP", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormKeyenceKvOldOverTcp( tabbedPane );
             }
         } );
 

@@ -131,6 +131,17 @@ public class UserControlReadWriteOp extends JPanel {
     private JButton button_write_hex;
     private JButton button_write_string;
 
+    private JRadioButton radioButton_dec;
+    private JRadioButton radioButton_hex;
+    private JRadioButton radioButton_bit;
+
+    private int getRenderResult( )
+    {
+        if (radioButton_hex.isSelected()) return 1;
+        else if (radioButton_bit.isSelected()) return 2;
+        else return -1;
+    }
+
     public void AddRead(JPanel panel){
         JPanel panelRead = new JPanel();
         panelRead.setLayout(null);
@@ -163,8 +174,29 @@ public class UserControlReadWriteOp extends JPanel {
         panelRead.add(textField_ReadLength);
 
         JLabel label2 = new JLabel("Result：");
-        label2.setBounds(9, 58,70, 17);
+        label2.setBounds(5, 58,70, 17);
         panelRead.add(label2);
+
+
+        JPanel panelFormat = new JPanel(null);
+        radioButton_dec = new JRadioButton("Dec");
+        radioButton_dec.setSelected(true);
+        radioButton_dec.setBounds( 0, 3, 70, 25 );
+        panelFormat.add(radioButton_dec);
+        radioButton_hex = new JRadioButton("Hex");
+        radioButton_hex.setBounds( 0, 25, 70, 25 );
+        panelFormat.add(radioButton_hex);
+        radioButton_bit = new JRadioButton("Bit");
+        radioButton_bit.setBounds( 0, 50, 70, 25 );
+        panelFormat.add(radioButton_bit);
+
+
+        panelFormat.setBounds( 9, 80, 70, 100 );
+        add(panelFormat);
+        ButtonGroup buttonGroup = new ButtonGroup();
+        buttonGroup.add(radioButton_dec);
+        buttonGroup.add(radioButton_hex);
+        buttonGroup.add(radioButton_bit);
 
         JTextArea textArea1 = new JTextArea();
         textArea1.setLineWrap(true);
@@ -215,7 +247,7 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Byte> read = (OperateResultExOne<Byte>)readByteMethod.invoke(readWriteNet, textField1.getText());
                     SetTimeSpend(now);
                     OutputReadCode( "Byte", "ReadByte", textField1.getText() );
-                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp, getRenderResult( ) );
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 catch (Exception ex){
@@ -244,7 +276,7 @@ public class UserControlReadWriteOp extends JPanel {
                 if (textField_ReadLength.getText().equals("1")) {
                     OperateResultExOne<Short> read = readWriteNet.ReadInt16(textField1.getText());
                     SetTimeSpend(now);
-                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp, getRenderResult( ));
                     OutputReadCode( "Short", "ReadInt16", textField1.getText() );
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
@@ -275,7 +307,7 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Integer> read = readWriteNet.ReadUInt16(textField1.getText());
                     SetTimeSpend(now);
                     OutputReadCode( "Integer", "ReadUInt16", textField1.getText() );
-                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp, getRenderResult( ));
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
@@ -305,7 +337,7 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Integer> read = readWriteNet.ReadInt32(textField1.getText());
                     SetTimeSpend(now);
                     OutputReadCode( "Integer", "ReadInt32", textField1.getText() );
-                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp, getRenderResult( ));
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
@@ -335,7 +367,7 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Long> read = readWriteNet.ReadUInt32(textField1.getText());
                     SetTimeSpend(now);
                     OutputReadCode( "Long", "ReadUInt32", textField1.getText() );
-                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp, getRenderResult( ));
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {
@@ -365,7 +397,7 @@ public class UserControlReadWriteOp extends JPanel {
                     OperateResultExOne<Long> read = readWriteNet.ReadInt64(textField1.getText());
                     SetTimeSpend(now);
                     OutputReadCode( "Long", "ReadInt64", textField1.getText() );
-                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp);
+                    DemoUtils.ReadResultRender(read, textField1.getText(), textArea1, jsp, getRenderResult( ));
                     if (!read.IsSuccess&&checkBox_read_timer.isSelected())  { checkBox_read_timer.setSelected(false); button_read_timer = null;}
                 }
                 else {

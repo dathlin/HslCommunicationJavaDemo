@@ -3,15 +3,18 @@ package HslCommunicationDemo.Demo;
 import HslCommunication.Utilities;
 
 import javax.swing.*;
+import javax.swing.table.DefaultTableModel;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
 public class AddressExampleControl extends JPanel {
     private JTable table;
+    private JScrollPane scrollPane;
+    private DefaultTableModel  tableModel;
     private String[] columns = new String[]{ "Address", "Description", "Bit", "Word", "Mark" };
     public AddressExampleControl( DeviceAddressExample[] addressExamples ){
         setLayout(null);
-        JScrollPane scrollPane = new JScrollPane();
+        scrollPane = new JScrollPane();
         scrollPane.setBounds(3, 3, 500, 100);
         String[][] tableData = new String[addressExamples.length][columns.length];
         for (int row = 0; row < addressExamples.length; row ++){
@@ -29,7 +32,8 @@ public class AddressExampleControl extends JPanel {
             }
         }
 
-        table = new JTable( tableData, columns);
+        tableModel = new DefaultTableModel(tableData, columns);
+        table = new JTable(tableModel);
         table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
         table.setRowHeight(20);
         scrollPane.setViewportView(table);
@@ -51,6 +55,37 @@ public class AddressExampleControl extends JPanel {
                 table.getColumnModel().getColumn(4).setPreferredWidth( getWidth() - 460- 23 );
             }
         });
+    }
+
+    public void SetAddressExample( DeviceAddressExample[] addressExamples )
+    {
+        if (addressExamples == null) addressExamples = new DeviceAddressExample[0];
+        if (tableModel == null) return;
+        tableModel.getDataVector().clear();
+
+        String[][] tableData = new String[addressExamples.length][columns.length];
+        for (int row = 0; row < addressExamples.length; row ++){
+            tableData[row][0] = addressExamples[row].AddressExample;
+            if (!addressExamples[row].IsHeader){
+                if (Utilities.IsStringNullOrEmpty(addressExamples[row].Unit)){
+                    tableData[row][1] = addressExamples[row].AddressType;
+                }
+                else {
+                    tableData[row][1] = addressExamples[row].AddressType + "(" + addressExamples[row].Unit + ")";
+                }
+                tableData[row][2] = addressExamples[row].BitEnable ? "√" : " ";
+                tableData[row][3] = addressExamples[row].WordEnable ? "√" : " ";
+                tableData[row][4] = addressExamples[row].Mark;
+            }
+        }
+        tableModel.setDataVector(tableData, columns);
+
+        // 设置列宽
+        table.getColumnModel().getColumn(0).setPreferredWidth( 180 );
+        table.getColumnModel().getColumn(1).setPreferredWidth( 200 );
+        table.getColumnModel().getColumn(2).setPreferredWidth( 40 );
+        table.getColumnModel().getColumn(3).setPreferredWidth( 40 );
+        table.getColumnModel().getColumn(4).setPreferredWidth( getWidth() - 460- 25 );
     }
 
 }
