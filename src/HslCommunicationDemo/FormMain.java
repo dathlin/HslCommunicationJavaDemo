@@ -24,6 +24,7 @@ import HslCommunicationDemo.PLC.Fuji.FormFujiCSTNet;
 import HslCommunicationDemo.PLC.Fuji.FormFujiSPBOverTcp;
 import HslCommunicationDemo.PLC.Fuji.FormFujiSPHNet;
 import HslCommunicationDemo.PLC.Ge.FormGeSRTPNet;
+import HslCommunicationDemo.PLC.Inovance.FormInovanceEasyNet;
 import HslCommunicationDemo.PLC.Inovance.FormInovanceSerialOverTcp;
 import HslCommunicationDemo.PLC.Inovance.FormInovanceTcpNet;
 import HslCommunicationDemo.PLC.Invt.FormInvtModbusRtuOverTcp;
@@ -670,6 +671,12 @@ public class FormMain extends JDialog
             @Override
             public JPanel Action() {
                 return new FormInovanceTcpNet( tabbedPane );
+            }
+        } );
+        AddTreeNode( node, "EasyNet", new FunctionOperate<JPanel>(){
+            @Override
+            public JPanel Action() {
+                return new FormInovanceEasyNet( tabbedPane );
             }
         } );
         treeNode.add(node);

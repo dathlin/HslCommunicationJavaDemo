@@ -11,6 +11,7 @@ import HslCommunication.Profinet.Omron.OmronPlcType;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -39,98 +40,60 @@ public class FormOmronFinsUdp extends HslJPanel {
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private OmronFinsControl finsControl = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             omronFinsNet.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
-        textField1.setText("192.168.0.10");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
-        textField2.setText("9600");
-        panelConnect.add(textField2);
-
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "9600" );
         JLabel label4 = new JLabel("PC Net Num：");
-        label4.setBounds(400, 17,100, 17);
-        panelConnect.add(label4);
+        label4.setBounds(5, TcpConnectControl.LocationTwoLine,100, 17);
+        tcpConnectControl.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(500,14,40, 23);
+        textField4.setBounds(110,TcpConnectControl.LocationTwoLine - 3,40, 23);
         textField4.setText("192");
-        panelConnect.add(textField4);
+        tcpConnectControl.add(textField4);
 
         JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(550,13,80, 25);
+        comboBox1.setBounds(160,TcpConnectControl.LocationTwoLine - 3,80, 25);
         comboBox1.addItem(DataFormat.ABCD);
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
         comboBox1.setSelectedIndex(2);
-        panelConnect.add(comboBox1);
+        tcpConnectControl.add(comboBox1);
 
 
         JComboBox<OmronPlcType> comboBox2 = new JComboBox<>();
-        comboBox2.setBounds(640,13,80, 25);
+        comboBox2.setBounds(250,TcpConnectControl.LocationTwoLine - 3,80, 25);
         comboBox2.addItem(OmronPlcType.CSCJ);
         comboBox2.addItem(OmronPlcType.CV);
         comboBox2.setSelectedIndex(0);
-        panelConnect.add(comboBox2);
+        tcpConnectControl.add(comboBox2);
 
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(850,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(752,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    omronFinsNet.setIpAddress(textField1.getText());
-                    omronFinsNet.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(omronFinsNet);
                     omronFinsNet.SA1 = (byte) Integer.parseInt(textField4.getText());
                     omronFinsNet.getByteTransform().setDataFormat((DataFormat) comboBox1.getSelectedItem());
                     omronFinsNet.setPlcType((OmronPlcType)comboBox2.getSelectedItem());
-                    button2.setEnabled(true);
-                    button1.setEnabled(false);
+                    tcpConnectControl.SetConnectSuccess();
                     userControlReadWriteDevice.SetReadWriteNet(omronFinsNet, defaultAddress, 10);
                     finsControl.SetOmronFins( omronFinsNet );
 
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( OmronFinsUdp.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( omronFinsNet, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     stringBuilder.append( "plc.SA1 = (byte) Integer.parseInt(\"" + textField4.getText() + "\");\r\n" );
                     stringBuilder.append( "plc.getByteTransform().setDataFormat(DataFormat." + (DataFormat) comboBox1.getSelectedItem() + ");\r\n" );
                     stringBuilder.append( "plc.setPlcType(OmronPlcType." + (OmronPlcType)comboBox2.getSelectedItem() + ");\r\n" );
@@ -145,20 +108,19 @@ public class FormOmronFinsUdp extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (!button2.isEnabled()) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(omronFinsNet!=null){
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 }

@@ -7,6 +7,7 @@ import HslCommunication.Profinet.Melsec.MelsecA3CNetOverTcp;
 import HslCommunication.Profinet.Melsec.MelsecFxLinksOverTcp;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -38,94 +39,58 @@ public class FormMelsecA3CNetOverTcp extends HslJPanel {
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private JPanel fxLinksControl;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl  tcpConnectControl;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             melsec.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,30, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(42,14,126, 23);
-        textField1.setText("192.168.0.10");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(170, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(220,14,60, 23);
-        textField2.setText("2000");
-        panelConnect.add(textField2);
-
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "2000");
         JLabel label3 = new JLabel("Station：");
-        label3.setBounds(280, 17,65, 17);
-        panelConnect.add(label3);
+        label3.setBounds(5, TcpConnectControl.LocationTwoLine,65, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(340,14,50, 23);
+        textField3.setBounds(70,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField3.setText("0");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
         JCheckBox checkBox1 = new JCheckBox("SumCheck?");
-        checkBox1.setBounds(400, 6, 100, 21);
+        checkBox1.setBounds(130, TcpConnectControl.LocationTwoLine - 1, 100, 21);
         checkBox1.setSelected(true);
-        panelConnect.add(checkBox1);
+        tcpConnectControl.add(checkBox1);
 
         JCheckBox checkBox2 = new JCheckBox("EnableWriteBitToWordRegister?");
-        checkBox2.setBounds(400, 30, 250, 21);
+        checkBox2.setBounds(230, TcpConnectControl.LocationTwoLine - 1, 250, 21);
         checkBox2.setSelected(false);
-        panelConnect.add(checkBox2);
+        tcpConnectControl.add(checkBox2);
 
         JLabel label5 = new JLabel("Format：");
-        label5.setBounds(610, 17,70, 17);
-        panelConnect.add(label5);
+        label5.setBounds(480, TcpConnectControl.LocationTwoLine,70, 17);
+        tcpConnectControl.add(label5);
 
 
         JComboBox<Integer> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(680,13,60, 25);
+        comboBox1.setBounds(560,TcpConnectControl.LocationTwoLine - 4,60, 25);
         comboBox1.addItem(1);
         comboBox1.addItem(2);
         comboBox1.addItem(3);
         comboBox1.addItem(4);
         comboBox1.setSelectedItem(1);
-        panelConnect.add(comboBox1);
+        tcpConnectControl.add(comboBox1);
 
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(850,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(750,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    melsec.setIpAddress(textField1.getText());
-                    melsec.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(melsec);
                     melsec.Station = Byte.parseByte(textField3.getText());
                     melsec.SumCheck = checkBox1.isSelected();
                     melsec.EnableWriteBitToWordRegister = checkBox2.isSelected();
@@ -138,8 +103,7 @@ public class FormMelsecA3CNetOverTcp extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(melsec, defaultAddress, 10);
                         DemoUtils.SetPanelEnabled(fxLinksControl, true);
                     }
@@ -152,7 +116,7 @@ public class FormMelsecA3CNetOverTcp extends HslJPanel {
                     }
 
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MelsecA3CNetOverTcp.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( melsec, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     stringBuilder.append( "plc.Station = Byte.parseByte(\"" + textField3.getText() + "\");\r\n");
                     stringBuilder.append( "plc.SumCheck = " + melsec.SumCheck + ";\r\n");
                     stringBuilder.append( "plc.EnableWriteBitToWordRegister = " + checkBox2.isSelected() + ";\r\n" );
@@ -168,15 +132,14 @@ public class FormMelsecA3CNetOverTcp extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(melsec !=null){
                     melsec.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                     DemoUtils.SetPanelEnabled(fxLinksControl, false);
                 }
@@ -184,7 +147,7 @@ public class FormMelsecA3CNetOverTcp extends HslJPanel {
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
     public JPanel AddFunction(){

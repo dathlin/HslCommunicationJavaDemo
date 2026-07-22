@@ -1,13 +1,15 @@
-package HslCommunicationDemo.PLC.AllenBradley;
+package HslCommunicationDemo.PLC.Inovance;
 
 import HslCommunication.Core.Types.OperateResult;
-import HslCommunication.Profinet.AllenBradley.AllenBradleyPcccNet;
-import HslCommunication.Profinet.AllenBradley.AllenBradleySLCNet;
+import HslCommunication.Profinet.Inovance.InovanceEasyNet;
+import HslCommunication.Profinet.Melsec.MelsecMcNet;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
 import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
+import HslCommunicationDemo.PLC.Melsec.DemoMelsecHelper;
+import HslCommunicationDemo.PLC.Melsec.MelsecMcControl;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
@@ -15,47 +17,46 @@ import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class FormAllenBradleySLCNet extends HslJPanel
+public class FormInovanceEasyNet  extends HslJPanel
 {
 
-    public FormAllenBradleySLCNet(JTabbedPane tabbedPane){
+    public FormInovanceEasyNet( JTabbedPane tabbedPane ){
         setLayout(null);
-        add( new UserControlReadWriteHead("SLC Net", tabbedPane, this));
+        add( new UserControlReadWriteHead("EasyNet", tabbedPane, this));
         AddConnectSegment(this);
-        allenBradleySLCNet = new AllenBradleySLCNet();
+        inovanceEasyNet = new InovanceEasyNet();
 
         userControlReadWriteDevice = DemoUtils.CreateDevicePanel(this);
         userControlReadWriteDevice.setEnabled(false);
 
-        addressExampleControl = new AddressExampleControl(DemoAllenBradleyHelper.GetSLCAddressExamples());
+        addressExampleControl = new AddressExampleControl(InovanceHelper.GetInovanceEasyNetAddress());
         userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
+
     }
 
     private AddressExampleControl addressExampleControl;
-    private AllenBradleySLCNet allenBradleySLCNet = null;
-    private String defaultAddress = "A9:0";
+    private InovanceEasyNet inovanceEasyNet = null;
+    private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
-        super.OnClose();
         if (tcpConnectControl.NeedCloseDevice()){
-            allenBradleySLCNet.ConnectClose();
+            inovanceEasyNet.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationCenterLine, "44818");
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationCenterLine, "12939");
         tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    tcpConnectControl.SetNetworkIpPort(allenBradleySLCNet);
-
-                    OperateResult connect = allenBradleySLCNet.ConnectServer();
+                    tcpConnectControl.SetNetworkIpPort(inovanceEasyNet);
+                    OperateResult connect = inovanceEasyNet.ConnectServer();
                     if(connect.IsSuccess){
                         JOptionPane.showMessageDialog(
                                 null,
@@ -63,7 +64,7 @@ public class FormAllenBradleySLCNet extends HslJPanel
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
                         tcpConnectControl.SetConnectSuccess();
-                        userControlReadWriteDevice.SetReadWriteNet(allenBradleySLCNet, defaultAddress, 10);
+                        userControlReadWriteDevice.SetReadWriteNet(inovanceEasyNet, defaultAddress, 10);
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -72,6 +73,9 @@ public class FormAllenBradleySLCNet extends HslJPanel
                                 "Result",
                                 JOptionPane.WARNING_MESSAGE);
                     }
+
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( inovanceEasyNet, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
+                    userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
                     JOptionPane.showMessageDialog(
@@ -80,10 +84,6 @@ public class FormAllenBradleySLCNet extends HslJPanel
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
-
-
-                StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( allenBradleySLCNet, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
-                userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
             }
         });
         tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
@@ -91,8 +91,8 @@ public class FormAllenBradleySLCNet extends HslJPanel
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
                 if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
-                if(allenBradleySLCNet !=null){
-                    allenBradleySLCNet.ConnectClose();
+                if(inovanceEasyNet!=null){
+                    inovanceEasyNet.ConnectClose();
                     tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
@@ -101,6 +101,6 @@ public class FormAllenBradleySLCNet extends HslJPanel
 
 
         panel.add(tcpConnectControl);
-    }
 
+    }
 }

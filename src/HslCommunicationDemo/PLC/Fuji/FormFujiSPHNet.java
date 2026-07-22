@@ -10,6 +10,7 @@ import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,56 +36,35 @@ public class FormFujiSPHNet extends HslJPanel {
     private FujiSPHNet plc = null;
     private String defaultAddress = "M1.100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             plc.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "507");
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "507");
 
         JLabel label3 = new JLabel("ConnectId：");
-        label3.setBounds(400, 17,80, 17);
-        panelConnect.add(label3);
+        label3.setBounds(5, TcpConnectControl.LocationTwoLine,80, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(480,14,50, 23);
+        textField3.setBounds(90,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField3.setText("254");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(684,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(577,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    plc.setIpAddress(textField1.getText());
-                    plc.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(plc);
                     plc.setConnectionID((byte) Integer.parseInt(textField3.getText()));
 
                     OperateResult connect = plc.ConnectServer();
@@ -94,8 +74,7 @@ public class FormFujiSPHNet extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(plc, defaultAddress, 10);
                     }
                     else {
@@ -107,7 +86,7 @@ public class FormFujiSPHNet extends HslJPanel {
                     }
 
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( FujiSPHNet.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( plc, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     stringBuilder.append( "plc.setConnectionID((byte) Integer.parseInt(\"" + textField3.getText() + "\"));\r\n" );
                     userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
@@ -120,22 +99,21 @@ public class FormFujiSPHNet extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (!button2.isEnabled()) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(plc !=null){
                     plc.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
 }

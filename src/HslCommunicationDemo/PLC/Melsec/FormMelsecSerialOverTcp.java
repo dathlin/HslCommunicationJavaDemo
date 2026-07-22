@@ -7,6 +7,7 @@ import HslCommunication.Profinet.Melsec.MelsecFxSerialOverTcp;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -33,55 +34,34 @@ public class FormMelsecSerialOverTcp extends HslJPanel
     private MelsecFxSerialOverTcp melsec = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             melsec.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "5014");
-
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "5014");
         JCheckBox checkBox1 = new JCheckBox("Use New Version");
-        checkBox1.setBounds(400, 14, 130, 21);
+        checkBox1.setBounds(5, TcpConnectControl.LocationTwoLine - 1, 130, 21);
         checkBox1.setSelected(true);
-        panelConnect.add(checkBox1);
+        tcpConnectControl.add(checkBox1);
 
         JCheckBox checkBox2 = new JCheckBox("Got?");
-        checkBox2.setBounds(530, 14, 77, 21);
-        panelConnect.add(checkBox2);
+        checkBox2.setBounds(140, TcpConnectControl.LocationTwoLine - 1, 77, 21);
+        tcpConnectControl.add(checkBox2);
 
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(684,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(577,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    melsec.setIpAddress(textField1.getText());
-                    melsec.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(melsec);
                     melsec.IsNewVersion = checkBox1.isSelected();
                     melsec.setUseGot(checkBox2.isSelected());
 
@@ -92,8 +72,7 @@ public class FormMelsecSerialOverTcp extends HslJPanel
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(melsec, defaultAddress, 10);
                     }
                     else {
@@ -104,7 +83,7 @@ public class FormMelsecSerialOverTcp extends HslJPanel
                                 JOptionPane.WARNING_MESSAGE);
                     }
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MelsecFxSerialOverTcp.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( melsec, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     stringBuilder.append( "plc.IsNewVersion = " + checkBox1.isSelected() + ";\r\n" );
                     stringBuilder.append( "plc.setUseGot(" + checkBox2.isSelected() + ");\r\n" );
                     userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
@@ -118,21 +97,20 @@ public class FormMelsecSerialOverTcp extends HslJPanel
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(melsec !=null){
                     melsec.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 }

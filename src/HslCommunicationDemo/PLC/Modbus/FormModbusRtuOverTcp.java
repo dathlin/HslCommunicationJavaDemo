@@ -12,6 +12,7 @@ import HslCommunication.Utilities;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.PLC.Modbus.ModbusSpecialControl;
 
 import javax.swing.*;
@@ -44,8 +45,7 @@ public class FormModbusRtuOverTcp extends HslJPanel {
     private ModbusSpecialControl modbusSpecialControl;
     protected FunctionOperateExTwo<String, Byte,OperateResultExOne<String>> addressMapping = null;
     protected String addressMappingCode = "";
-    private JButton button_connect = null;
-    private JButton button_disconnect = null;
+    private TcpConnectControl  tcpConnectControl = null;
 
     public String getWindowHead(){
         return "Modbus RTU Over Tcp";
@@ -61,81 +61,61 @@ public class FormModbusRtuOverTcp extends HslJPanel {
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled())
-        {
+        if (tcpConnectControl.NeedCloseDevice()) {
             modbusTcpNet.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect, 7);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "502", 7);
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "502");
 
         JLabel label3 = new JLabel("Station：");
-        label3.setBounds(390, 7,56, 17);
-        panelConnect.add(label3);
+        label3.setBounds(170, TcpConnectControl.LocationTwoLine,56, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(440,4,40, 23);
+        textField3.setBounds(230,TcpConnectControl.LocationTwoLine - 3,40, 23);
         textField3.setText("1");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
 
         JLabel label10 = new JLabel("BroadcastStation:");
-        label10.setBounds(10, 33,130, 17);
-        panelConnect.add(label10);
+        label10.setBounds(5, TcpConnectControl.LocationTwoLine,130, 17);
+        tcpConnectControl.add(label10);
 
         JTextField textField_broadcast = new JTextField();
-        textField_broadcast.setBounds(130,30,40, 23);
+        textField_broadcast.setBounds(125,TcpConnectControl.LocationTwoLine - 2,40, 23);
         textField_broadcast.setText("");
-        panelConnect.add(textField_broadcast);
+        tcpConnectControl.add(textField_broadcast);
 
 
 
         JCheckBox checkBox1 = new JCheckBox("Start from 0?");
-        checkBox1.setBounds(490,4,106, 21);
+        checkBox1.setBounds(280,TcpConnectControl.LocationTwoLine - 1,106, 21);
         checkBox1.setSelected(true);
-        panelConnect.add(checkBox1);
+        tcpConnectControl.add(checkBox1);
 
         JCheckBox checkBox_string_reverse = new JCheckBox("string reverse?");
-        checkBox_string_reverse.setBounds(490,28,150, 21);
-        panelConnect.add(checkBox_string_reverse);
+        checkBox_string_reverse.setBounds(400,TcpConnectControl.LocationTwoLine - 1,150, 21);
+        tcpConnectControl.add(checkBox_string_reverse);
 
 
         JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(650,13,80, 25);
+        comboBox1.setBounds(570,TcpConnectControl.LocationTwoLine - 4,80, 25);
         comboBox1.addItem(DataFormat.ABCD);
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
         comboBox1.setSelectedItem(DataFormat.CDAB);
-        panelConnect.add(comboBox1);
+        tcpConnectControl.add(comboBox1);
 
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(850,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(752,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    modbusTcpNet.setIpAddress(textField1.getText());
-                    modbusTcpNet.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(modbusTcpNet);
                     modbusTcpNet.setStation( (byte) Integer.parseInt( textField3.getText() ) );
                     modbusTcpNet.setAddressStartWithZero(checkBox1.isSelected());
                     modbusTcpNet.setDataFormat((DataFormat) comboBox1.getSelectedItem());
@@ -153,8 +133,7 @@ public class FormModbusRtuOverTcp extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(modbusTcpNet, defaultAddress, 10);
                         modbusSpecialControl.setEnabled(true);
                         modbusSpecialControl.SetReadWriteModbus(modbusTcpNet, "100");
@@ -168,7 +147,7 @@ public class FormModbusRtuOverTcp extends HslJPanel {
                     }
 
 
-                    StringBuilder stringBuilder = DemoUtils.CreateDeviceCode( ModbusRtuOverTcp.class.getName(), "modbus", textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( modbusTcpNet, "modbus", tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     stringBuilder.append( "modbus.setStation( (byte) Integer.parseInt( \"" + textField3.getText() + "\" ) );\r\n" );
                     stringBuilder.append( "modbus.setAddressStartWithZero(" + checkBox1.isSelected() + ");\r\n" );
                     stringBuilder.append( "modbus.setDataFormat(DataFormat." + (DataFormat) comboBox1.getSelectedItem() + ");\r\n" );
@@ -191,15 +170,14 @@ public class FormModbusRtuOverTcp extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (!button2.isEnabled()) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(modbusTcpNet!=null){
                     modbusTcpNet.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                     modbusSpecialControl.setEnabled(false);
                 }
@@ -207,7 +185,7 @@ public class FormModbusRtuOverTcp extends HslJPanel {
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
 
 
     }

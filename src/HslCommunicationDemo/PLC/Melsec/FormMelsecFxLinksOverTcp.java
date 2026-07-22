@@ -7,6 +7,7 @@ import HslCommunication.Profinet.Melsec.MelsecFxLinksOverTcp;
 import HslCommunication.Profinet.Melsec.MelsecFxSerialOverTcp;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -38,97 +39,61 @@ public class FormMelsecFxLinksOverTcp  extends HslJPanel {
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private JPanel fxLinksControl;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             melsec.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,30, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(42,14,126, 23);
-        textField1.setText("192.168.0.10");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(170, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(220,14,60, 23);
-        textField2.setText("2000");
-        panelConnect.add(textField2);
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "2000");
 
         JLabel label3 = new JLabel("Station：");
-        label3.setBounds(280, 17,65, 17);
-        panelConnect.add(label3);
+        label3.setBounds(5, TcpConnectControl.LocationTwoLine,65, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(340,14,50, 23);
+        textField3.setBounds(70,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField3.setText("0");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
         JLabel label4 = new JLabel("TimeOut：");
-        label4.setBounds(390, 17,70, 17);
-        panelConnect.add(label4);
+        label4.setBounds(125, TcpConnectControl.LocationTwoLine,70, 17);
+        tcpConnectControl.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(460,14,50, 23);
+        textField4.setBounds(200,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField4.setText("0");
-        panelConnect.add(textField4);
-
+        tcpConnectControl.add(textField4);
 
         JCheckBox checkBox1 = new JCheckBox("SumCheck?");
-        checkBox1.setBounds(510, 14, 100, 21);
+        checkBox1.setBounds(260, TcpConnectControl.LocationTwoLine - 1, 100, 21);
         checkBox1.setSelected(true);
-        panelConnect.add(checkBox1);
+        tcpConnectControl.add(checkBox1);
 
         JLabel label5 = new JLabel("Format：");
-        label5.setBounds(610, 17,70, 17);
-        panelConnect.add(label5);
+        label5.setBounds(370, TcpConnectControl.LocationTwoLine,70, 17);
+        tcpConnectControl.add(label5);
 
 
         JComboBox<Integer> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(680,13,60, 25);
+        comboBox1.setBounds(450,TcpConnectControl.LocationTwoLine - 4,60, 25);
         comboBox1.addItem(1);
         comboBox1.addItem(4);
         comboBox1.setSelectedItem(1);
-        panelConnect.add(comboBox1);
+        tcpConnectControl.add(comboBox1);
 
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(850,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(750,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    melsec.setIpAddress(textField1.getText());
-                    melsec.setPort(Integer.parseInt(textField2.getText()));
+
                     melsec.setStation(Byte.parseByte(textField3.getText()));
                     melsec.setWaittingTime(Byte.parseByte(textField4.getText()));
                     melsec.setSumCheck(checkBox1.isSelected());
@@ -141,8 +106,7 @@ public class FormMelsecFxLinksOverTcp  extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(melsec, defaultAddress, 10);
                         DemoUtils.SetPanelEnabled(fxLinksControl, true);
                     }
@@ -154,7 +118,7 @@ public class FormMelsecFxLinksOverTcp  extends HslJPanel {
                                 JOptionPane.WARNING_MESSAGE);
                     }
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MelsecFxLinksOverTcp.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( melsec, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     stringBuilder.append( "plc.setStation(Byte.parseByte(\"" + textField3.getText() + "\"));\r\n" );
                     stringBuilder.append( "plc.setWaittingTime(Byte.parseByte(\"" + textField4.getText() + "\"));\r\n" );
                     stringBuilder.append( "plc.setSumCheck(" + checkBox1.isSelected() + ");\r\n" );
@@ -170,15 +134,14 @@ public class FormMelsecFxLinksOverTcp  extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(melsec !=null){
                     melsec.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                     DemoUtils.SetPanelEnabled(fxLinksControl, false);
                 }
@@ -186,7 +149,7 @@ public class FormMelsecFxLinksOverTcp  extends HslJPanel {
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
     public JPanel AddFunction(){

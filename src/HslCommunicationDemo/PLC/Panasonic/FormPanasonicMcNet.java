@@ -9,6 +9,7 @@ import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -34,46 +35,25 @@ public class FormPanasonicMcNet extends HslJPanel {
     private PanasonicMcNet plc = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             plc.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect =  DemoUtils.CreateConnectPanel(panel);
-
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "6000");
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "6000");
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    plc.setIpAddress(textField1.getText());
-                    plc.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(plc);
 
                     OperateResult connect = plc.ConnectServer();
                     if(connect.IsSuccess){
@@ -82,8 +62,7 @@ public class FormPanasonicMcNet extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(plc, defaultAddress, 10);
                     }
                     else {
@@ -95,7 +74,7 @@ public class FormPanasonicMcNet extends HslJPanel {
                     }
 
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( PanasonicMcNet.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( plc, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
@@ -107,21 +86,20 @@ public class FormPanasonicMcNet extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(plc !=null){
                     plc.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 }

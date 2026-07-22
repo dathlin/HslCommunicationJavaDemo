@@ -1,23 +1,19 @@
 package HslCommunicationDemo.PLC.Melsec;
 
-import HslCommunication.BasicFramework.SoftBasic;
-import HslCommunication.Core.Types.HslExtension;
+import HslCommunication.Core.Types.FunctionOperateExTwo;
 import HslCommunication.Core.Types.OperateResult;
-import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Melsec.MelsecMcNet;
 import HslCommunicationDemo.Demo.AddressExampleControl;
-import HslCommunicationDemo.Demo.CodeExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
-import HslCommunicationDemo.PLC.Modbus.DemoModbusHelper;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
 import javax.swing.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.nio.charset.StandardCharsets;
 
 public class FormMelsecBinary extends HslJPanel
 {
@@ -33,7 +29,7 @@ public class FormMelsecBinary extends HslJPanel
         userControlReadWriteDevice.AddSpecialFunctionTab(melsecMcControl, false, "MelsecFunction");
         userControlReadWriteDevice.setEnabled(false);
 
-        addressExampleControl = new AddressExampleControl(DemoMelsecHelper.GetMcAddress());
+        addressExampleControl = new AddressExampleControl(DemoMelsecHelper.GetMcAddress(true));
         userControlReadWriteDevice.AddSpecialFunctionTab(addressExampleControl, false, DeviceAddressExample.GetTitle());
 
     }
@@ -43,46 +39,24 @@ public class FormMelsecBinary extends HslJPanel
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private MelsecMcControl melsecMcControl;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl;
 
     @Override
     public void OnClose() {
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             melsecMcNet.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "6000");
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationCenterLine, "6000");
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    melsecMcNet.setIpAddress(textField1.getText());
-                    melsecMcNet.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(melsecMcNet);
 
                     OperateResult connect = melsecMcNet.ConnectServer();
                     if(connect.IsSuccess){
@@ -92,9 +66,14 @@ public class FormMelsecBinary extends HslJPanel
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
                         melsecMcControl.setEnabled(true);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(melsecMcNet, defaultAddress, 10);
+                        userControlReadWriteDevice.SetWriteRandom(new FunctionOperateExTwo<String[], byte[], OperateResult>(){
+                            @Override
+                            public OperateResult Action(String[] content1, byte[] content2) {
+                                return melsecMcNet.WriteRandom(content1, content2);
+                            }
+                        });
                         melsecMcControl.SetReadWritePlc(melsecMcNet);
                     }
                     else {
@@ -105,7 +84,7 @@ public class FormMelsecBinary extends HslJPanel
                                 JOptionPane.WARNING_MESSAGE);
                     }
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MelsecMcNet.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( melsecMcNet, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
@@ -117,15 +96,14 @@ public class FormMelsecBinary extends HslJPanel
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(melsecMcNet!=null){
                     melsecMcNet.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                     melsecMcControl.setEnabled(false);
                 }
@@ -133,7 +111,7 @@ public class FormMelsecBinary extends HslJPanel
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
 
     }
 

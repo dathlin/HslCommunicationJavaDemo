@@ -2,9 +2,11 @@ package HslCommunicationDemo.Instrument;
 
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
+import HslCommunication.Profinet.AllenBradley.AllenBradleyPcccNet;
 import HslCommunication.Profinet.FATEK.FatekProgramOverTcp;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.PLC.Fatek.FatekHelper;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -33,6 +35,7 @@ public class FormRkcTemperatureControllerOverTcp extends JPanel {
     private HslCommunication.Instrument.RKC.TemperatureControllerOverTcp rkc = null;
     private String defaultAddress = "M1";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
+    private TcpConnectControl  tcpConnectControl = null;
 
     public static DeviceAddressExample[] GetRkcAddress( ) {
         return new DeviceAddressExample[]
@@ -66,42 +69,24 @@ public class FormRkcTemperatureControllerOverTcp extends JPanel {
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "2000");
+        tcpConnectControl = new TcpConnectControl( panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "2000" );
 
         JLabel label4 = new JLabel("Station：");
-        label4.setBounds(403, 17,58, 17);
-        panelConnect.add(label4);
+        label4.setBounds(5, TcpConnectControl.LocationTwoLine,58, 17);
+        tcpConnectControl.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(459,14,53, 23);
+        textField4.setBounds(65,TcpConnectControl.LocationTwoLine - 3,53, 23);
         textField4.setText("1");
-        panelConnect.add(textField4);
+        tcpConnectControl.add(textField4);
 
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(684,11,121, 28);
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(577,11,91, 28);
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    rkc.setIpAddress(textField1.getText());
-                    rkc.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(rkc);
                     rkc.setStation(Byte.parseByte(textField4.getText()));
 
                     OperateResult connect = rkc.ConnectServer();
@@ -111,8 +96,7 @@ public class FormRkcTemperatureControllerOverTcp extends JPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(rkc, defaultAddress, 1);
                         userControlReadWriteDevice.getUserControlReadWriteOp().EnableRKC();
                     }
@@ -131,23 +115,26 @@ public class FormRkcTemperatureControllerOverTcp extends JPanel {
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
+
+                StringBuilder stringBuilder = DemoUtils.CreateDeviceCode( HslCommunication.Instrument.RKC.TemperatureControllerOverTcp.class.getName(), "rkc", tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
+                stringBuilder.append( "rkc.setStation( Byte.parseByte(\"" + textField4.getText() + "\"));\r\n" );
+                userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
             }
         });
 
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(rkc !=null){
                     rkc.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 }

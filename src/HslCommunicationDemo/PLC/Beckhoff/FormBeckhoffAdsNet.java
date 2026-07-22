@@ -7,6 +7,7 @@ import HslCommunication.Profinet.Melsec.MelsecMcNet;
 import HslCommunication.Utilities;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.PLC.Melsec.MelsecMcControl;
@@ -53,109 +54,73 @@ public class FormBeckhoffAdsNet extends HslJPanel
     private BeckhoffAdsNet beckhoffAdsNet;
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             beckhoffAdsNet.ConnectClose();
         }
     }
 
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel, 79);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 5,56, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,2,114, 23);
-        textField1.setText("127.0.0.1");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(8, 30,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(62,27,114, 23);
-        textField2.setText("48898");
-        panelConnect.add(textField2);
+        tcpConnectControl = new TcpConnectControl(panel, 80, TcpConnectControl.LocationOneLine, "48898");
 
         JLabel label5 = new JLabel("Target NetId：");
-        label5.setBounds(179, 5,95, 17);
-        panelConnect.add(label5);
+        label5.setBounds(5, TcpConnectControl.LocationTwoLine,95, 17);
+        tcpConnectControl.add(label5);
 
         JTextField textField14 = new JTextField();
-        textField14.setBounds(273,2,179, 23);
+        textField14.setBounds(100,TcpConnectControl.LocationTwoLine - 3,160, 23);
         textField14.setText("");
-        panelConnect.add(textField14);
+        tcpConnectControl.add(textField14);
 
         JLabel label15 = new JLabel("Sender NetId：");
-        label15.setBounds(179, 30,98, 17);
-        panelConnect.add(label15);
+        label15.setBounds(5, TcpConnectControl.LocationThreeLine,98, 17);
+        tcpConnectControl.add(label15);
 
         JTextField textField15 = new JTextField();
-        textField15.setBounds(273,27,179, 23);
+        textField15.setBounds(100,TcpConnectControl.LocationThreeLine - 3,160, 23);
         textField15.setText("");
-        panelConnect.add(textField15);
+        tcpConnectControl.add(textField15);
 
         JCheckBox checkBox_auto = new JCheckBox("自动AMS NetId");
-        checkBox_auto.setBounds(178,54, 115, 21);
-        panelConnect.add(checkBox_auto);
+        checkBox_auto.setBounds(270,TcpConnectControl.LocationThreeLine - 1, 115, 21);
+        tcpConnectControl.add(checkBox_auto);
 
         JLabel label6 = new JLabel("<html><span style=\"color:green\">Ams Port</span></html>");
-        label6.setBounds(310, 55,64, 17);
-        panelConnect.add(label6);
+        label6.setBounds(390, TcpConnectControl.LocationThreeLine,64, 17);
+        tcpConnectControl.add(label6);
 
         JTextField textField_ams_port = new JTextField();
-        textField_ams_port.setBounds(379,52,72, 23);
+        textField_ams_port.setBounds(460,TcpConnectControl.LocationThreeLine - 3,72, 23);
         textField_ams_port.setText("851");
-        panelConnect.add(textField_ams_port);
+        tcpConnectControl.add(textField_ams_port);
 
         JLabel label8 = new JLabel("示例：192.168.1.100.1.1:801");
-        label8.setBounds(473, 4,167, 17);
-        panelConnect.add(label8);
+        label8.setBounds(270, TcpConnectControl.LocationTwoLine,167, 17);
+        tcpConnectControl.add(label8);
 
         JCheckBox checkBox_tag = new JCheckBox("标签缓存");
-        checkBox_tag.setBounds(473,28, 80, 21);
+        checkBox_tag.setBounds(473,TcpConnectControl.LocationTwoLine - 1, 80, 21);
         checkBox_tag.setSelected(true);
-        panelConnect.add(checkBox_tag);
+        tcpConnectControl.add(checkBox_tag);
 
 
         JLabel label7 = new JLabel("<html><span style=\"color:red\">TwinCAT2，端口号801,811,821,831；TwinCAT3，端口号为851,852,853</span></html>");
-        label7.setBounds(456, 54,502, 17);
-        panelConnect.add(label7);
+        label7.setBounds(536, TcpConnectControl.LocationThreeLine,502, 17);
+        tcpConnectControl.add(label7);
 
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(661,23,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(561,23,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    beckhoffAdsNet.setIpAddress(textField1.getText());
-                    beckhoffAdsNet.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(beckhoffAdsNet);
                     if (checkBox_auto.isSelected()){
                         beckhoffAdsNet.setUseAutoAmsNetID(true);
                         if (!Utilities.IsStringNullOrEmpty(textField_ams_port.getText())){
@@ -175,8 +140,7 @@ public class FormBeckhoffAdsNet extends HslJPanel
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(beckhoffAdsNet, defaultAddress, 10);
 
                         if (checkBox_auto.isSelected()){
@@ -196,7 +160,7 @@ public class FormBeckhoffAdsNet extends HslJPanel
                                 JOptionPane.WARNING_MESSAGE);
                     }
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( BeckhoffAdsNet.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( beckhoffAdsNet, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     if (checkBox_auto.isSelected()){
                         stringBuilder.append( "plc.setUseAutoAmsNetID(true);\r\n" );
                         if (!Utilities.IsStringNullOrEmpty(textField_ams_port.getText())){
@@ -220,22 +184,21 @@ public class FormBeckhoffAdsNet extends HslJPanel
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(beckhoffAdsNet!=null){
                     beckhoffAdsNet.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
 }

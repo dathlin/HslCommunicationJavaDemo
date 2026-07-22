@@ -5,6 +5,7 @@ import HslCommunication.Profinet.Siemens.SiemensFetchWriteNet;
 import HslCommunication.Profinet.Toyota.ToyoPuc;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
@@ -34,62 +35,25 @@ public class FormToyoPuc extends HslJPanel
     private ToyoPuc toyoPuc = null;
     private String defaultAddress = "D100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             toyoPuc.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,156, 23);
-        textField1.setText("127.0.0.1");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(234, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(288,14,80, 23);
-        textField2.setText("6000");
-        panelConnect.add(textField2);
-
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationCenterLine, "6000");
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    toyoPuc.setIpAddress(textField1.getText());
-                    toyoPuc.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(toyoPuc);
 
                     OperateResult connect = toyoPuc.ConnectServer();
                     if(connect.IsSuccess){
@@ -98,8 +62,7 @@ public class FormToyoPuc extends HslJPanel
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(toyoPuc, defaultAddress, 10);
                     }
                     else {
@@ -110,7 +73,7 @@ public class FormToyoPuc extends HslJPanel
                                 JOptionPane.WARNING_MESSAGE);
                     }
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( ToyoPuc.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( toyoPuc, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
                 }
                 catch (Exception ex){
@@ -122,21 +85,20 @@ public class FormToyoPuc extends HslJPanel
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(toyoPuc!=null){
                     toyoPuc.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 }

@@ -6,6 +6,8 @@ import HslCommunication.Core.Types.OperateResultExOne;
 import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunication.Robot.FANUC.FanucData;
 import HslCommunication.Robot.FANUC.FanucInterfaceNet;
+import HslCommunicationDemo.Demo.CodeExampleControl;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -28,6 +30,7 @@ public class FormFanucInterfaceNet extends HslJPanel {
         fanucInterfaceNet = new FanucInterfaceNet();
         DemoUtils.SetPanelEnabled(panelReadString, false);
         DemoUtils.SetPanelEnabled(panelReadContent, false);
+
     }
 
     private FanucInterfaceNet fanucInterfaceNet = null;
@@ -35,62 +38,26 @@ public class FormFanucInterfaceNet extends HslJPanel {
     private UserControlReadWriteOp userControlReadWriteOp1 = null;
     private JPanel panelReadString;
     private JPanel panelReadContent;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private CodeExampleControl codeExampleControl;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             fanucInterfaceNet.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
-        textField1.setText("192.168.0.10");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
-        textField2.setText("60008");
-        panelConnect.add(textField2);
-
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(584,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(477,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationCenterLine, "60008");
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (!button1.isEnabled())return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    fanucInterfaceNet.setIpAddress(textField1.getText());
-                    fanucInterfaceNet.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(fanucInterfaceNet);
 
                     OperateResult connect = fanucInterfaceNet.ConnectServer();
                     if(connect.IsSuccess){
@@ -99,11 +66,14 @@ public class FormFanucInterfaceNet extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteOp1.SetReadWriteNet(fanucInterfaceNet, defaultAddress, 10);
                         DemoUtils.SetPanelEnabled(panelReadString, true);
                         DemoUtils.SetPanelEnabled(panelReadContent, true);
+
+
+                        StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( fanucInterfaceNet, "fanuc", tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
+                        codeExampleControl.SetDeviceCode( stringBuilder.toString() );
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -122,15 +92,14 @@ public class FormFanucInterfaceNet extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(fanucInterfaceNet !=null){
                     fanucInterfaceNet.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
 
                     DemoUtils.SetPanelEnabled(panelReadString, false);
                     DemoUtils.SetPanelEnabled(panelReadContent, false);
@@ -138,8 +107,7 @@ public class FormFanucInterfaceNet extends HslJPanel {
             }
         });
 
-
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
     public void AddContent(JPanel panel){
@@ -169,6 +137,9 @@ public class FormFanucInterfaceNet extends HslJPanel {
         AddReadBulk(panelReadContent);
 
         tabbedPane.add("Single Read Write", panelReadContent);
+
+        codeExampleControl = new CodeExampleControl();
+        tabbedPane.add(CodeExampleControl.GetTitle(), codeExampleControl);
     }
 
     public void AddAllRead(JPanel panel){

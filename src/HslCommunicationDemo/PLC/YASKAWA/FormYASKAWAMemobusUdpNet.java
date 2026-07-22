@@ -7,12 +7,14 @@ import HslCommunication.Profinet.YASKAWA.MemobusTcpNet;
 import HslCommunication.Profinet.YASKAWA.MemobusUdpNet;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteDevice;
 import HslCommunicationDemo.UserControlReadWriteHead;
 
 import javax.swing.*;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
@@ -20,7 +22,7 @@ public class FormYASKAWAMemobusUdpNet extends HslJPanel {
 
     public FormYASKAWAMemobusUdpNet(JTabbedPane tabbedPane){
         setLayout(null);
-        add( new UserControlReadWriteHead("Memobus Tcp", tabbedPane, this));
+        add( new UserControlReadWriteHead("Memobus Udp", tabbedPane, this));
         AddConnectSegment(this);
         plc = new MemobusUdpNet();
 
@@ -35,75 +37,52 @@ public class FormYASKAWAMemobusUdpNet extends HslJPanel {
     private MemobusUdpNet plc = null;
     private String defaultAddress = "100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             plc.ConnectClose();
         }
     }
 
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "9999");
-
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "9999");
         JLabel label3 = new JLabel("Cpu From：");
-        label3.setBounds(400, 5,80, 17);
-        panelConnect.add(label3);
+        label3.setBounds(5, TcpConnectControl.LocationTwoLine,80, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(480,4,50, 23);
+        textField3.setBounds(90,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField3.setText("1");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
         JLabel label4 = new JLabel("Cpu To：");
-        label4.setBounds(400, 30,80, 17);
-        panelConnect.add(label4);
+        label4.setBounds(150, TcpConnectControl.LocationTwoLine,80, 17);
+        tcpConnectControl.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(480,29,50, 23);
+        textField4.setBounds(240,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField4.setText("2");
-        panelConnect.add(textField4);
+        tcpConnectControl.add(textField4);
 
         JComboBox<DataFormat> comboBox1 = new JComboBox<>();
-        comboBox1.setBounds(550,14,80, 25);
+        comboBox1.setBounds(300,TcpConnectControl.LocationTwoLine - 3,80, 25);
         comboBox1.addItem(DataFormat.ABCD);
         comboBox1.addItem(DataFormat.BADC);
         comboBox1.addItem(DataFormat.CDAB);
         comboBox1.addItem(DataFormat.DCBA);
         comboBox1.setSelectedItem(DataFormat.CDAB);
-        panelConnect.add(comboBox1);
-
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(784,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(677,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.add(comboBox1);
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    plc.setIpAddress(textField1.getText());
-                    plc.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(plc);
                     plc.setCpuFrom((byte) Integer.parseInt(textField3.getText()));
                     plc.setCpuTo((byte) Integer.parseInt(textField4.getText()));
                     plc.getByteTransform().setDataFormat((DataFormat)comboBox1.getSelectedItem());
@@ -113,8 +92,7 @@ public class FormYASKAWAMemobusUdpNet extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(plc, defaultAddress, 10);
                 }
                 catch (Exception ex){
@@ -125,28 +103,27 @@ public class FormYASKAWAMemobusUdpNet extends HslJPanel {
                             JOptionPane.ERROR_MESSAGE);
                 }
 
-                StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( MemobusUdpNet.class, textField1.getText(), textField2.getText() );
+                StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( plc, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                 stringBuilder.append( "plc.setCpuFrom((byte) Integer.parseInt(\"" + textField3.getText() + "\"));\r\n" );
                 stringBuilder.append( "plc.setCpuTo((byte) Integer.parseInt(\"" + textField4.getText() + "\"));\r\n" );
                 stringBuilder.append( "plc.getByteTransform().setDataFormat(DataFormat." + (DataFormat)comboBox1.getSelectedItem() + ");\r\n" );
                 userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (!button2.isEnabled()) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(plc !=null){
                     plc.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 }

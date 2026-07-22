@@ -6,6 +6,7 @@ import HslCommunication.Core.Types.List;
 import HslCommunication.Profinet.Omron.OmronPlcType;
 import HslCommunication.Profinet.OpenProtocol.OpenProtocolNet;
 import HslCommunication.Utilities;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -68,14 +69,12 @@ public class FormOpenProtocol extends HslJPanel {
     private JCheckBox checkBox_stop;
     private JCheckBox checkBox_format;
     private JLabel label_sub;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             openProtocolNet.ConnectClose();
         }
     }
@@ -370,48 +369,43 @@ public class FormOpenProtocol extends HslJPanel {
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "4545");
 
-        JTextField textField1 = DemoUtils.CreateIpAddressTextBox(panelConnect);
-        JTextField textField2 = DemoUtils.CreateIpPortTextBox(panelConnect, "4545");
+        JLabel label10 = new JLabel("Subscribe MID：");
+        label10.setBounds(3, TcpConnectControl.LocationTwoLine,130, 17);
+        tcpConnectControl.add(label10);
+
+        JTextField textField10 = new JTextField();
+        textField10.setBounds(110,TcpConnectControl.LocationTwoLine - 3,200, 23);
+        textField10.setText("");
+        tcpConnectControl.add(textField10);
 
         JLabel label3 = new JLabel("RevisonOnConnect：");
-        label3.setBounds(390, 17,120, 17);
-        panelConnect.add(label3);
+        label3.setBounds(320, TcpConnectControl.LocationTwoLine,130, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(510,14,40, 23);
+        textField3.setBounds(460,TcpConnectControl.LocationTwoLine - 3,40, 23);
         textField3.setText("1");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
         JCheckBox checkBox1 = new JCheckBox("AutoAckControllerMessage?");
-        checkBox1.setBounds(550,17,200, 17);
-        panelConnect.add(checkBox1);
+        checkBox1.setBounds(510,TcpConnectControl.LocationTwoLine - 1,200, 17);
+        tcpConnectControl.add(checkBox1);
 
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(860,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(762,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    openProtocolNet.setIpAddress(textField1.getText());
-                    openProtocolNet.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(openProtocolNet);
                     openProtocolNet.RevisonOnConnected = Integer.parseInt(textField3.getText());
                     openProtocolNet.AutoAckControllerMessage = checkBox1.isSelected();
+                    if (!Utilities.IsStringNullOrEmpty(textField10.getText()))
+                    {
+                        openProtocolNet.SetExtraSubscribeMID(textField10.getText());
+                    }
 
                     OperateResult connect = openProtocolNet.ConnectServer();
                     if(connect.IsSuccess){
@@ -420,8 +414,7 @@ public class FormOpenProtocol extends HslJPanel {
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         //userControlReadWriteDevice.SetReadWriteNet(omronFinsNet, defaultAddress, 10);
                     }
                     else {
@@ -441,22 +434,21 @@ public class FormOpenProtocol extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (!button2.isEnabled()) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(openProtocolNet!=null){
                     openProtocolNet.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     //userControlReadWriteDevice.setEnabled(false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
     private OpenProtocolNet openProtocolNet;

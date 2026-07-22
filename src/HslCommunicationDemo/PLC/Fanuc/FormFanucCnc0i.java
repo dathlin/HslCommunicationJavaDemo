@@ -4,6 +4,8 @@ import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.CNC.Fanuc.*;
 import HslCommunication.Core.Types.*;
 import HslCommunication.Utilities;
+import HslCommunicationDemo.Demo.CodeExampleControl;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 import HslCommunicationDemo.DemoUtils;
 import HslCommunicationDemo.HslJPanel;
 import HslCommunicationDemo.UserControlReadWriteHead;
@@ -40,70 +42,34 @@ public class FormFanucCnc0i extends HslJPanel {
 
     private FanucSeries0i fanuc = null;
     private JPanel panelContent = null;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private CodeExampleControl codeExampleControl;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             fanuc.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
-        textField1.setText("192.168.64.129");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
-        textField2.setText("8193");
-        panelConnect.add(textField2);
-
-        JLabel label3 = new JLabel("Timeout：");
-        label3.setBounds(338, 17,70, 17);
-        panelConnect.add(label3);
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "8193");
+        JLabel label3 = new JLabel("Receive Timeout：");
+        label3.setBounds(5, TcpConnectControl.LocationTwoLine,120, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(422,14,40, 23);
+        textField3.setBounds(130,TcpConnectControl.LocationTwoLine - 3,40, 23);
         textField3.setText("5000");
-        panelConnect.add(textField3);
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(684,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(577,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.add(textField3);
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    fanuc.setIpAddress(textField1.getText());
-                    fanuc.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(fanuc);
                     fanuc.setReceiveTimeOut( Integer.parseInt(textField3.getText()));
 
                     OperateResult connect = fanuc.ConnectServer();
@@ -114,8 +80,11 @@ public class FormFanucCnc0i extends HslJPanel {
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
                         DemoUtils.SetPanelEnabled(panelContent,true);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
+
+
+                        StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( fanuc, "fanuc", tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
+                        codeExampleControl.SetDeviceCode( stringBuilder.toString() );
                     }
                     else {
                         JOptionPane.showMessageDialog(
@@ -134,22 +103,21 @@ public class FormFanucCnc0i extends HslJPanel {
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (!button2.isEnabled()) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(fanuc !=null){
                     fanuc.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     DemoUtils.SetPanelEnabled(panelContent,false);
                 }
             }
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
     public void AddContent(JPanel panel){
@@ -174,10 +142,14 @@ public class FormFanucCnc0i extends HslJPanel {
         tabbedPane.addTab("Basic Test", panelContent1);
         tabbedPane.addTab("File Test", AddFileOperate());
 
+        codeExampleControl = new CodeExampleControl();
+        tabbedPane.add(CodeExampleControl.GetTitle(), codeExampleControl);
 
         panel.add(panelContent);
         this.panelContent = panelContent1;
         DemoUtils.SetPanelEnabled(this.panelContent,false);
+
+
     }
 
     private String GetPathFromTree( DefaultMutableTreeNode treeNode )
@@ -1192,6 +1164,35 @@ public class FormFanucCnc0i extends HslJPanel {
 
 
 
+        JButton button47 = new JButton("复位(Reset)");
+        button47.setFocusPainted(false);
+        button47.setBounds(419,112,96, 29);
+        button47.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                super.mouseClicked(e);
+
+                OperateResult read = fanuc.Reset();
+                if (read.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Reset Success!",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Reset Failed:" + read.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+                textArea_code.setText( "OperateResultExOne<Integer> read = fanuc.ReadSpindleRate();  // 主轴倍率" );
+            }
+        });
+        panel.add(button47);
+
+
         JLabel label2 = new JLabel("宏变量:");
         label2.setBounds(640,153,60,17);
         panel.add(label2);
@@ -1473,7 +1474,16 @@ public class FormFanucCnc0i extends HslJPanel {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                OperateResult read = fanuc.SetCurrentProgram(Short.parseShort(texBox6.getText()));
+
+                OperateResult read = null;
+                try {
+                    read = fanuc.SetCurrentProgram(Short.parseShort(texBox6.getText()));
+                    textArea_code.setText( "OperateResult read = fanuc.SetCurrentProgram((short)" + Short.parseShort(texBox6.getText()) + ");" );
+                }
+                catch (Exception ex){
+                    read = fanuc.SetCurrentProgram( texBox6.getText() );
+                    textArea_code.setText( "OperateResult read = fanuc.SetCurrentProgram( \"" + texBox6.getText() + "\" );" );
+                }
                 if (read.IsSuccess){
                     JOptionPane.showMessageDialog(
                             null,
@@ -1484,12 +1494,11 @@ public class FormFanucCnc0i extends HslJPanel {
                 else {
                     JOptionPane.showMessageDialog(
                             null,
-                            "Read Failed:" + read.ToMessageShowString(),
+                            "Set Failed:" + read.ToMessageShowString(),
                             "Result",
                             JOptionPane.ERROR_MESSAGE);
                 }
 
-                textArea_code.setText( "OperateResult read = fanuc.SetCurrentProgram(" + Short.parseShort(texBox6.getText()) + ");" );
             }
         });
         panel.add(button25);

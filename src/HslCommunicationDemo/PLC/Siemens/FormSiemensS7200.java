@@ -10,6 +10,7 @@ import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -44,56 +45,35 @@ public class FormSiemensS7200 extends HslJPanel
     private String defaultAddress = "M100";
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private SiemensS7Control siemensS7Control;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl tcpConnectControl = null;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             siemensS7Net.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
-        textField1.setText("192.168.0.10");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
-        textField2.setText("102");
-        panelConnect.add(textField2);
-
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "102");
         JLabel label3 = new JLabel("LocalTSAP：");
-        label3.setBounds(305, 10,78, 17);
-        panelConnect.add(label3);
+        label3.setBounds(5, TcpConnectControl.LocationTwoLine,78, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(384,7,53, 23);
+        textField3.setBounds(85,TcpConnectControl.LocationTwoLine -3,53, 23);
         textField3.setText("4D57");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
         JLabel label4 = new JLabel("DestTSAP：");
-        label4.setBounds(443, 10,78, 17);
-        panelConnect.add(label4);
+        label4.setBounds(145, TcpConnectControl.LocationTwoLine,78, 17);
+        tcpConnectControl.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(519,7,53, 23);
+        textField4.setBounds(230,TcpConnectControl.LocationTwoLine - 3,53, 23);
         textField4.setText("4D57");
-        panelConnect.add(textField4);
+        tcpConnectControl.add(textField4);
 
 
 
@@ -119,32 +99,17 @@ public class FormSiemensS7200 extends HslJPanel
         }
 
         JLabel label5 = new JLabel("16进制!!! [16 HEX]");
-        label5.setBounds(337, 33,110, 17);
+        label5.setBounds(290, TcpConnectControl.LocationTwoLine,110, 17);
         label5.setForeground(Color.red);
-        panelConnect.add(label5);
+        tcpConnectControl.add(label5);
 
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(734,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(627,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    siemensS7Net.setIpAddress(textField1.getText());
-                    siemensS7Net.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(siemensS7Net);
                     if (siemensPLCS == SiemensPLCS.S200)
                     {
                         siemensS7Net.setLocalTSAP((int)Long.parseLong(textField3.getText(), 16));
@@ -157,8 +122,7 @@ public class FormSiemensS7200 extends HslJPanel
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         userControlReadWriteDevice.SetReadWriteNet(siemensS7Net, defaultAddress, 10);
                         siemensS7Control.setEnabled(true);
                         siemensS7Control.SetReadWriteS7(siemensS7Net);
@@ -172,7 +136,7 @@ public class FormSiemensS7200 extends HslJPanel
                     }
 
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( SiemensS7Net.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( siemensS7Net, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     if (siemensPLCS == SiemensPLCS.S200)
                     {
                         stringBuilder.append( "plc.setLocalTSAP((int)Long.parseLong(\"" + textField3.getText() + "\", 16));\r\n" );
@@ -189,15 +153,14 @@ public class FormSiemensS7200 extends HslJPanel
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (tcpConnectControl.ButtonDisconnect.isEnabled() == false) return;
                 if(siemensS7Net!=null){
                     siemensS7Net.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                     siemensS7Control.setEnabled(false);
                 }
@@ -205,6 +168,6 @@ public class FormSiemensS7200 extends HslJPanel
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 }

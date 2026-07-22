@@ -2,6 +2,9 @@ package HslCommunicationDemo.Demo;
 
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.IReadWriteNet;
+import HslCommunication.Core.Types.ActionOperateExThree;
+import HslCommunication.Core.Types.FunctionOperateExTwo;
+import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
 
 import javax.swing.*;
@@ -41,7 +44,7 @@ public class BatchReadControl extends JPanel {
         textAreaResult = new JTextArea();
         textAreaResult.setLineWrap(true);
         JScrollPane jsp = new JScrollPane(textAreaResult);
-        jsp.setBounds(83,36,425, 78);
+        jsp.setBounds(83,36,405, 78);
         add(jsp);
 
         JPanel panelFormat = new JPanel(null);
@@ -69,7 +72,7 @@ public class BatchReadControl extends JPanel {
 
         JButton button2 = new JButton("Read");
         button2.setFocusPainted(false);
-        button2.setBounds(436,4,72, 28);
+        button2.setBounds(416,4,92, 28);
         button2.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -98,13 +101,60 @@ public class BatchReadControl extends JPanel {
         });
         add(button2);
 
+        JButton button3 = new JButton("Write");
+        button3.setFocusPainted(false);
+        button3.setBounds(416,36,92, 28);
+        button3.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (button3.isEnabled() == false) return;
+                super.mouseClicked(e);
+
+                byte[] writeValue = null;
+                if (radioButton_binary.isSelected()){
+                    writeValue = SoftBasic.HexStringToBytes(textAreaResult.getText());
+                }
+                else {
+                    writeValue = SoftBasic.GetFromAsciiStringRender(textAreaResult.getText());
+                }
+                Date now = new Date();
+                OperateResult write = null;
+                if (textBox_address.getText().contains(";")&&writeRandom!=null) {
+                    write = writeRandom.Action(textBox_address.getText().split(";"), writeValue);
+                }
+                else {
+                    write = readWriteNet.Write(textBox_address.getText(),writeValue);
+                }
+                SetTimeSpend(now);
+
+                if (write.IsSuccess){
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Success",
+                            "Result",
+                            JOptionPane.INFORMATION_MESSAGE);
+                }
+                else {
+                    JOptionPane.showMessageDialog(
+                            null,
+                            "Write Failed:" + write.ToMessageShowString(),
+                            "Result",
+                            JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        });
+        add(button3);
+
+
+
         addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
                 super.componentResized(e);
 
-                button2.setBounds(getWidth() - 80, 4, 72, 28);
-                jsp.setBounds(83,36,getWidth() - 90, getHeight() - 60);
+                button2.setBounds(getWidth() - 100, 4, 92, 28);
+                button3.setBounds(getWidth() - 100, 36, 92, 28);
+                jsp.setBounds(83,36,getWidth() - 90 - 92 - 5, getHeight() - 60);
 
                 panelFormat.setBounds( 83, getHeight() - 28, 130, 27 );
                 jsp.updateUI();
@@ -156,6 +206,10 @@ public class BatchReadControl extends JPanel {
         textAreaResult.setEnabled(enabled);
     }
 
+    public void SetWriteRandom(FunctionOperateExTwo<String[], byte[], OperateResult> writeRandom){
+        this.writeRandom = writeRandom;
+    }
+
     private JTextField textBox_address;
     private JTextField textBox_length;
     private String address = "";
@@ -163,5 +217,6 @@ public class BatchReadControl extends JPanel {
     private JTextArea textAreaResult;
     private JLabel label_read_length;
     private JLabel label_read_time;
+    private FunctionOperateExTwo<String[],byte[], OperateResult> writeRandom = null;
 
 }

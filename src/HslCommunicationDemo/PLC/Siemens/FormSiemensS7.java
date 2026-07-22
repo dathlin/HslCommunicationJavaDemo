@@ -10,6 +10,7 @@ import HslCommunication.Profinet.Siemens.SiemensS7Net;
 import HslCommunicationDemo.*;
 import HslCommunicationDemo.Demo.AddressExampleControl;
 import HslCommunicationDemo.Demo.DeviceAddressExample;
+import HslCommunicationDemo.Demo.TcpConnectControl;
 
 import javax.swing.*;
 import java.awt.*;
@@ -48,66 +49,45 @@ public class FormSiemensS7 extends HslJPanel
     private UserControlReadWriteDevice userControlReadWriteDevice = null;
     private SiemensS7Control siemensS7Control;
     private SiemensS7WriteControl writeControl;
-    private JButton button_connect;
-    private JButton button_disconnect;
+    private TcpConnectControl  tcpConnectControl;
 
     @Override
     public void OnClose() {
         super.OnClose();
-        if (button_connect == null || button_disconnect == null) return;
-        if (button_disconnect.isEnabled()){
+        if (tcpConnectControl.NeedCloseDevice()){
             siemensS7Net.ConnectClose();
         }
     }
 
     public void AddConnectSegment(JPanel panel){
-        JPanel panelConnect = DemoUtils.CreateConnectPanel(panel);
-
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(8, 17,56, 17);
-        panelConnect.add(label1);
-
-        JTextField textField1 = new JTextField();
-        textField1.setBounds(62,14,106, 23);
-        textField1.setText("127.0.0.1");
-        panelConnect.add(textField1);
-
-        JLabel label2 = new JLabel("Port：");
-        label2.setBounds(184, 17,56, 17);
-        panelConnect.add(label2);
-
-        JTextField textField2 = new JTextField();
-        textField2.setBounds(238,14,61, 23);
-        textField2.setText("102");
-        panelConnect.add(textField2);
-
+        tcpConnectControl = new TcpConnectControl(panel, TcpConnectControl.HeightTwoLine, TcpConnectControl.LocationOneLine, "102");
         JLabel label3 = new JLabel("Rack：");
-        label3.setBounds(305, 10,48, 17);
-        panelConnect.add(label3);
+        label3.setBounds(5, TcpConnectControl.LocationTwoLine,48, 17);
+        tcpConnectControl.add(label3);
 
         JTextField textField3 = new JTextField();
-        textField3.setBounds(354,7,50, 23);
+        textField3.setBounds(55,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField3.setText("0");
-        panelConnect.add(textField3);
+        tcpConnectControl.add(textField3);
 
         JLabel label4 = new JLabel("Slot：");
-        label4.setBounds(423, 10,48, 17);
-        panelConnect.add(label4);
+        label4.setBounds(110, TcpConnectControl.LocationTwoLine,48, 17);
+        tcpConnectControl.add(label4);
 
         JTextField textField4 = new JTextField();
-        textField4.setBounds(469,7,50, 23);
+        textField4.setBounds(165,TcpConnectControl.LocationTwoLine - 3,50, 23);
         textField4.setText("0");
-        panelConnect.add(textField4);
+        tcpConnectControl.add(textField4);
 
         JLabel label6 = new JLabel("pdu：");
-        label6.setBounds(530, 10,48, 17);
-        panelConnect.add(label6);
+        label6.setBounds(220, TcpConnectControl.LocationTwoLine,48, 17);
+        tcpConnectControl.add(label6);
 
         JTextField textField6 = new JTextField();
-        textField6.setBounds(560,7,40, 23);
+        textField6.setBounds(270,TcpConnectControl.LocationTwoLine - 3,40, 23);
         textField6.setText("0");
         textField6.setEnabled(false);
-        panelConnect.add(textField6);
+        tcpConnectControl.add(textField6);
 
 
         if (this.siemensPLCS == SiemensPLCS.S400)
@@ -130,38 +110,25 @@ public class FormSiemensS7 extends HslJPanel
             textField3.setText("0");
             textField4.setText("0");
         }
+        else if (this.siemensPLCS == SiemensPLCS.S200Smart)
+        {
+            textField3.setEnabled(false);
+            textField4.setEnabled(false);
+        }
 
 
-        JLabel label5 = new JLabel("Not s7-200 smart");
-        label5.setBounds(337, 33,110, 17);
-        label5.setForeground(Color.GRAY);
-        panelConnect.add(label5);
-
-        JButton button2 = new JButton("Disconnect");
-        button2.setFocusPainted(false);
-        button2.setBounds(774,11,121, 28);
-        button_disconnect = button2;
-        panelConnect.add(button2);
-
-        JButton button1 = new JButton("Connect");
-        button1.setFocusPainted(false);
-        button1.setBounds(667,11,91, 28);
-        button_connect = button1;
-        panelConnect.add(button1);
-
-        button2.setEnabled(false);
-        button1.setEnabled(true);
-        button1.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonConnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (button1.isEnabled() == false)return;
+                if (!tcpConnectControl.ButtonConnect.isEnabled())return;
                 super.mouseClicked(e);
                 try {
-                    siemensS7Net.setIpAddress(textField1.getText());
-                    siemensS7Net.setPort(Integer.parseInt(textField2.getText()));
+                    tcpConnectControl.SetNetworkIpPort(siemensS7Net);
 
-                    siemensS7Net.setRack((byte) Integer.parseInt(textField3.getText()));
-                    siemensS7Net.setSlot((byte) Integer.parseInt(textField4.getText()));
+                    if (siemensPLCS != SiemensPLCS.S200Smart) {
+                        siemensS7Net.setRack((byte) Integer.parseInt(textField3.getText()));
+                        siemensS7Net.setSlot((byte) Integer.parseInt(textField4.getText()));
+                    }
 
 
                     OperateResult connect = siemensS7Net.ConnectServer();
@@ -171,8 +138,7 @@ public class FormSiemensS7 extends HslJPanel
                                 "Connect Success",
                                 "Result",
                                 JOptionPane.PLAIN_MESSAGE);
-                        button2.setEnabled(true);
-                        button1.setEnabled(false);
+                        tcpConnectControl.SetConnectSuccess();
                         textField6.setText(String.valueOf(siemensS7Net.getPduLength()));
                         userControlReadWriteDevice.SetReadWriteNet(siemensS7Net, defaultAddress, 10);
                         siemensS7Control.setEnabled(true);
@@ -189,7 +155,7 @@ public class FormSiemensS7 extends HslJPanel
                     }
 
 
-                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( SiemensS7Net.class, textField1.getText(), textField2.getText() );
+                    StringBuilder stringBuilder = DemoUtils.CreatePlcDeviceCode( siemensS7Net, tcpConnectControl.TextBoxIp.getText(), tcpConnectControl.TextBoxPort.getText() );
                     stringBuilder.append( "plc.setRack((byte) Integer.parseInt(\"" + textField3.getText() + "\"));\r\n" );
                     stringBuilder.append( "plc.setSlot((byte) Integer.parseInt(\"" + textField4.getText() + "\"));\r\n" );
                     userControlReadWriteDevice.SetDeviceCode( stringBuilder.toString() );
@@ -203,15 +169,14 @@ public class FormSiemensS7 extends HslJPanel
                 }
             }
         });
-        button2.addMouseListener(new MouseAdapter() {
+        tcpConnectControl.ButtonDisconnect.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
                 super.mouseClicked(e);
-                if (button2.isEnabled() == false) return;
+                if (!tcpConnectControl.ButtonDisconnect.isEnabled()) return;
                 if(siemensS7Net!=null){
                     siemensS7Net.ConnectClose();
-                    button1.setEnabled(true);
-                    button2.setEnabled(false);
+                    tcpConnectControl.SetConnectClose();
                     userControlReadWriteDevice.setEnabled(false);
                     siemensS7Control.setEnabled(false);
                 }
@@ -219,7 +184,7 @@ public class FormSiemensS7 extends HslJPanel
         });
 
 
-        panel.add(panelConnect);
+        panel.add(tcpConnectControl);
     }
 
 }

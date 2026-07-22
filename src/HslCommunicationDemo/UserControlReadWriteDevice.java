@@ -4,6 +4,8 @@ import HslCommunication.Core.Net.IReadWriteNet;
 import HslCommunication.Core.Net.NetworkBase.NetworkDoubleBase;
 import HslCommunication.Core.Net.NetworkBase.NetworkUdpBase;
 import HslCommunication.Core.Types.ActionOperateExOne;
+import HslCommunication.Core.Types.FunctionOperateExTwo;
+import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.LogNet.Core.HslMessageItem;
 import HslCommunication.LogNet.Core.LogNetBase;
 import HslCommunicationDemo.Demo.BatchReadControl;
@@ -146,6 +148,11 @@ public class UserControlReadWriteDevice extends JPanel {
     public void SetReadWriteNet(IReadWriteNet readWrite, String address, int strLength, String deviceName ){
         SetReadWriteNet( readWrite, address, strLength );
         userControlReadWriteOp.SetDeviceName(deviceName);
+    }
+
+    public void SetWriteRandom(FunctionOperateExTwo<String[], byte[], OperateResult> writeRandom)
+    {
+        batchReadControl.SetWriteRandom(writeRandom);
     }
     /**
      * 新增一个自定义的控件信息

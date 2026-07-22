@@ -2,6 +2,9 @@ package HslCommunicationDemo;
 
 import HslCommunication.BasicFramework.SoftBasic;
 import HslCommunication.Core.Net.IReadWriteNet;
+import HslCommunication.Core.Net.NetworkBase.NetworkDeviceBase;
+import HslCommunication.Core.Net.NetworkBase.NetworkDoubleBase;
+import HslCommunication.Core.Net.NetworkBase.NetworkUdpDeviceBase;
 import HslCommunication.Core.Types.Array;
 import HslCommunication.Core.Types.OperateResult;
 import HslCommunication.Core.Types.OperateResultExOne;
@@ -13,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.net.InetSocketAddress;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -286,12 +290,12 @@ public class DemoUtils {
         return CreateIpAddressTextBox( panelConnect, 17 );
     }
     public static JTextField CreateIpAddressTextBox( JPanel panelConnect, int y ) {
-        JLabel label1 = new JLabel("Ip：");
-        label1.setBounds(7, y , 50, 17);
+        JLabel label1 = new JLabel("IP：");
+        label1.setBounds(7, y, 30, 17);
         panelConnect.add(label1);
 
         JTextField textField1 = new JTextField();
-        textField1.setBounds(60, y - 3, 200, 23);
+        textField1.setBounds(40, y - 3, 160, 23);
         textField1.setText("127.0.0.1");
         panelConnect.add(textField1);
         return textField1;
@@ -302,11 +306,11 @@ public class DemoUtils {
     }
     public static JTextField CreateIpPortTextBox( JPanel panelConnect, String port, int y ) {
         JLabel label1 = new JLabel("Port：");
-        label1.setBounds(270, y, 56, 17);
+        label1.setBounds(205, y, 56, 17);
         panelConnect.add(label1);
 
         JTextField textField2 = new JTextField();
-        textField2.setBounds(320, y - 3, 61, 23);
+        textField2.setBounds(250, y - 3, 61, 23);
         textField2.setText(port);
         panelConnect.add(textField2);
         return textField2;
@@ -356,7 +360,7 @@ public class DemoUtils {
         return "new SimpleDateFormat(\"yyyy-MM-dd\").parse(\"" + date + "\")";
     }
 
-    public static StringBuilder CreateDeviceCode( String type, String deviceName, String ip, String port ) {
+    public static StringBuilder CreateDeviceCode( String type, String deviceName, String ip, String port, StringBuilder otherCode ){
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append(type + " " + deviceName + " = new " + type + "();");
         stringBuilder.append("\r\n");
@@ -364,6 +368,9 @@ public class DemoUtils {
         stringBuilder.append("\r\n");
         stringBuilder.append(deviceName + ".setPort(Integer.parseInt(\"" + port + "\"));");
         stringBuilder.append("\r\n");
+        if (otherCode != null) {
+            stringBuilder.append(otherCode.toString());
+        }
         if (type.contains("Udp")){
 
         }
@@ -374,11 +381,43 @@ public class DemoUtils {
         return stringBuilder;
     }
 
+    public static StringBuilder CreateDeviceCode( String type, String deviceName, String ip, String port ) {
+        return CreateDeviceCode( type, deviceName, ip, port, null );
+    }
+
     public static StringBuilder CreatePlcDeviceCode( String type, String ip, String port ){
         return CreateDeviceCode(type, "plc", ip, port);
     }
 
     public static StringBuilder CreatePlcDeviceCode( Class type, String ip, String port ){
         return CreateDeviceCode(type.getName(), "plc", ip, port);
+    }
+    public static StringBuilder CreatePlcDeviceCode(NetworkDoubleBase plc, String ip, String port ){
+        return CreatePlcDeviceCode(plc, "plc", ip, port);
+    }
+    public static StringBuilder CreatePlcDeviceCode(NetworkDoubleBase plc, String deviceName, String ip, String port ){
+        StringBuilder otherCode = new StringBuilder();
+        if (plc.getLocalAddress() != null){
+            InetSocketAddress address = plc.getLocalAddress();
+            otherCode.append(deviceName + ".setLocalAddress(new java.net.InetSocketAddress(" + address.getPort() + "));   // 绑定本地端口号");
+            otherCode.append("\r\n");
+        }
+        otherCode.append(deviceName + ".setConnectTimeOut( " + plc.getConnectTimeOut() + " );   // 连接超时时间");
+        otherCode.append("\r\n");
+        return CreateDeviceCode(plc.getClass().getName(), deviceName, ip, port,  otherCode);
+    }
+    public static StringBuilder CreatePlcDeviceCode(NetworkUdpDeviceBase plc, String ip, String port ){
+        String deviceName = "plc";
+        return  CreatePlcDeviceCode(plc, deviceName, ip, port);
+    }
+
+    public static StringBuilder CreatePlcDeviceCode(NetworkUdpDeviceBase plc, String deviceName, String ip, String port ){
+        StringBuilder otherCode = new StringBuilder();
+        if (plc.getLocalAddress() != null){
+            InetSocketAddress address = plc.getLocalAddress();
+            otherCode.append(deviceName + ".setLocalAddress(new java.net.InetSocketAddress(" + address.getPort() + "));   // 绑定本地端口号");
+            otherCode.append("\r\n");
+        }
+        return CreateDeviceCode(plc.getClass().getName(), deviceName, ip, port,  otherCode);
     }
 }
